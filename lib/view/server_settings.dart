@@ -27,19 +27,19 @@ class ServerSettingsPage extends StatelessWidget {
               SizedBox(height: 40),
               LoginInput(
                 label: "服务器域名",
-                defaultText: Api.domain,
+                defaultText: Api.serverSettings.domain,
               ),
               LoginInput(
                 label: "http端口",
-                defaultText: Api.httpPort,
+                defaultText: Api.serverSettings.httpPort.toString(),
               ),
               LoginInput(
                 label: "websocket端口",
-                defaultText: Api.websocketPort,
+                defaultText: Api.serverSettings.webSocketPort.toString(),
               ),
               LoginInput(
                 label: "是否ssl",
-                defaultText: Api.isSsl ? "1" : "0",
+                defaultText: Api.serverSettings.ssl ? "1" : "0",
               ),
               SizedBox(height: 30),
               FlatButton(
