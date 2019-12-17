@@ -4,8 +4,9 @@ import 'package:wechat/constants.dart';
 class LoginInput extends StatelessWidget {
   final String label;
   final String defaultText;
+  final ValueChanged<String> onChanged;
 
-  LoginInput({@required this.label, this.defaultText = ""})
+  LoginInput({@required this.label, this.defaultText = "", this.onChanged})
       : assert(label != null),
         assert(defaultText != null);
 
@@ -25,13 +26,14 @@ class LoginInput extends StatelessWidget {
             fontSize: 18,
           ),
           decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              contentPadding: EdgeInsets.symmetric(vertical: 4),
               labelText: label + "：",
               border: UnderlineInputBorder(
                 borderSide: BorderSide(
                   color: Color(AppColors.LoginInputNormal), // TODO:这里颜色不生效
                 ),
               )),
+          onChanged: (String value) => onChanged(value),
         ),
       ),
     );

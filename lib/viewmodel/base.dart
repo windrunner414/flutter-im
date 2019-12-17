@@ -4,15 +4,15 @@ abstract class BaseViewModel {
   bool _isFirstInit = true;
 
   @mustCallSuper
-  void init(BuildContext context) {
+  void init() {
     if (_isFirstInit) {
       _isFirstInit = false;
-      doInit(context);
+      doInit();
     }
   }
 
   @protected
-  void doInit(BuildContext context);
+  void doInit();
 
   void dispose();
 }

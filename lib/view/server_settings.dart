@@ -1,11 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wechat/api.dart';
 import 'package:wechat/constants.dart';
 import 'package:wechat/widget/login_input.dart';
+
+import '../viewmodel/provider.dart';
+import '../viewmodel/server_settings.dart';
 
 class ServerSettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    ServerSettingsViewModel viewModel = ViewModelProvider.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("服务器设置"),
@@ -27,23 +31,40 @@ class ServerSettingsPage extends StatelessWidget {
               SizedBox(height: 40),
               LoginInput(
                 label: "服务器域名",
-                defaultText: Api.serverSettings.domain,
+                defaultText: viewModel.settings.domain,
+                onChanged: (String value) => viewModel.settings.domain = value,
               ),
               LoginInput(
                 label: "http端口",
-                defaultText: Api.serverSettings.httpPort.toString(),
+                defaultText: viewModel.settings.httpPort.toString(),
+                onChanged: (String value) =>
+                    viewModel.settings.httpPort = int.tryParse(value) ?? 80,
               ),
               LoginInput(
                 label: "websocket端口",
-                defaultText: Api.serverSettings.webSocketPort.toString(),
+                defaultText: viewModel.settings.webSocketPort.toString(),
+                onChanged: (String value) => viewModel.settings.webSocketPort =
+                    int.tryParse(value) ?? 9701,
               ),
-              LoginInput(
-                label: "是否ssl",
-                defaultText: Api.serverSettings.ssl ? "1" : "0",
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    "启用ssl",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  CupertinoSwitch(
+                    value: viewModel.settings.ssl,
+                    onChanged: (open) {
+                      viewModel.settings.ssl = open;
+                    },
+                  ),
+                ],
               ),
               SizedBox(height: 30),
               FlatButton(
-                onPressed: () {},
+                onPressed: () => viewModel.save(),
                 color: Color(AppColors.LoginInputActive),
                 padding: EdgeInsets.symmetric(vertical: 10),
                 child: Center(

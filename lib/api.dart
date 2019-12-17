@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:wechat/model/server_settings.dart';
-import 'package:wechat/util/storage.dart';
+import 'model/server_settings.dart';
+import 'util/storage.dart';
 
 final _defaultServerSettings = ServerSettings(
     domain: "im.php20.cn", httpPort: 80, webSocketPort: 9701, ssl: false);

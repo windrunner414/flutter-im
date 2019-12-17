@@ -1,14 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:wechat/viewmodel/base.dart';
+import 'base.dart';
 
 class LoginViewModel extends BaseViewModel {
   @override
-  void doInit(BuildContext context) {
-
-  }
+  void doInit() {}
 
   @override
-  void dispose() {
-
-  }
+  void dispose() {}
 }
