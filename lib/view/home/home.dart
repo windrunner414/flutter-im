@@ -1,0 +1,143 @@
+import 'package:flutter/material.dart';
+
+import '../../constants.dart';
+import 'contacts.dart';
+import 'conversation.dart';
+import 'profile.dart';
+
+enum _ActionItems { GROUP_CHAT, ADD_FRIEND, QR_SCAN }
+
+class NavigationIconView {
+  final BottomNavigationBarItem item;
+
+  NavigationIconView(
+      {Key key, String title, IconData icon, IconData activeIcon})
+      : item = new BottomNavigationBarItem(
+            icon: Icon(icon),
+            activeIcon: Icon(activeIcon),
+            title: Text(title),
+            backgroundColor: Colors.white);
+}
+
+class HomePage extends StatefulWidget {
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  PageController _pageController;
+  List<Widget> _pages;
+  int _currentIndex = 0;
+  List<NavigationIconView> _navigationViews;
+
+  @override
+  void initState() {
+    super.initState();
+    _navigationViews = [
+      NavigationIconView(
+        title: Config.AppName,
+        icon: IconData(0xe608, fontFamily: Constants.IconFontFamily),
+        activeIcon: IconData(0xe603, fontFamily: Constants.IconFontFamily),
+      ),
+      NavigationIconView(
+        title: '通讯录',
+        icon: IconData(0xe601, fontFamily: Constants.IconFontFamily),
+        activeIcon: IconData(0xe602, fontFamily: Constants.IconFontFamily),
+      ),
+      NavigationIconView(
+        title: '我',
+        icon: IconData(0xe607, fontFamily: Constants.IconFontFamily),
+        activeIcon: IconData(0xe630, fontFamily: Constants.IconFontFamily),
+      ),
+    ];
+    _pageController = PageController(initialPage: _currentIndex);
+    _pages = [
+      ConversationPage(),
+      ContactsPage(),
+      ProfilePage(),
+    ];
+  }
+
+  _buildPopupMenuItem(int iconName, String title) {
+    return Row(
+      children: <Widget>[
+        Icon(
+          IconData(iconName, fontFamily: Constants.IconFontFamily),
+          size: 22.0,
+          color: const Color(AppColors.AppBarPopupMenuColor),
+        ),
+        Container(width: 12.0),
+        Text(
+          title,
+          style: TextStyle(color: const Color(AppColors.AppBarPopupMenuColor)),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomNavBar = BottomNavigationBar(
+      items:
+          _navigationViews.map((NavigationIconView view) => view.item).toList(),
+      currentIndex: _currentIndex,
+      type: BottomNavigationBarType.fixed,
+      fixedColor: const Color(AppColors.TabIconActive),
+      selectedFontSize: 14,
+      unselectedFontSize: 14,
+      onTap: (int index) {
+        setState(() {
+          _currentIndex = index;
+          _pageController.jumpToPage(_currentIndex);
+        });
+      },
+    );
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(Config.AppName),
+        elevation: 0.0,
+        actions: <Widget>[
+          PopupMenuButton(
+            itemBuilder: (BuildContext context) {
+              return <PopupMenuItem<_ActionItems>>[
+                PopupMenuItem(
+                  child: _buildPopupMenuItem(0xe606, "发起群聊"),
+                  value: _ActionItems.GROUP_CHAT,
+                ),
+                PopupMenuItem(
+                  child: _buildPopupMenuItem(0xe638, "添加朋友"),
+                  value: _ActionItems.ADD_FRIEND,
+                ),
+                PopupMenuItem(
+                  child: _buildPopupMenuItem(0xe79b, "扫一扫"),
+                  value: _ActionItems.QR_SCAN,
+                )
+              ];
+            },
+            icon: Icon(
+              IconData(0xe66b, fontFamily: Constants.IconFontFamily),
+              size: 22.0,
+            ),
+            onSelected: (_ActionItems selected) {
+              print('点击的是$selected');
+            },
+            tooltip: "菜单",
+          ),
+          Container(width: 16.0)
+        ],
+      ),
+      body: PageView.builder(
+        itemBuilder: (BuildContext context, int index) {
+          return _pages[index];
+        },
+        controller: _pageController,
+        itemCount: _pages.length,
+        onPageChanged: (int index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
+      bottomNavigationBar: bottomNavBar,
+    );
+  }
+}
