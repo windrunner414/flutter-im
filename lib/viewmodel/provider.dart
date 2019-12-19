@@ -9,9 +9,8 @@ class ViewModelProvider<T extends BaseViewModel> extends StatefulWidget {
   ViewModelProvider({
     @required this.child,
   })  : assert(child != null),
-        super(key: GlobalKey()) {
-    print(T);
-  }
+        assert(T != BaseViewModel),
+        super(key: GlobalKey());
 
   static T of<T extends BaseViewModel>(BuildContext context) =>
       ((context.findAncestorWidgetOfExactType<ViewModelProvider<T>>().key
@@ -20,7 +19,7 @@ class ViewModelProvider<T extends BaseViewModel> extends StatefulWidget {
           .viewModel;
 
   @override
-  _ViewModelProviderState createState() => _ViewModelProviderState();
+  _ViewModelProviderState<T> createState() => _ViewModelProviderState<T>();
 }
 
 class _ViewModelProviderState<T extends BaseViewModel>

@@ -8,6 +8,7 @@ import 'di.dart';
 import 'route.dart';
 import 'util/storage.dart';
 import 'view/login.dart';
+import 'viewmodel/login.dart';
 import 'viewmodel/provider.dart';
 
 /// Material和Cupertino混合，他不香吗
@@ -53,6 +54,6 @@ Widget errorPage() => Container(
       ),
     );
 
-Widget rootPage() => ViewModelProvider(
+Widget rootPage() => ViewModelProvider<LoginViewModel>(
       child: LoginPage(),
     );

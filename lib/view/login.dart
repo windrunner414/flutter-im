@@ -33,7 +33,7 @@ class LoginPage extends StatelessWidget {
             onSelected: (_ActionItems selected) {
               switch (selected) {
                 case _ActionItems.SERVER_SETTINGS:
-                  _openServerSettingPage(context);
+                  Router.navigateTo(context, Page.ServerSetting);
                   break;
               }
             },
@@ -79,12 +79,5 @@ class LoginPage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _openServerSettingPage(BuildContext context) async {
-    if (await Router.navigateTo(context, Page.ServerSetting) ?? false) {
-      //TODO:API变了，刷新验证码
-      print("修改了");
-    }
   }
 }
