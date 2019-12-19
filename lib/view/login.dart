@@ -82,7 +82,9 @@ class LoginPage extends StatelessWidget {
   }
 
   void _openServerSettingPage(BuildContext context) async {
-    await router.navigateTo(context, "/serverSetting");
-    //TODO:API变了，刷新验证码
+    if (await Router.navigateTo(context, Page.ServerSetting) ?? false) {
+      //TODO:API变了，刷新验证码
+      print("修改了");
+    }
   }
 }

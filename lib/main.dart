@@ -8,7 +8,6 @@ import 'di.dart';
 import 'route.dart';
 import 'util/storage.dart';
 import 'view/login.dart';
-import 'viewmodel/login.dart';
 import 'viewmodel/provider.dart';
 
 /// Material和Cupertino混合，他不香吗
@@ -34,7 +33,7 @@ Future<void> init() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await StorageUtil.init();
-  initRoute();
+  Router.init();
   startDartIn(appModule);
 }
 
@@ -55,6 +54,5 @@ Widget errorPage() => Container(
     );
 
 Widget rootPage() => ViewModelProvider(
-      viewModel: inject<LoginViewModel>(),
       child: LoginPage(),
     );

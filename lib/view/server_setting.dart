@@ -82,7 +82,7 @@ class ServerSettingPage extends StatelessWidget {
                 onPressed: () {
                   viewModel.save();
                   ToastUtil.show("保存成功");
-                  router.pop(context);
+                  Router.pop(context, true);
                 },
                 color: Color(AppColors.LoginInputActive),
                 padding: EdgeInsets.symmetric(vertical: 10),

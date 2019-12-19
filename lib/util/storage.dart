@@ -4,6 +4,9 @@ class StorageUtil {
   static SharedPreferences _prefs;
 
   static Future<void> init() async {
+    if (_prefs != null) {
+      return;
+    }
     _prefs = await SharedPreferences.getInstance();
     if (_prefs == null) {
       throw "SharedPreferences初始化失败";
