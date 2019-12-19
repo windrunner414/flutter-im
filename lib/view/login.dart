@@ -33,7 +33,7 @@ class LoginPage extends StatelessWidget {
             onSelected: (_ActionItems selected) {
               switch (selected) {
                 case _ActionItems.SERVER_SETTINGS:
-                  _openServerSettings(context);
+                  _openServerSettingPage(context);
                   break;
               }
             },
@@ -81,8 +81,8 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  void _openServerSettings(BuildContext context) async {
-    await router.navigateTo(context, "/serverSettings");
+  void _openServerSettingPage(BuildContext context) async {
+    await router.navigateTo(context, "/serverSetting");
     //TODO:API变了，刷新验证码
   }
 }

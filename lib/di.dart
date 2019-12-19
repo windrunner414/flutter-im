@@ -1,11 +1,11 @@
 import 'package:dartin/dartin.dart';
 
 import 'viewmodel/login.dart';
-import 'viewmodel/server_settings.dart';
+import 'viewmodel/server_setting.dart';
 
 final viewModelModule = Module([
   factory<LoginViewModel>(({params}) => LoginViewModel()),
-  factory<ServerSettingsViewModel>(({params}) => ServerSettingsViewModel()),
+  factory<ServerSettingViewModel>(({params}) => ServerSettingViewModel()),
 ]);
 
 final appModule = [viewModelModule];

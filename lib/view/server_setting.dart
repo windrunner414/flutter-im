@@ -1,15 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wechat/constants.dart';
-import 'package:wechat/widget/login_input.dart';
+import 'package:flutter/services.dart';
 
+import '../constants.dart';
+import '../route.dart';
+import '../util/toast.dart';
 import '../viewmodel/provider.dart';
-import '../viewmodel/server_settings.dart';
+import '../viewmodel/server_setting.dart';
+import '../widget/login_input.dart';
 
-class ServerSettingsPage extends StatelessWidget {
+class ServerSettingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    ServerSettingsViewModel viewModel = ViewModelProvider.of(context);
+    ServerSettingViewModel viewModel = ViewModelProvider.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("服务器设置"),
@@ -31,20 +34,32 @@ class ServerSettingsPage extends StatelessWidget {
               SizedBox(height: 40),
               LoginInput(
                 label: "服务器域名",
-                defaultText: viewModel.settings.domain,
-                onChanged: (String value) => viewModel.settings.domain = value,
+                defaultText: viewModel.config.domain,
+                onChanged: (String value) => viewModel.config.domain = value,
+                inputFormatters: [
+                  WhitelistingTextInputFormatter(RegExp("[a-zA-Z0-9\\.-]")),
+                ],
+                keyboardType: TextInputType.url,
               ),
               LoginInput(
                 label: "http端口",
-                defaultText: viewModel.settings.httpPort.toString(),
+                defaultText: viewModel.config.httpPort.toString(),
                 onChanged: (String value) =>
-                    viewModel.settings.httpPort = int.tryParse(value) ?? 80,
+                    viewModel.config.httpPort = int.tryParse(value) ?? 80,
+                inputFormatters: [
+                  WhitelistingTextInputFormatter.digitsOnly,
+                ],
+                keyboardType: TextInputType.number,
               ),
               LoginInput(
                 label: "websocket端口",
-                defaultText: viewModel.settings.webSocketPort.toString(),
-                onChanged: (String value) => viewModel.settings.webSocketPort =
+                defaultText: viewModel.config.webSocketPort.toString(),
+                onChanged: (String value) => viewModel.config.webSocketPort =
                     int.tryParse(value) ?? 9701,
+                inputFormatters: [
+                  WhitelistingTextInputFormatter.digitsOnly,
+                ],
+                keyboardType: TextInputType.number,
               ),
               SizedBox(height: 8),
               Row(
@@ -55,16 +70,20 @@ class ServerSettingsPage extends StatelessWidget {
                     style: TextStyle(fontSize: 18),
                   ),
                   CupertinoSwitch(
-                    value: viewModel.settings.ssl,
+                    value: viewModel.config.ssl,
                     onChanged: (open) {
-                      viewModel.settings.ssl = open;
+                      viewModel.config.ssl = open;
                     },
                   ),
                 ],
               ),
               SizedBox(height: 30),
               FlatButton(
-                onPressed: () => viewModel.save(),
+                onPressed: () {
+                  viewModel.save();
+                  ToastUtil.show("保存成功");
+                  router.pop(context);
+                },
                 color: Color(AppColors.LoginInputActive),
                 padding: EdgeInsets.symmetric(vertical: 10),
                 child: Center(

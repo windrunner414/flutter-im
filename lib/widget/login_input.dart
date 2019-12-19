@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:wechat/constants.dart';
 
 class LoginInput extends StatelessWidget {
   final String label;
   final String defaultText;
   final ValueChanged<String> onChanged;
+  final List<TextInputFormatter> inputFormatters;
+  final TextInputType keyboardType;
 
-  LoginInput({@required this.label, this.defaultText = "", this.onChanged})
+  LoginInput(
+      {@required this.label,
+      this.defaultText = "",
+      this.onChanged,
+      this.inputFormatters,
+      this.keyboardType})
       : assert(label != null),
         assert(defaultText != null);
 
@@ -28,12 +36,14 @@ class LoginInput extends StatelessWidget {
           decoration: InputDecoration(
               contentPadding: EdgeInsets.symmetric(vertical: 4),
               labelText: label + "：",
-              border: UnderlineInputBorder(
+              enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
-                  color: Color(AppColors.LoginInputNormal), // TODO:这里颜色不生效
+                  color: Color(AppColors.LoginInputNormal),
                 ),
               )),
           onChanged: (String value) => onChanged(value),
+          inputFormatters: inputFormatters,
+          keyboardType: keyboardType,
         ),
       ),
     );

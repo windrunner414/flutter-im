@@ -1,43 +1,43 @@
 import 'dart:convert';
 
-import 'model/server_settings.dart';
+import 'model/server_config.dart';
 import 'util/storage.dart';
 
-final _defaultServerSettings = ServerSettings(
+final _defaultServerConfig = ServerConfig(
     domain: "im.php20.cn", httpPort: 80, webSocketPort: 9701, ssl: false);
-const _StorageKey = "server_settings";
+const _StorageKey = "server_config";
 
 class Api {
-  static ServerSettings _serverSettings;
-  static ServerSettings get serverSettings {
-    if (_serverSettings == null) {
+  static ServerConfig _serverConfig;
+  static ServerConfig get serverConfig {
+    if (_serverConfig == null) {
       String settings = StorageUtil.get<String>(_StorageKey);
       if (settings == null) {
-        _serverSettings = _defaultServerSettings;
+        _serverConfig = _defaultServerConfig;
       } else {
-        _serverSettings = ServerSettings.fromJson(json.decode(settings));
+        _serverConfig = ServerConfig.fromJson(json.decode(settings));
       }
     }
-    return _serverSettings;
+    return _serverConfig;
   }
 
-  static set serverSettings(ServerSettings settings) {
-    _serverSettings = settings;
-    StorageUtil.setString(_StorageKey, json.encode(_serverSettings));
+  static set serverConfig(ServerConfig config) {
+    _serverConfig = config;
+    StorageUtil.setString(_StorageKey, json.encode(_serverConfig));
   }
 
   static String get httpBase =>
-      (serverSettings.ssl ? "https" : "http") +
+      (serverConfig.ssl ? "https" : "http") +
       "://" +
-      serverSettings.domain +
+      serverConfig.domain +
       ":" +
-      serverSettings.httpPort.toString() +
+      serverConfig.httpPort.toString() +
       "/";
   static String get webSocketBase =>
-      (serverSettings.ssl ? "wss" : "ws") +
+      (serverConfig.ssl ? "wss" : "ws") +
       "://" +
-      serverSettings.domain +
+      serverConfig.domain +
       ":" +
-      serverSettings.webSocketPort.toString() +
+      serverConfig.webSocketPort.toString() +
       "/";
 }
