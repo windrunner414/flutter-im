@@ -43,7 +43,8 @@ abstract class HttpApiClient {
             switch (e.type) {
               case DioErrorType.RESPONSE:
                 if (e.response.statusCode == 401) {
-                  //LayerUtil.showToast(e.response.data);
+                  LayerUtil.showToast(
+                      ApiResponse.fromJson(e.response.data).msg);
                   //Router.navigateTo(context, page)
                 }
                 break;
