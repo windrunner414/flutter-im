@@ -1,10 +1,10 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'server_config.g.dart';
+part 'api_server_config.g.dart';
 
 @JsonSerializable()
-class ServerConfig {
-  ServerConfig({this.domain, int httpPort, int webSocketPort, this.ssl})
+class ApiServerConfig {
+  ApiServerConfig({this.domain, int httpPort, int webSocketPort, this.ssl})
       : assert(domain != null),
         assert(httpPort != null),
         assert(webSocketPort != null),
@@ -25,7 +25,7 @@ class ServerConfig {
   set webSocketPort(int port) =>
       _webSocketPort = (port > 0 && port <= 65535) ? port : 9701;
 
-  factory ServerConfig.fromJson(Map<String, dynamic> json) =>
-      _$ServerConfigFromJson(json);
-  Map<String, dynamic> toJson() => _$ServerConfigToJson(this);
+  factory ApiServerConfig.fromJson(Map<String, dynamic> json) =>
+      _$ApiServerConfigFromJson(json);
+  Map<String, dynamic> toJson() => _$ApiServerConfigToJson(this);
 }

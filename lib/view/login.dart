@@ -33,7 +33,7 @@ class LoginPage extends StatelessWidget {
             onSelected: (_ActionItems selected) {
               switch (selected) {
                 case _ActionItems.SERVER_SETTINGS:
-                  Router.navigateTo(context, Page.ServerSetting);
+                  Router.navigateTo(Page.ServerSetting);
                   break;
               }
             },

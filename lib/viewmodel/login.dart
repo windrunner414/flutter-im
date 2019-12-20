@@ -1,8 +1,13 @@
+import '../api.dart';
 import 'base.dart';
 
 class LoginViewModel extends BaseViewModel {
   @override
-  void doInit() {}
+  void init() {
+    httpApiClient
+        .getVerifyCode()
+        .then((v) => print(v.toJson()), onError: (e) => print(e));
+  }
 
   @override
   void dispose() {}

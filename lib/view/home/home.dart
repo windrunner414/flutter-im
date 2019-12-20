@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../constants.dart';
+import '../../widget/automatic_keep_alive.dart';
 import 'contacts.dart';
 import 'conversation.dart';
 import 'profile.dart';
@@ -51,9 +52,9 @@ class _HomePageState extends State<HomePage> {
     ];
     _pageController = PageController(initialPage: _currentIndex);
     _pages = [
-      ConversationPage(),
-      ContactsPage(),
-      ProfilePage(),
+      AutomaticKeepAliveWidget(child: ConversationPage()),
+      AutomaticKeepAliveWidget(child: ContactsPage()),
+      AutomaticKeepAliveWidget(child: ProfilePage()),
     ];
   }
 

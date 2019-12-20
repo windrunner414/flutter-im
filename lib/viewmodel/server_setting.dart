@@ -1,19 +1,19 @@
 import '../api.dart';
-import '../model/server_config.dart';
+import '../model/api_server_config.dart';
 import 'base.dart';
 
 class ServerSettingViewModel extends BaseViewModel {
-  ServerConfig config;
+  ApiServerConfig config;
 
   @override
-  void doInit() {
-    config = ServerConfig.fromJson(Api.serverConfig.toJson());
+  void init() {
+    config = ApiServerConfig.fromJson(ApiServer.config.toJson());
   }
 
   @override
   void dispose() {}
 
   void save() {
-    Api.serverConfig = config;
+    ApiServer.config = config;
   }
 }

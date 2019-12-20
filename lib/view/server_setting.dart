@@ -4,10 +4,10 @@ import 'package:flutter/services.dart';
 
 import '../constants.dart';
 import '../route.dart';
-import '../util/toast.dart';
-import '../viewmodel/provider.dart';
+import '../util/layer.dart';
 import '../viewmodel/server_setting.dart';
 import '../widget/login_input.dart';
+import '../widget/viewmodel_provider.dart';
 
 class ServerSettingPage extends StatelessWidget {
   @override
@@ -81,8 +81,8 @@ class ServerSettingPage extends StatelessWidget {
               FlatButton(
                 onPressed: () {
                   viewModel.save();
-                  ToastUtil.show("保存成功");
-                  Router.pop(context);
+                  LayerUtil.showToast("保存成功");
+                  Router.pop();
                 },
                 color: Color(AppColors.LoginInputActive),
                 padding: EdgeInsets.symmetric(vertical: 10),

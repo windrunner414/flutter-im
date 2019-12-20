@@ -3,8 +3,8 @@ import 'package:fluro/fluro.dart' show TransitionType, Handler;
 import 'package:flutter/material.dart';
 
 import 'view/server_setting.dart';
-import 'viewmodel/provider.dart';
 import 'viewmodel/server_setting.dart';
+import 'widget/viewmodel_provider.dart';
 
 enum Page { ServerSetting }
 
@@ -36,16 +36,15 @@ class _RoutePage {
   };
 }
 
-class Router {
-  static Fluro.Router _router;
+class _RouterNavigatorObserver extends NavigatorObserver {}
 
-  Router._();
+abstract class Router {
+  static final Fluro.Router _router = Fluro.Router();
+  static RouteFactory get generator => _router.generator;
+  static final _RouterNavigatorObserver navigatorObserver =
+      _RouterNavigatorObserver();
 
   static void init() {
-    if (_router != null) {
-      return;
-    }
-    _router = Fluro.Router();
     for (_RoutePage page in _RoutePage._pages.values) {
       String routePath = page.routePath;
       if (page.parameters != null && page.parameters.length > 0) {
@@ -56,23 +55,25 @@ class Router {
     }
   }
 
-  static Future navigateTo(BuildContext context, Page page,
-          {List<String> parameters,
-          bool replace = false,
-          bool clearStack = false,
-          TransitionType transition,
-          Duration transitionDuration = const Duration(milliseconds: 250),
-          RouteTransitionsBuilder transitionBuilder}) =>
-      _router.navigateTo(
-          context,
-          _RoutePage._pages[page].routePath +
-              (parameters != null ? ("/" + parameters.join("/")) : ""),
-          replace: replace,
-          clearStack: clearStack,
-          transition: transition,
-          transitionBuilder: transitionBuilder,
-          transitionDuration: transitionDuration);
+  static Future<T> navigateTo<T extends Object>(Page page,
+      {List<String> parameters,
+      bool replace = false,
+      bool clearStack = false}) {
+    assert(replace != null);
+    assert(clearStack != null);
 
-  static bool pop<T extends Object>(BuildContext context, [T result]) =>
-      Navigator.pop(context, result);
+    NavigatorState navigator = navigatorObserver.navigator;
+    String path = _RoutePage._pages[page].routePath +
+        (((parameters ?? []).length > 0) ? ("/" + parameters.join("/")) : "");
+    if (clearStack) {
+      return navigator.pushNamedAndRemoveUntil(path, (check) => false);
+    } else if (replace) {
+      return navigator.pushReplacementNamed(path);
+    } else {
+      return navigator.pushNamed(path);
+    }
+  }
+
+  static bool pop<T extends Object>([T result]) =>
+      navigatorObserver.navigator.pop(result);
 }

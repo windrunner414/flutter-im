@@ -1,45 +1,38 @@
 import 'package:dartin/dartin.dart';
 import 'package:flutter/material.dart';
 
-import 'base.dart';
+import '../viewmodel/base.dart';
 
 class ViewModelProvider<T extends BaseViewModel> extends StatefulWidget {
   final Widget child;
+  final T viewModel;
 
   ViewModelProvider({
     @required this.child,
   })  : assert(child != null),
         assert(T != BaseViewModel),
-        super(key: GlobalKey());
+        viewModel = inject();
 
   static T of<T extends BaseViewModel>(BuildContext context) =>
-      ((context.findAncestorWidgetOfExactType<ViewModelProvider<T>>().key
-                  as GlobalKey)
-              .currentState as _ViewModelProviderState<T>)
-          .viewModel;
+      context.findAncestorWidgetOfExactType<ViewModelProvider<T>>().viewModel;
 
   @override
-  _ViewModelProviderState<T> createState() => _ViewModelProviderState<T>();
+  _ViewModelProviderState createState() => _ViewModelProviderState();
 }
 
-class _ViewModelProviderState<T extends BaseViewModel>
-    extends State<ViewModelProvider<T>> {
-  T _viewModel;
-  T get viewModel => _viewModel;
-
+class _ViewModelProviderState extends State<ViewModelProvider> {
   @override
   Widget build(BuildContext context) => widget.child;
 
   @override
   void initState() {
-    _viewModel = inject();
-    viewModel.init();
+    widget.viewModel.init();
     super.initState();
   }
 
   @override
   void dispose() {
-    viewModel.dispose();
+    widget.viewModel.dispose();
     super.dispose();
   }
 }

@@ -1,20 +1,27 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dartin/dartin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:oktoast/oktoast.dart';
 
+import 'api.dart';
 import 'constants.dart';
 import 'di.dart';
 import 'route.dart';
 import 'util/storage.dart';
+import 'view/home/home.dart';
 import 'view/login.dart';
 import 'viewmodel/login.dart';
-import 'viewmodel/provider.dart';
+import 'widget/viewmodel_provider.dart';
 
 /// Material和Cupertino混合，他不香吗
 void main() {
-  runApp(OKToast(
+  runApp(BotToastInit(
     child: MaterialApp(
+      navigatorObservers: [
+        BotToastNavigatorObserver(),
+        Router.navigatorObserver,
+      ],
+      onGenerateRoute: Router.generator,
       title: Config.AppName,
       theme: ThemeData.light().copyWith(
           primaryColor: Color(AppColors.AppBarColor),
@@ -36,6 +43,7 @@ Future<void> init() async {
   await StorageUtil.init();
   Router.init();
   startDartIn(appModule);
+  ApiServer.init(); // 必须在storage初始化后调用
 }
 
 /// 这里只有初始化失败才会显示，后续可以改成全局处理未捕获的异常
@@ -54,6 +62,8 @@ Widget errorPage() => Container(
       ),
     );
 
-Widget rootPage() => ViewModelProvider<LoginViewModel>(
-      child: LoginPage(),
-    );
+Widget rootPage() => false
+    ? HomePage()
+    : ViewModelProvider<LoginViewModel>(
+        child: LoginPage(),
+      );

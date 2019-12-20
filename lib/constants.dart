@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
-class Config {
+abstract class Config {
   static const AppName = "微信";
+
+  static const enableHttp2 = false;
+  static const http2IdleTimeout = 15000;
 }
 
-class AppColors {
+abstract class AppColors {
   static const BackgroundColor = 0xffebebeb;
   static const AppBarColor = 0xff303030;
   static const TabIconNormal = 0xff999999;
@@ -25,7 +28,7 @@ class AppColors {
   static const LoginInputActive = 0xff46c11b;
 }
 
-class AppStyles {
+abstract class AppStyles {
   static const TitleStyle = TextStyle(
     fontSize: 14.0,
     color: Color(AppColors.TitleColor),
@@ -49,7 +52,7 @@ class AppStyles {
   );
 }
 
-class Constants {
+abstract class Constants {
   static const IconFontFamily = "appIconFont";
   static const ConversationAvatarSize = 48.0;
   static const DividerWidth = 0.5;
