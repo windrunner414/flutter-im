@@ -8,6 +8,8 @@ final _defaultServerConfig = ServerConfig(
 const _StorageKey = "server_config";
 
 class Api {
+  static const VERIFY_CODE = "Api/Common/VerifyCode/verifyCode";
+
   static ServerConfig _serverConfig;
   static ServerConfig get serverConfig {
     if (_serverConfig == null) {
