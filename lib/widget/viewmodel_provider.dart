@@ -1,7 +1,6 @@
 import 'package:dartin/dartin.dart';
 import 'package:flutter/material.dart';
-
-import '../viewmodel/base.dart';
+import 'package:wechat/viewmodel/base.dart';
 
 class ViewModelProvider<T extends BaseViewModel> extends StatefulWidget {
   final Widget child;

@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-
-import '../../constants.dart';
-import '../../model/contacts.dart' show Contact, ContactsPageData;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:wechat/constants.dart';
+import 'package:wechat/model/contacts.dart';
 
 class _ContactItem extends StatefulWidget {
   _ContactItem({
@@ -24,7 +23,9 @@ class _ContactItem extends StatefulWidget {
   _ContactItemState createState() => _ContactItemState();
 
   static double _height(bool hasGroupTitle) {
-    final _buttonHeight = MARGIN_VERTICAL * 2 + Constants.ContactAvatarSize + Constants.DividerWidth;
+    final _buttonHeight = MARGIN_VERTICAL * 2 +
+        Constants.ContactAvatarSize +
+        Constants.DividerWidth;
     if (hasGroupTitle) {
       return _buttonHeight + GROUP_TITLE_HEIGHT;
     } else {
@@ -36,7 +37,8 @@ class _ContactItem extends StatefulWidget {
 class _ContactItemState extends State<_ContactItem> {
   bool _active = false;
   bool get _isAvatarFromNet {
-   return widget.avatar.startsWith('http') || widget.avatar.startsWith("https");
+    return widget.avatar.startsWith('http') ||
+        widget.avatar.startsWith("https");
   }
 
   @override
@@ -56,7 +58,7 @@ class _ContactItemState extends State<_ContactItem> {
         height: Constants.ContactAvatarSize,
       );
     }
-    
+
     Widget _button = GestureDetector(
       onTapDown: (_) {
         setState(() => _active = true);
@@ -70,20 +72,20 @@ class _ContactItemState extends State<_ContactItem> {
       onTap: () {
         print('233');
       },
-      onLongPress: () {
-
-      },
+      onLongPress: () {},
       child: Container(
-        color: _active ? Color(AppColors.ContactItemActiveBgColor) : Colors.transparent,
+        color: _active
+            ? Color(AppColors.ContactItemActiveBgColor)
+            : Colors.transparent,
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 16.0),
-          padding: const EdgeInsets.symmetric(vertical: _ContactItem.MARGIN_VERTICAL),
+          padding: const EdgeInsets.symmetric(
+              vertical: _ContactItem.MARGIN_VERTICAL),
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
                   width: Constants.DividerWidth,
-                  color: Color(AppColors.DividerColor)
-              ),
+                  color: Color(AppColors.DividerColor)),
             ),
           ),
           child: Row(
@@ -96,7 +98,7 @@ class _ContactItemState extends State<_ContactItem> {
         ),
       ),
     );
-    
+
     Widget _itemBody;
     if (widget.groupTitle != null) {
       _itemBody = Column(
@@ -106,12 +108,13 @@ class _ContactItemState extends State<_ContactItem> {
             padding: EdgeInsets.only(left: 16.0, right: 16.0),
             color: const Color(AppColors.ContactGroupTitleBgColor),
             alignment: Alignment.centerLeft,
-            child: Text(widget.groupTitle, style:AppStyles.GroupTitleItemTextStyle),
+            child: Text(widget.groupTitle,
+                style: AppStyles.GroupTitleItemTextStyle),
           ),
           _button,
         ],
       );
-    }else {
+    } else {
       _itemBody = _button;
     }
 
@@ -119,12 +122,34 @@ class _ContactItemState extends State<_ContactItem> {
   }
 }
 
- const INDEX_BAR_WORDS = [
+const INDEX_BAR_WORDS = [
   "↑",
-  "A", "B", "C", "D", "E", "F", "G",
-  "H", "I", "J", "K", "L", "M", "N",
-  "O", "P", "Q", "R", "S", "T", "U",
-  "V", "W", "X", "Y", "Z"
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+  "K",
+  "L",
+  "M",
+  "N",
+  "O",
+  "P",
+  "Q",
+  "R",
+  "S",
+  "T",
+  "U",
+  "V",
+  "W",
+  "X",
+  "Y",
+  "Z"
 ];
 
 class ContactsPage extends StatefulWidget {
@@ -140,32 +165,32 @@ class _ContactsPageState extends State<ContactsPage> {
   List<Contact> _contacts = [];
   final List<_ContactItem> _functionButtons = [
     _ContactItem(
-      avatar: 'assets/images/ic_new_friend.png',
-      title: '新的朋友',
-      onPressed: (){
-        print("添加新朋友");
-      }
-    ),
+        avatar: 'assets/images/ic_new_friend.png',
+        title: '新的朋友',
+        onPressed: () {
+          print("添加新朋友");
+        }),
     _ContactItem(
-      avatar: 'assets/images/ic_group_chat.png',
-      title: '群聊',
-      onPressed: (){
-        print("点击了群聊");
-      }
-    ),
+        avatar: 'assets/images/ic_group_chat.png',
+        title: '群聊',
+        onPressed: () {
+          print("点击了群聊");
+        }),
   ];
-  final Map _letterPosMap = {INDEX_BAR_WORDS[0]:0.0};
+  final Map _letterPosMap = {INDEX_BAR_WORDS[0]: 0.0};
 
   @override
   void initState() {
     _contacts = data.contacts;
-    _contacts.sort((Contact a, Contact b) => a.nameIndex.compareTo(b.nameIndex));
+    _contacts
+        .sort((Contact a, Contact b) => a.nameIndex.compareTo(b.nameIndex));
     _scrollController = new ScrollController();
 
     var _totalPos = _functionButtons.length * _ContactItem._height(false);
     for (var i = 0; i < _contacts.length; i++) {
       bool _hasGroupTitle = true;
-      if (i > 0 && _contacts[i].nameIndex.compareTo(_contacts[i-1].nameIndex) == 0) {
+      if (i > 0 &&
+          _contacts[i].nameIndex.compareTo(_contacts[i - 1].nameIndex) == 0) {
         _hasGroupTitle = false;
       }
 
@@ -174,7 +199,7 @@ class _ContactsPageState extends State<ContactsPage> {
       }
       _totalPos += _ContactItem._height(_hasGroupTitle);
     }
-    
+
     super.initState();
   }
 
@@ -183,10 +208,10 @@ class _ContactsPageState extends State<ContactsPage> {
     _scrollController.dispose();
     super.dispose();
   }
-  
+
   String getLetter(BuildContext context, double tileHeight, Offset globalPos) {
     RenderBox _box = context.findRenderObject();
-    var local =  _box.globalToLocal(globalPos);
+    var local = _box.globalToLocal(globalPos);
     int index = (local.dy ~/ tileHeight).clamp(0, INDEX_BAR_WORDS.length - 1);
     return INDEX_BAR_WORDS[index];
   }
@@ -195,10 +220,11 @@ class _ContactsPageState extends State<ContactsPage> {
     if (_letterPosMap.isNotEmpty) {
       final _pos = _letterPosMap[letter];
       if (_pos != null) {
-        _scrollController.animateTo(_letterPosMap[letter], curve: Curves.easeInOut, duration: Duration(microseconds: 200));   
+        _scrollController.animateTo(_letterPosMap[letter],
+            curve: Curves.easeInOut, duration: Duration(microseconds: 200));
       }
     }
-  } 
+  }
 
   Widget _buildIndexBar(BuildContext context, BoxConstraints constraints) {
     final List<Widget> _letters = INDEX_BAR_WORDS.map((String word) {
@@ -211,26 +237,28 @@ class _ContactsPageState extends State<ContactsPage> {
     return GestureDetector(
       onVerticalDragDown: (DragDownDetails details) {
         setState(() {
-          _indexBarBgColor = Colors.black26;  
-          _currentLetter = getLetter(context, _tileHeight, details.globalPosition);
+          _indexBarBgColor = Colors.black26;
+          _currentLetter =
+              getLetter(context, _tileHeight, details.globalPosition);
           _jumpToIndex(_currentLetter);
         });
       },
       onVerticalDragEnd: (DragEndDetails details) {
         setState(() {
           _indexBarBgColor = Colors.transparent;
-          _currentLetter = null;                
+          _currentLetter = null;
         });
       },
-      onVerticalDragCancel: (){
+      onVerticalDragCancel: () {
         setState(() {
           _indexBarBgColor = Colors.transparent;
-          _currentLetter = null;               
+          _currentLetter = null;
         });
       },
-      onVerticalDragUpdate: (DragUpdateDetails details){
+      onVerticalDragUpdate: (DragUpdateDetails details) {
         setState(() {
-          _currentLetter = getLetter(context, _tileHeight, details.globalPosition);
+          _currentLetter =
+              getLetter(context, _tileHeight, details.globalPosition);
           _jumpToIndex(_currentLetter);
         });
       },
@@ -242,21 +270,25 @@ class _ContactsPageState extends State<ContactsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> _body = [ 
+    final List<Widget> _body = [
       ListView.builder(
         controller: _scrollController,
         itemBuilder: (BuildContext context, int index) {
-          if(index < _functionButtons.length){
+          if (index < _functionButtons.length) {
             return _functionButtons[index];
           }
           int _contactIndex = index - _functionButtons.length;
           bool _isGroupTitle = true;
           Contact _contact = _contacts[_contactIndex];
 
-          if (_contactIndex >= 1 && _contact.nameIndex == _contacts[_contactIndex - 1].nameIndex) {
+          if (_contactIndex >= 1 &&
+              _contact.nameIndex == _contacts[_contactIndex - 1].nameIndex) {
             _isGroupTitle = false;
           }
-          return _ContactItem(avatar: _contact.avatar, title: _contact.name, groupTitle: _isGroupTitle ?_contact.nameIndex: null);
+          return _ContactItem(
+              avatar: _contact.avatar,
+              title: _contact.name,
+              groupTitle: _isGroupTitle ? _contact.nameIndex : null);
         },
         itemCount: _contacts.length + _functionButtons.length,
       ),
@@ -274,22 +306,22 @@ class _ContactsPageState extends State<ContactsPage> {
       )
     ];
 
-    if(_currentLetter != null && _currentLetter.isNotEmpty) {
-      _body.add(
-        Center(
-          child: Container(
-            width: Constants.IndexLetterBoxSize,
-            height: Constants.IndexLetterBoxSize,
-            decoration: BoxDecoration(
-              color: AppColors.IndexLetterBoxBgColor,
-              borderRadius: BorderRadius.all(Radius.circular(Constants.IndexLetterBoxRadius)),
-            ),
-            child: Center(
-              child: Text(_currentLetter, style: AppStyles.IndexLetterBoxTextStyle),
-            ),
+    if (_currentLetter != null && _currentLetter.isNotEmpty) {
+      _body.add(Center(
+        child: Container(
+          width: Constants.IndexLetterBoxSize,
+          height: Constants.IndexLetterBoxSize,
+          decoration: BoxDecoration(
+            color: AppColors.IndexLetterBoxBgColor,
+            borderRadius: BorderRadius.all(
+                Radius.circular(Constants.IndexLetterBoxRadius)),
           ),
-        )
-      );
+          child: Center(
+            child:
+                Text(_currentLetter, style: AppStyles.IndexLetterBoxTextStyle),
+          ),
+        ),
+      ));
     }
 
     return Stack(

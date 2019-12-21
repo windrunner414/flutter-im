@@ -1,6 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-
-import 'model_generic_json_converter.dart';
+import 'package:wechat/model/model_generic_json_converter.dart';
 
 part 'api_response.g.dart';
 

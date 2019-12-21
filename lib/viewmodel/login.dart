@@ -1,5 +1,4 @@
-import '../api.dart';
-import 'base.dart';
+import 'package:wechat/viewmodel/base.dart';
 
 class LoginViewModel extends BaseViewModel {
   @override
@@ -7,7 +6,7 @@ class LoginViewModel extends BaseViewModel {
     /*httpApiClient
         .getVerifyCode()
         .then((v) => print(v.toJson()), onError: (e) => print(e));*/
-    httpApiClient.getUserInfo();
+    //httpApiClient.getUserInfo();
   }
 
   @override

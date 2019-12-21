@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../constants.dart' show Constants, AppColors;
+import 'package:wechat/constants.dart';
 
 class FullWidthButton extends StatelessWidget {
   static const HORIZONTAL_PADDING = 20.0;

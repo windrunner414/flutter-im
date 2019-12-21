@@ -1,8 +1,7 @@
 import 'package:generic_json_converter_annotation/generic_json_converter_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';
-
-import 'user.dart';
-import 'verify_code.dart';
+import 'package:wechat/model/user.dart';
+import 'package:wechat/model/verify_code.dart';
 
 part 'model_generic_json_converter.g.dart';
 

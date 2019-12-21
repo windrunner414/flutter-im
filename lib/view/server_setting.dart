@@ -1,13 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import '../constants.dart';
-import '../route.dart';
-import '../util/layer.dart';
-import '../viewmodel/server_setting.dart';
-import '../widget/login_input.dart';
-import '../widget/viewmodel_provider.dart';
+import 'package:wechat/constants.dart';
+import 'package:wechat/route.dart';
+import 'package:wechat/util/layer.dart';
+import 'package:wechat/viewmodel/server_setting.dart';
+import 'package:wechat/widget/login_input.dart';
+import 'package:wechat/widget/viewmodel_provider.dart';
 
 class ServerSettingPage extends StatelessWidget {
   @override

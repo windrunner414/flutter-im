@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import '../../constants.dart' show AppColors, AppStyles, Constants;
-import '../../model/conversation.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:wechat/constants.dart';
+import 'package:wechat/model/conversation.dart';
 
 class _ConversationItem extends StatefulWidget {
   _ConversationItem(this._conversation);
@@ -9,12 +9,12 @@ class _ConversationItem extends StatefulWidget {
   final Conversation _conversation;
 
   @override
-  _ConversationItemState createState() => _ConversationItemState(this._conversation);
+  _ConversationItemState createState() =>
+      _ConversationItemState(this._conversation);
 }
 
 class _ConversationItemState extends State<_ConversationItem> {
-  _ConversationItemState(this._conversation)
-    : assert(_conversation != null);
+  _ConversationItemState(this._conversation) : assert(_conversation != null);
 
   final Conversation _conversation;
   bool _active = false;
@@ -28,30 +28,32 @@ class _ConversationItemState extends State<_ConversationItem> {
       height: Constants.ConversationAvatarSize,
     );
 
-    Widget avatarContainer; 
-    if(_conversation.unreadMsgCount > 0) {
-        Widget unreadMsgCountText = Container(
-          width: Constants.UnReadMsgNotifyDotSize,
-          height: Constants.UnReadMsgNotifyDotSize,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(Constants.UnReadMsgNotifyDotSize / 2.0),
-            color: Color(AppColors.NotifyDotBgColor),
-          ),
-          child: Text(_conversation.unreadMsgCount.toString(), style: AppStyles.UnreadMsgCountDotStyle),
-        );
+    Widget avatarContainer;
+    if (_conversation.unreadMsgCount > 0) {
+      Widget unreadMsgCountText = Container(
+        width: Constants.UnReadMsgNotifyDotSize,
+        height: Constants.UnReadMsgNotifyDotSize,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          borderRadius:
+              BorderRadius.circular(Constants.UnReadMsgNotifyDotSize / 2.0),
+          color: Color(AppColors.NotifyDotBgColor),
+        ),
+        child: Text(_conversation.unreadMsgCount.toString(),
+            style: AppStyles.UnreadMsgCountDotStyle),
+      );
 
-        avatarContainer = Stack(
-          overflow: Overflow.visible,
-          children: <Widget>[
-            avatar,
-            Positioned(
-              right: -6.0,
-              top: -6.0,
-              child: unreadMsgCountText,
-            )
-          ],
-        );
+      avatarContainer = Stack(
+        overflow: Overflow.visible,
+        children: <Widget>[
+          avatar,
+          Positioned(
+            right: -6.0,
+            top: -6.0,
+            child: unreadMsgCountText,
+          )
+        ],
+      );
     } else {
       avatarContainer = avatar;
     }
@@ -71,20 +73,17 @@ class _ConversationItemState extends State<_ConversationItem> {
       onTap: () {
         print('233');
       },
-      onLongPress: () {
-
-      },
+      onLongPress: () {},
       child: Container(
         padding: const EdgeInsets.all(10.0),
         decoration: BoxDecoration(
-            color: Color(_active ? AppColors.ConversationItemActiveBgColor : AppColors.ConversationItemBgColor),
+            color: Color(_active
+                ? AppColors.ConversationItemActiveBgColor
+                : AppColors.ConversationItemBgColor),
             border: Border(
                 bottom: BorderSide(
                     color: Color(AppColors.DividerColor),
-                    width: Constants.DividerWidth
-                )
-            )
-        ),
+                    width: Constants.DividerWidth))),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
@@ -94,7 +93,7 @@ class _ConversationItemState extends State<_ConversationItem> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(_conversation.title, style:AppStyles.TitleStyle),
+                  Text(_conversation.title, style: AppStyles.TitleStyle),
                   Text(_conversation.desc, style: AppStyles.DescStyle)
                 ],
               ),
@@ -126,9 +125,9 @@ class _ConversationPageState extends State<ConversationPage> {
       },
       color: Color(AppColors.TabIconActive),
       child: ListView.builder(
-          itemBuilder: (BuildContext context, int index) => _ConversationItem(data.conversations[index]),
-          itemCount: data.conversations.length
-      ),
+          itemBuilder: (BuildContext context, int index) =>
+              _ConversationItem(data.conversations[index]),
+          itemCount: data.conversations.length),
     );
   }
 }
