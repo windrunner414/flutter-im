@@ -1,9 +1,10 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:wechat/model/base.dart';
 
 part 'api_server_config.g.dart';
 
 @JsonSerializable()
-class ApiServerConfig {
+class ApiServerConfig extends BaseModel {
   ApiServerConfig({this.domain, int httpPort, int webSocketPort, this.ssl})
       : assert(domain != null),
         assert(httpPort != null),

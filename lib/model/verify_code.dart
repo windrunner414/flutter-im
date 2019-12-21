@@ -1,9 +1,10 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:wechat/model/base.dart';
 
 part 'verify_code.g.dart';
 
 @JsonSerializable()
-class VerifyCode {
+class VerifyCode extends BaseModel {
   String verifyCode;
   int verifyCodeTime;
   String verifyCodeHash;

@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:wechat/model/base.dart';
 
 part 'user.g.dart';
 
@@ -10,7 +11,7 @@ enum UserState {
 }
 
 @JsonSerializable()
-class User {
+class User extends BaseModel {
   String userAccount;
   String userName;
   int userId;

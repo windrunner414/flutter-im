@@ -3,7 +3,10 @@ part of 'api.dart';
 HttpApiClient _httpApiClient;
 HttpApiClient get httpApiClient => _httpApiClient;
 
-@RestApi()
+/// 现在所有api都扔一起了，如果后期api多了可以拆开mixin
+/// 但是得修改下retrofit的库，把他获取method的地方加上mixin的method
+/// https://github.com/trevorwang/retrofit.dart/pull/88
+@RestApi(autoCastResponse: true)
 abstract class HttpApiClient {
   final Dio _dio;
 
@@ -16,18 +19,15 @@ abstract class HttpApiClient {
       ..transformer =
           DefaultTransformer(jsonDecodeCallback: WorkerUtil.jsonDecode)
       ..interceptors.add(InterceptorsWrapper(
-          onRequest: (RequestOptions options) =>
-              options..queryParameters["userSession"] = "",
-          onResponse: (Response response) async {
-            print(response.statusCode.toString() +
-                "|" +
-                response.data.toString());
-            return response; // continue
-          },
+          onRequest: (RequestOptions options) async => options
+            ..queryParameters["userSession"] =
+                (await inject<UserRepository>().getSelfInfo())?.userSession,
+          onResponse: (Response response) async => response, // continue,
           onError: (DioError e) async {
             switch (e.type) {
               case DioErrorType.RESPONSE:
                 if (e.response.statusCode == 401) {
+                  e.type = DioErrorType.CANCEL;
                   LayerUtil.showToast(
                       ApiResponse.fromJson(e.response.data).msg);
                   //Router.navigateTo(context, page)
