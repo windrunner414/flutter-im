@@ -47,7 +47,7 @@ abstract class Router {
   static void init() {
     for (_RoutePage page in _RoutePage._pages.values) {
       String routePath = page.routePath;
-      if (page.parameters != null && page.parameters.length > 0) {
+      if (page.parameters != null && page.parameters.isNotEmpty) {
         routePath += "/:" + page.parameters.join("/:");
       }
       _router.define(routePath,
@@ -64,7 +64,7 @@ abstract class Router {
 
     NavigatorState navigator = navigatorObserver.navigator;
     String path = _RoutePage._pages[page].routePath +
-        (((parameters ?? []).length > 0) ? ("/" + parameters.join("/")) : "");
+        ((parameters ?? []).isNotEmpty ? ("/" + parameters.join("/")) : "");
     if (clearStack) {
       return navigator.pushNamedAndRemoveUntil(path, (check) => false);
     } else if (replace) {

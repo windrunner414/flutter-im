@@ -5,6 +5,10 @@ abstract class Config {
 
   static const enableHttp2 = false;
   static const http2IdleTimeout = 15000;
+
+  /// isolate数量，解析json等在isolate内执行
+  /// 会优先设置为cpu核心数，如果小于该值，或获取不到，会设置成该值
+  static const minimalIsolatePoolSize = 4;
 }
 
 abstract class AppColors {

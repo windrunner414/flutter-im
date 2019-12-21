@@ -1,13 +1,13 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import 'generic_converter.dart';
+import 'model_generic_json_converter.dart';
 
 part 'api_response.g.dart';
 
 @JsonSerializable()
 class ApiResponse<T extends Object> {
   int code;
-  @GenericConverter()
+  @ModelGenericJsonConverter()
   T result;
   String msg;
 

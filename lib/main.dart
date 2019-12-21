@@ -1,7 +1,11 @@
+import 'dart:math';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dartin/dartin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:system_info/system_info.dart';
+import 'package:worker_manager/worker_manager.dart';
 
 import 'api.dart';
 import 'constants.dart';
@@ -43,6 +47,10 @@ Future<void> init() async {
   await StorageUtil.init();
   Router.init();
   startDartIn(appModule);
+  await Executor(
+          isolatePoolSize:
+              max(SysInfo.processors.length, Config.minimalIsolatePoolSize))
+      .warmUp();
   ApiServer.init(); // 必须在storage初始化后调用
 }
 

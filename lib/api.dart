@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:dio_http2_adapter/dio_http2_adapter.dart';
 import 'package:retrofit/retrofit.dart';
+import 'package:worker_manager/worker_manager.dart';
 
 import 'constants.dart';
 import 'model/api_response.dart';
@@ -30,6 +32,8 @@ abstract class HttpApiClient {
       ..options.connectTimeout = 5000
       ..options.receiveTimeout = 7500
       ..options.sendTimeout = 7500
+      ..transformer =
+          DefaultTransformer(jsonDecodeCallback: _jsonDecodeInIsolate)
       ..interceptors.add(InterceptorsWrapper(
           onRequest: (RequestOptions options) =>
               options..queryParameters["userSession"] = "",
@@ -106,4 +110,20 @@ abstract class ApiServer {
       config = ApiServerConfig.fromJson(json.decode(configJson));
     }
   }
+}
+
+Future _jsonDecodeInIsolate(String data) {
+  Completer completer = Completer();
+  Executor()
+      .addTask(
+        task: Task(
+          function: jsonDecode,
+          arg: data,
+          timeout: Duration(seconds: 30),
+        ),
+        priority: WorkPriority.high,
+      )
+      .listen((result) => completer.complete(result))
+      .onError((error) => completer.completeError(error));
+  return completer.future;
 }
