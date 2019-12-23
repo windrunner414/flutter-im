@@ -6,9 +6,11 @@ class AutomaticKeepAliveWidget extends StatefulWidget {
   final Widget child;
   final bool Function() wantKeepAlive;
 
-  AutomaticKeepAliveWidget({this.child, this.wantKeepAlive = _wantKeepAlive})
+  AutomaticKeepAliveWidget(
+      {Key key, @required this.child, this.wantKeepAlive = _wantKeepAlive})
       : assert(child != null),
-        assert(wantKeepAlive != null);
+        assert(wantKeepAlive != null),
+        super(key: key);
 
   @override
   _AutomaticKeepAliveWidgetState createState() =>

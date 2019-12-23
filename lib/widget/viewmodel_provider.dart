@@ -4,34 +4,53 @@ import 'package:wechat/viewmodel/base.dart';
 
 class ViewModelProvider<T extends BaseViewModel> extends StatefulWidget {
   final Widget child;
-  final T viewModel;
 
   ViewModelProvider({
+    Key key,
     @required this.child,
   })  : assert(child != null),
         assert(T != BaseViewModel),
-        viewModel = inject();
+        super(key: key);
 
-  static T of<T extends BaseViewModel>(BuildContext context) =>
-      context.findAncestorWidgetOfExactType<ViewModelProvider<T>>().viewModel;
+  static T of<T extends BaseViewModel>(BuildContext context) => context
+      .dependOnInheritedWidgetOfExactType<_ViewModelProviderInherited<T>>()
+      .viewModel;
 
   @override
-  _ViewModelProviderState createState() => _ViewModelProviderState();
+  _ViewModelProviderState<T> createState() => _ViewModelProviderState<T>();
 }
 
-class _ViewModelProviderState extends State<ViewModelProvider> {
+class _ViewModelProviderState<T extends BaseViewModel>
+    extends State<ViewModelProvider<T>> {
+  final T viewModel = inject();
+
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) =>
+      _ViewModelProviderInherited<T>(viewModel: viewModel, child: widget.child);
 
   @override
   void initState() {
-    widget.viewModel.init();
+    viewModel.init();
     super.initState();
   }
 
   @override
   void dispose() {
-    widget.viewModel.dispose();
+    viewModel.dispose();
     super.dispose();
   }
+}
+
+class _ViewModelProviderInherited<T extends BaseViewModel>
+    extends InheritedWidget {
+  final T viewModel;
+
+  _ViewModelProviderInherited(
+      {Key key, @required this.viewModel, @required Widget child})
+      : assert(T != BaseViewModel),
+        assert(child != null),
+        super(key: key, child: child);
+
+  @override
+  bool updateShouldNotify(InheritedWidget oldWidget) => false;
 }

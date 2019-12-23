@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wechat/constants.dart';
+import 'package:wechat/util/screen_util.dart';
 import 'package:wechat/view/home/contacts.dart';
 import 'package:wechat/view/home/conversation.dart';
 import 'package:wechat/view/home/profile.dart';
@@ -92,39 +93,41 @@ class _HomePageState extends State<HomePage> {
       },
     );
     return Scaffold(
-      appBar: AppBar(
-        title: Text(Config.AppName),
-        elevation: 0.0,
-        actions: <Widget>[
-          PopupMenuButton(
-            itemBuilder: (BuildContext context) {
-              return <PopupMenuItem<_ActionItems>>[
-                PopupMenuItem(
-                  child: _buildPopupMenuItem(0xe606, "发起群聊"),
-                  value: _ActionItems.GROUP_CHAT,
+      appBar: PreferredSize(
+          preferredSize: Size.fromHeight(kToolbarHeight.height),
+          child: AppBar(
+            title: Text(Config.AppName),
+            elevation: 0.0,
+            actions: <Widget>[
+              PopupMenuButton(
+                itemBuilder: (BuildContext context) {
+                  return <PopupMenuItem<_ActionItems>>[
+                    PopupMenuItem(
+                      child: _buildPopupMenuItem(0xe606, "发起群聊"),
+                      value: _ActionItems.GROUP_CHAT,
+                    ),
+                    PopupMenuItem(
+                      child: _buildPopupMenuItem(0xe638, "添加朋友"),
+                      value: _ActionItems.ADD_FRIEND,
+                    ),
+                    PopupMenuItem(
+                      child: _buildPopupMenuItem(0xe79b, "扫一扫"),
+                      value: _ActionItems.QR_SCAN,
+                    )
+                  ];
+                },
+                icon: Icon(
+                  IconData(0xe66b, fontFamily: Constants.IconFontFamily),
+                  size: 22.0,
                 ),
-                PopupMenuItem(
-                  child: _buildPopupMenuItem(0xe638, "添加朋友"),
-                  value: _ActionItems.ADD_FRIEND,
-                ),
-                PopupMenuItem(
-                  child: _buildPopupMenuItem(0xe79b, "扫一扫"),
-                  value: _ActionItems.QR_SCAN,
-                )
-              ];
-            },
-            icon: Icon(
-              IconData(0xe66b, fontFamily: Constants.IconFontFamily),
-              size: 22.0,
-            ),
-            onSelected: (_ActionItems selected) {
-              print('点击的是$selected');
-            },
-            tooltip: "菜单",
-          ),
-          Container(width: 16.0)
-        ],
-      ),
+                onSelected: (_ActionItems selected) {
+                  print('点击的是$selected');
+                },
+                tooltip: "菜单",
+              ),
+              SizedBox(width: 16.0)
+            ],
+          )),
       body: PageView.builder(
         itemBuilder: (BuildContext context, int index) {
           return _pages[index];

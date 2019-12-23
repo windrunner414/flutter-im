@@ -7,10 +7,10 @@ import 'package:wechat/repository/remote/api.dart';
 import 'package:wechat/util/storage.dart';
 
 class UserRepository extends BaseRepository {
-  Future<User> getSelfInfo({bool refresh = false}) async {
+  Future<User> getSelfInfo({bool fromCache = false}) async {
     const String storageKey = "user.self_info";
-    if (refresh) {
-      ApiResponse<User> response = await httpApiClient.getSelfInfo();
+    if (!fromCache) {
+      ApiResponse<User> response = await HttpApiClient().getSelfInfo();
       StorageUtil.setString(storageKey, jsonEncode(response.result));
       return response.result;
     }

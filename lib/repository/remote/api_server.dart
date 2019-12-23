@@ -4,13 +4,13 @@ final ApiServerConfig _defaultApiServerConfig = ApiServerConfig(
     domain: "im.php20.cn", httpPort: 80, webSocketPort: 9701, ssl: false);
 
 abstract class ApiServer {
-  static const _StorageKey = "api.server_config";
+  static const _StorageKey = "config.api_server_config";
   static ApiServerConfig _config;
   static ApiServerConfig get config => _config;
   static set config(ApiServerConfig value) {
     _config = value;
-    _httpApiClient?._dio?.close(force: true);
-    _httpApiClient = HttpApiClient._();
+    HttpApiClient._instance?._dio?.close(force: true);
+    HttpApiClient._instance = HttpApiClient._();
     StorageUtil.setString(_StorageKey, json.encode(_config));
   }
 

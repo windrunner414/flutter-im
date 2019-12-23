@@ -1,14 +1,14 @@
 part of 'api.dart';
 
-HttpApiClient _httpApiClient;
-HttpApiClient get httpApiClient => _httpApiClient;
-
 /// 现在所有api都扔一起了，如果后期api多了可以拆开mixin
 /// 但是得修改下retrofit的库，把他获取method的地方加上mixin的method
 /// https://github.com/trevorwang/retrofit.dart/pull/88
 @RestApi(autoCastResponse: true)
 abstract class HttpApiClient {
   final Dio _dio;
+
+  static HttpApiClient _instance;
+  factory HttpApiClient() => _instance;
 
   factory HttpApiClient._() {
     final Dio dio = Dio()
@@ -21,13 +21,13 @@ abstract class HttpApiClient {
       ..interceptors.add(InterceptorsWrapper(
           onRequest: (RequestOptions options) async => options
             ..queryParameters["userSession"] =
-                (await inject<UserRepository>().getSelfInfo())?.userSession,
+                inject<AuthRepository>().getUserSession(),
           onResponse: (Response response) async => response, // continue,
           onError: (DioError e) async {
             switch (e.type) {
               case DioErrorType.RESPONSE:
                 if (e.response.statusCode == 401) {
-                  e.type = DioErrorType.CANCEL;
+                  e.type = DioErrorType.CANCEL; // 如果是未登录，error类型就改成请求取消
                   LayerUtil.showToast(
                       ApiResponse.fromJson(e.response.data).msg);
                   //Router.navigateTo(context, page)

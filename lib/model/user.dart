@@ -17,15 +17,13 @@ class User extends BaseModel {
   int userId;
   String userAvatar;
   UserState state;
-  String userSession;
 
   User(
       {this.userAccount,
       this.userName,
       this.userId,
       this.userAvatar,
-      this.state,
-      this.userSession});
+      this.state});
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
   Map<String, dynamic> toJson() => _$UserToJson(this);
