@@ -1,28 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wechat/constants.dart';
+import 'package:wechat/app.dart';
 import 'package:wechat/util/screen_util.dart';
 
 class LoginInput extends StatelessWidget {
   final String label;
-  final String defaultText;
-  final ValueChanged<String> onChanged;
+  final TextEditingController controller;
   final List<TextInputFormatter> inputFormatters;
   final TextInputType keyboardType;
   final bool obscureText;
 
-  LoginInput(
+  const LoginInput(
       {Key key,
       @required this.label,
-      this.defaultText = "",
-      this.onChanged,
+      this.controller,
       this.inputFormatters,
       this.keyboardType,
       this.obscureText = false})
-      : assert(label != null),
-        assert(defaultText != null),
-        assert(obscureText != null),
-        super(key: key);
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) => Container(
@@ -33,20 +28,18 @@ class LoginInput extends StatelessWidget {
             hintColor: Colors.black87,
           ),
           child: TextField(
-            controller: TextEditingController.fromValue(
-                TextEditingValue(text: defaultText)),
+            controller: controller,
             style: TextStyle(
               fontSize: 18.sp,
             ),
             decoration: InputDecoration(
                 contentPadding: EdgeInsets.symmetric(vertical: 4.height),
-                labelText: label + "：",
+                labelText: label == null ? null : label + "：",
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
                     color: Color(AppColors.LoginInputNormal),
                   ),
                 )),
-            onChanged: (String value) => onChanged(value),
             inputFormatters: inputFormatters,
             keyboardType: keyboardType,
             obscureText: obscureText,

@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:wechat/constants.dart';
+import 'package:wechat/app.dart';
 import 'package:wechat/widget/full_width_button.dart';
 
 class _ProfileHeaderView extends StatelessWidget {

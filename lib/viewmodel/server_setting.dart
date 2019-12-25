@@ -1,19 +1,31 @@
+import 'package:flutter/cupertino.dart';
 import 'package:wechat/model/api_server_config.dart';
-import 'package:wechat/repository/remote/api.dart';
+import 'package:wechat/service/base.dart';
 import 'package:wechat/viewmodel/base.dart';
 
 class ServerSettingViewModel extends BaseViewModel {
-  ApiServerConfig config;
+  TextEditingController domainEditingController = TextEditingController();
+  TextEditingController httpPortEditingController = TextEditingController();
+  TextEditingController webSocketPortEditingController =
+      TextEditingController();
+  bool useSsl = false;
 
   @override
   void init() {
-    config = ApiServerConfig.fromJson(ApiServer.config.toJson());
+    super.init();
+    domainEditingController.text = Service.config.domain;
+    httpPortEditingController.text = Service.config.httpPort.toString();
+    webSocketPortEditingController.text =
+        Service.config.webSocketPort.toString();
+    useSsl = Service.config.ssl;
   }
 
-  @override
-  void dispose() {}
-
   void save() {
-    ApiServer.config = config;
+    Service.config = ApiServerConfig(
+      domain: domainEditingController.text,
+      httpPort: int.tryParse(httpPortEditingController.text) ?? 80,
+      webSocketPort: int.tryParse(webSocketPortEditingController.text) ?? 9701,
+      ssl: useSsl,
+    );
   }
 }

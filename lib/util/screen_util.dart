@@ -15,7 +15,7 @@ class ScreenUtil {
         ..init(context);
 }
 
-extension ScreenUtilNumExtensionMethods on num {
+extension ScreenUtilExtension on num {
   num get width => FlutterScreenUtil.ScreenUtil.getInstance().setWidth(this);
   num get height => FlutterScreenUtil.ScreenUtil.getInstance().setHeight(this);
   num get sp => FlutterScreenUtil.ScreenUtil.getInstance().setSp(this);

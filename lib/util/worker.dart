@@ -3,7 +3,7 @@ import 'dart:convert' as convert;
 import 'dart:math';
 
 import 'package:system_info/system_info.dart';
-import 'package:wechat/constants.dart';
+import 'package:wechat/app.dart';
 import 'package:worker_manager/worker_manager.dart';
 
 abstract class WorkerUtil {
@@ -16,7 +16,7 @@ abstract class WorkerUtil {
 
     _executor = Executor(
         isolatePoolSize:
-            max(SysInfo.processors.length, Config.minimalIsolatePoolSize));
+            max(SysInfo.processors.length, Config.MinimalIsolatePoolSize));
     await _executor.warmUp();
   }
 
@@ -34,6 +34,14 @@ abstract class WorkerUtil {
       Task(
         function: convert.jsonDecode,
         arg: json,
+        timeout: Duration(seconds: 30),
+      ),
+      priority: WorkPriority.high);
+
+  static Future<String> jsonEncode(Object object) => execute(
+      Task(
+        function: convert.jsonEncode,
+        arg: object,
         timeout: Duration(seconds: 30),
       ),
       priority: WorkPriority.high);

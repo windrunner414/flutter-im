@@ -1,14 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:wechat/model/user.dart';
+import 'package:wechat/util/storage.dart';
+import 'package:wechat/util/worker.dart';
 
 abstract class Config {
   static const AppName = "微信";
 
-  static const enableHttp2 = false;
-  static const http2IdleTimeout = 15000;
-
   /// isolate数量，解析json等在isolate内执行
   /// 会优先设置为cpu核心数，如果小于该值，或获取不到，会设置成该值
-  static const minimalIsolatePoolSize = 4;
+  static const MinimalIsolatePoolSize = 4;
+}
+
+abstract class AppState {
+  static BehaviorSubject<String> userSession = BehaviorSubject();
+  static BehaviorSubject<User> selfInfo = BehaviorSubject();
+
+  static const String _UserSessionStorageKey = "auth.user_session";
+  static const String _SelfInfoStorageKey = "auth.self_info";
+
+  static Future<void> init() async {
+    userSession.value = StorageUtil.get(_UserSessionStorageKey);
+    userSession.listen(
+        (String value) => StorageUtil.setString(_UserSessionStorageKey, value));
+
+    String selfInfoJson = StorageUtil.get(_SelfInfoStorageKey);
+    selfInfo.value = selfInfoJson == null
+        ? null
+        : User.fromJson(await WorkerUtil.jsonDecode(selfInfoJson));
+    selfInfo.listen((User value) async => StorageUtil.setString(
+        _SelfInfoStorageKey,
+        value == null ? null : await WorkerUtil.jsonEncode(value)));
+  }
 }
 
 abstract class AppColors {

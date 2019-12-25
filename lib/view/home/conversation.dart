@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:wechat/constants.dart';
+import 'package:wechat/app.dart';
 import 'package:wechat/model/conversation.dart';
 
 class _ConversationItem extends StatefulWidget {

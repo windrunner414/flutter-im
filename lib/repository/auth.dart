@@ -1,11 +1,14 @@
-import 'package:wechat/model/verify_code.dart';
+import 'package:dartin/dartin.dart';
+import 'package:wechat/app.dart';
+import 'package:wechat/model/user.dart';
 import 'package:wechat/repository/base.dart';
-import 'package:wechat/repository/remote/api.dart';
-import 'package:wechat/util/storage.dart';
+import 'package:wechat/service/auth.dart';
 
 class AuthRepository extends BaseRepository {
-  String getUserSession() => StorageUtil.get("auth.user_session");
+  AuthService _authService = inject();
 
-  Future<VerifyCode> getVerifyCode() async =>
-      (await HttpApiClient().getVerifyCode()).result;
+  Future<User> getSelfInfo() async {
+    AppState.selfInfo.value = (await _authService.getSelfInfo()).body.result;
+    return AppState.selfInfo.value;
+  }
 }

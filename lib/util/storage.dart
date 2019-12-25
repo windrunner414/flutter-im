@@ -9,7 +9,7 @@ abstract class StorageUtil {
     }
     _prefs = await SharedPreferences.getInstance();
     if (_prefs == null) {
-      throw "SharedPreferences初始化失败";
+      throw StateError("SharedPreferences初始化失败");
     }
   }
 
@@ -22,4 +22,6 @@ abstract class StorageUtil {
       _prefs.setString(key, value);
   static Future<void> setStringList(String key, List<String> value) =>
       _prefs.setStringList(key, value);
+  static Future<bool> remove(String key) => _prefs.remove(key);
+  static Future<bool> clear() => _prefs.clear();
 }

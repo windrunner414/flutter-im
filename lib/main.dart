@@ -2,18 +2,15 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dartin/dartin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wechat/constants.dart';
+import 'package:wechat/app.dart';
 import 'package:wechat/di.dart';
-import 'package:wechat/repository/auth.dart';
-import 'package:wechat/repository/remote/api.dart';
 import 'package:wechat/route.dart';
+import 'package:wechat/service/base.dart';
 import 'package:wechat/util/screen_util.dart';
 import 'package:wechat/util/storage.dart';
 import 'package:wechat/util/worker.dart';
 import 'package:wechat/view/home/home.dart';
 import 'package:wechat/view/login.dart';
-import 'package:wechat/viewmodel/login.dart';
-import 'package:wechat/widget/viewmodel_provider.dart';
 
 /// Material和Cupertino混合，他不香吗
 void main() {
@@ -40,7 +37,7 @@ void main() {
               height: 736,
               allowFontScaling: true,
               context: context);
-          return snapshot.hasError ? errorPage() : rootPage();
+          return snapshot.hasError ? errorPage(snapshot.error) : rootPage();
         },
       ),
     ),
@@ -50,29 +47,45 @@ void main() {
 Future<void> init() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+  startDartIn(appModule);
   await StorageUtil.init();
   await WorkerUtil.init();
+  await AppState.init();
+  await Service.init();
   Router.init();
-  startDartIn(appModule);
-  ApiServer.init(); // 必须在storage初始化后调用
 }
 
 /// 这里只有初始化失败才会显示，后续可以改成全局处理未捕获的异常
-Widget errorPage() => Container(
-      padding: EdgeInsets.symmetric(horizontal: 32.width),
-      color: Colors.white,
-      child: Center(
-        child: Text(
-          "啊哦，崩溃了",
-          style: TextStyle(
-            fontSize: 24.sp,
-            decoration: TextDecoration.none,
-            color: Colors.black87,
-          ),
+Widget errorPage(error) {
+  assert(() {
+    if (error is Error) {
+      print(error.stackTrace);
+    }
+    print(error.toString());
+    return true;
+  }());
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 32.width),
+    color: Colors.white,
+    child: Center(
+      child: Text(
+        "啊哦，崩溃了",
+        style: TextStyle(
+          fontSize: 24.sp,
+          decoration: TextDecoration.none,
+          color: Colors.black87,
         ),
       ),
-    );
+    ),
+  );
+}
 
-Widget rootPage() => inject<AuthRepository>().getUserSession() == null
-    ? ViewModelProvider<LoginViewModel>(child: LoginPage())
-    : HomePage();
+Widget rootPage() => StreamBuilder(
+      stream: AppState.userSession,
+      builder: (BuildContext context, AsyncSnapshot snapshot) =>
+          snapshot.connectionState != ConnectionState.active
+              ? Container()
+              : (snapshot.hasData ? HomePage() : LoginPage()),
+    );

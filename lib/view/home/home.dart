@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:wechat/constants.dart';
+import 'package:wechat/app.dart';
 import 'package:wechat/util/screen_util.dart';
 import 'package:wechat/view/home/contacts.dart';
 import 'package:wechat/view/home/conversation.dart';
 import 'package:wechat/view/home/profile.dart';
-import 'package:wechat/widget/automatic_keep_alive.dart';
 
 enum _ActionItems { GROUP_CHAT, ADD_FRIEND, QR_SCAN }
 
@@ -52,9 +51,9 @@ class _HomePageState extends State<HomePage> {
     ];
     _pageController = PageController(initialPage: _currentIndex);
     _pages = [
-      AutomaticKeepAliveWidget(child: ConversationPage()),
-      AutomaticKeepAliveWidget(child: ContactsPage()),
-      AutomaticKeepAliveWidget(child: ProfilePage()),
+      ConversationPage(),
+      ContactsPage(),
+      ProfilePage(),
     ];
   }
 

@@ -1,15 +1,14 @@
-import 'package:wechat/constants.dart';
+import 'package:wechat/app.dart';
 import 'package:wechat/model/base.dart';
 
 class Conversation extends BaseModel {
   Conversation(
       {this.avatar,
       this.title,
-      this.titleColor: AppColors.TitleColor,
+      this.titleColor = AppColors.TitleColor,
       this.desc,
       this.updateAt,
-      this.unreadMsgCount: 0,
-      this.dispalyDot: false});
+      this.unreadMsgCount = 0});
 
   String avatar;
   String title;
@@ -17,7 +16,6 @@ class Conversation extends BaseModel {
   String desc;
   String updateAt;
   int unreadMsgCount;
-  bool dispalyDot;
 }
 
 class ConversationPageData {

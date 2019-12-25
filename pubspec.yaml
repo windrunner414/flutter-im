@@ -16,20 +16,19 @@ dependencies:
   json_annotation: ^3.0.0
   dartin: ^0.1.5
   rxdart: ^0.23.1
-  retrofit: ^1.0.1+1
-  dio_http2_adapter: ^1.0.0
   worker_manager: ^2.1.4
   system_info: ^0.1.1
   generic_json_converter_annotation: ^0.0.2
   flutter_screenutil: ^0.7.0
+  chopper: ^3.0.1+1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^1.7.2
   json_serializable: ^3.2.3
-  retrofit_generator: ^1.0.2+2
   generic_json_converter_generator: ^0.0.2
+  chopper_generator: ^3.0.3
 
 flutter:
   uses-material-design: true

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:wechat/constants.dart';
+import 'package:wechat/app.dart';
 import 'package:wechat/util/screen_util.dart';
 
 class FullWidthButton extends StatelessWidget {
   static const HORIZONTAL_PADDING = 20.0;
   static const VERTICAL_PADDING = 13.0;
 
-  FullWidthButton({
+  const FullWidthButton({
     Key key,
     @required this.title,
     @required this.iconPath,

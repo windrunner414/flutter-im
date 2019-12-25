@@ -1,35 +1,41 @@
 import 'package:dartin/dartin.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/model/verify_code.dart';
-import 'package:wechat/repository/auth.dart';
+import 'package:wechat/repository/common.dart';
 import 'package:wechat/viewmodel/base.dart';
 
 class LoginViewModel extends BaseViewModel {
-  final AuthRepository _authRepository = inject();
-  BehaviorSubject<VerifyCode> _verifyCodeSubject = BehaviorSubject();
-  Stream<VerifyCode> get verifyCodeStream => _verifyCodeSubject.stream;
+  final CommonRepository _commonRepository = inject();
 
-  String username;
-  String password = "";
-  String verifyCode = "";
+  final BehaviorSubject<VerifyCode> verifyCode = BehaviorSubject();
+  final TextEditingController usernameEditingController =
+      TextEditingController();
+  final TextEditingController passwordEditingController =
+      TextEditingController();
+  final TextEditingController verifyCodeEditingController =
+      TextEditingController();
 
   Future<void> refreshVerifyCode() async {
-    _verifyCodeSubject.add(null);
+    verifyCode.value = null;
     try {
-      _verifyCodeSubject.add(await _authRepository.getVerifyCode());
-    } catch (e) {
-      _verifyCodeSubject.addError(e);
+      verifyCode.value =
+          await manageFuture(_commonRepository.getVerifyCode(), #getVerifyCode);
+    } on CancelException {} catch (error) {
+      verifyCode.addError(error);
     }
   }
 
   @override
   void init() {
-    username = ""; // TODO:保存用户名
+    super.init();
+    usernameEditingController.text = ""; // TODO:保存用户名
     refreshVerifyCode();
   }
 
   @override
   void dispose() {
-    _verifyCodeSubject.close();
+    super.dispose();
+    verifyCode.close();
   }
 }

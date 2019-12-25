@@ -2,8 +2,6 @@ import 'package:fluro/fluro.dart' as Fluro show Router;
 import 'package:fluro/fluro.dart' show TransitionType, Handler;
 import 'package:flutter/material.dart';
 import 'package:wechat/view/server_setting.dart';
-import 'package:wechat/viewmodel/server_setting.dart';
-import 'package:wechat/widget/viewmodel_provider.dart';
 
 enum Page { ServerSetting }
 
@@ -27,9 +25,7 @@ class _RoutePage {
       routePath: "/serverSetting",
       transitionType: TransitionType.cupertinoFullScreenDialog,
       handler: Handler(
-        handlerFunc: (_, __) => ViewModelProvider<ServerSettingViewModel>(
-          child: ServerSettingPage(),
-        ),
+        handlerFunc: (_, __) => ServerSettingPage(),
       ),
     ),
   };
