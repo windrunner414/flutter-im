@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:wechat/app.dart';
+import 'package:wechat/constant.dart';
 import 'package:wechat/model/contacts.dart';
 
 class _ContactItem extends StatefulWidget {
@@ -24,8 +24,8 @@ class _ContactItem extends StatefulWidget {
 
   static double _height(bool hasGroupTitle) {
     final _buttonHeight = MARGIN_VERTICAL * 2 +
-        Constants.ContactAvatarSize +
-        Constants.DividerWidth;
+        Constant.ContactAvatarSize +
+        Constant.DividerWidth;
     if (hasGroupTitle) {
       return _buttonHeight + GROUP_TITLE_HEIGHT;
     } else {
@@ -47,15 +47,15 @@ class _ContactItemState extends State<_ContactItem> {
     if (_isAvatarFromNet) {
       _avatarIcon = CachedNetworkImage(
         imageUrl: widget.avatar,
-        placeholder: (context, url) => Constants.ContactAvatarDefaultIocn,
-        width: Constants.ContactAvatarSize,
-        height: Constants.ContactAvatarSize,
+        placeholder: (context, url) => Constant.ContactAvatarDefaultIcon,
+        width: Constant.ContactAvatarSize,
+        height: Constant.ContactAvatarSize,
       );
     } else {
       _avatarIcon = Image.asset(
         widget.avatar,
-        width: Constants.ContactAvatarSize,
-        height: Constants.ContactAvatarSize,
+        width: Constant.ContactAvatarSize,
+        height: Constant.ContactAvatarSize,
       );
     }
 
@@ -75,7 +75,7 @@ class _ContactItemState extends State<_ContactItem> {
       onLongPress: () {},
       child: Container(
         color: _active
-            ? Color(AppColors.ContactItemActiveBgColor)
+            ? Color(AppColor.ContactItemActiveBgColor)
             : Colors.transparent,
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -84,8 +84,8 @@ class _ContactItemState extends State<_ContactItem> {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                  width: Constants.DividerWidth,
-                  color: Color(AppColors.DividerColor)),
+                  width: Constant.DividerWidth,
+                  color: Color(AppColor.DividerColor)),
             ),
           ),
           child: Row(
@@ -106,10 +106,10 @@ class _ContactItemState extends State<_ContactItem> {
           Container(
             height: _ContactItem.GROUP_TITLE_HEIGHT,
             padding: EdgeInsets.only(left: 16.0, right: 16.0),
-            color: const Color(AppColors.ContactGroupTitleBgColor),
+            color: Color(AppColor.ContactGroupTitleBgColor),
             alignment: Alignment.centerLeft,
             child: Text(widget.groupTitle,
-                style: AppStyles.GroupTitleItemTextStyle),
+                style: AppStyle.GroupTitleItemTextStyle),
           ),
           _button,
         ],
@@ -293,7 +293,7 @@ class _ContactsPageState extends State<ContactsPage> {
         itemCount: _contacts.length + _functionButtons.length,
       ),
       Positioned(
-        width: Constants.IndexBarWidth,
+        width: Constant.IndexBarWidth,
         right: 0.0,
         top: 0.0,
         bottom: 0.0,
@@ -309,16 +309,16 @@ class _ContactsPageState extends State<ContactsPage> {
     if (_currentLetter != null && _currentLetter.isNotEmpty) {
       _body.add(Center(
         child: Container(
-          width: Constants.IndexLetterBoxSize,
-          height: Constants.IndexLetterBoxSize,
+          width: Constant.IndexLetterBoxSize,
+          height: Constant.IndexLetterBoxSize,
           decoration: BoxDecoration(
-            color: AppColors.IndexLetterBoxBgColor,
+            color: AppColor.IndexLetterBoxBgColor,
             borderRadius: BorderRadius.all(
-                Radius.circular(Constants.IndexLetterBoxRadius)),
+                Radius.circular(Constant.IndexLetterBoxRadius)),
           ),
           child: Center(
             child:
-                Text(_currentLetter, style: AppStyles.IndexLetterBoxTextStyle),
+                Text(_currentLetter, style: AppStyle.IndexLetterBoxTextStyle),
           ),
         ),
       ));

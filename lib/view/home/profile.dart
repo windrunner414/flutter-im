@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:wechat/app.dart';
+import 'package:wechat/constant.dart';
 import 'package:wechat/widget/full_width_button.dart';
 
 class _ProfileHeaderView extends StatelessWidget {
@@ -19,9 +19,9 @@ class _ProfileHeaderView extends StatelessWidget {
           CachedNetworkImage(
             imageUrl:
                 'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=919597481,2630034837&fm=26&gp=0.jpg',
-            placeholder: (context, url) => Constants.ProfileAvatarDefaultIocn,
-            width: Constants.ProfileHeaderIconSize,
-            height: Constants.ProfileHeaderIconSize,
+            placeholder: (context, url) => Constant.ProfileAvatarDefaultIcon,
+            width: Constant.ProfileHeaderIconSize,
+            height: Constant.ProfileHeaderIconSize,
           ),
           SizedBox(width: 10.0),
           Expanded(
@@ -30,14 +30,14 @@ class _ProfileHeaderView extends StatelessWidget {
               children: <Widget>[
                 Text('Flutter',
                     style: TextStyle(
-                      color: Color(AppColors.TitleColor),
+                      color: Color(AppColor.TitleColor),
                       fontSize: 16.0,
                       fontWeight: FontWeight.w500,
                     )),
                 SizedBox(height: 10.0),
                 Text('用户名: 123456',
                     style: TextStyle(
-                      color: Color(AppColors.DescTextColor),
+                      color: Color(AppColor.DescTextColor),
                       fontSize: 13.0,
                     ))
               ],
@@ -46,19 +46,19 @@ class _ProfileHeaderView extends StatelessWidget {
           Icon(
             IconData(
               0xe620,
-              fontFamily: Constants.IconFontFamily,
+              fontFamily: Constant.IconFontFamily,
             ),
             size: 22.0,
-            color: Color(AppColors.TabIconNormal),
+            color: Color(AppColor.TabIconNormal),
           ),
           SizedBox(width: 5.0),
           Icon(
             IconData(
               0xe664,
-              fontFamily: Constants.IconFontFamily,
+              fontFamily: Constant.IconFontFamily,
             ),
             size: 22.0,
-            color: Color(AppColors.TabIconNormal),
+            color: Color(AppColor.TabIconNormal),
           ),
         ],
       ),
@@ -77,7 +77,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(AppColors.BackgroundColor),
+      color: Color(AppColor.BackgroundColor),
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[

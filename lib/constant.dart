@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:wechat/model/user.dart';
-import 'package:wechat/util/storage.dart';
-import 'package:wechat/util/worker.dart';
 
 abstract class Config {
   static const AppName = "微信";
@@ -12,29 +8,7 @@ abstract class Config {
   static const MinimalIsolatePoolSize = 4;
 }
 
-abstract class AppState {
-  static BehaviorSubject<String> userSession = BehaviorSubject();
-  static BehaviorSubject<User> selfInfo = BehaviorSubject();
-
-  static const String _UserSessionStorageKey = "auth.user_session";
-  static const String _SelfInfoStorageKey = "auth.self_info";
-
-  static Future<void> init() async {
-    userSession.value = StorageUtil.get(_UserSessionStorageKey);
-    userSession.listen(
-        (String value) => StorageUtil.setString(_UserSessionStorageKey, value));
-
-    String selfInfoJson = StorageUtil.get(_SelfInfoStorageKey);
-    selfInfo.value = selfInfoJson == null
-        ? null
-        : User.fromJson(await WorkerUtil.jsonDecode(selfInfoJson));
-    selfInfo.listen((User value) async => StorageUtil.setString(
-        _SelfInfoStorageKey,
-        value == null ? null : await WorkerUtil.jsonEncode(value)));
-  }
-}
-
-abstract class AppColors {
+abstract class AppColor {
   static const BackgroundColor = 0xffebebeb;
   static const AppBarColor = 0xff303030;
   static const TabIconNormal = 0xff999999;
@@ -55,23 +29,23 @@ abstract class AppColors {
   static const LoginInputActive = 0xff46c11b;
 }
 
-abstract class AppStyles {
+abstract class AppStyle {
   static const TitleStyle = TextStyle(
     fontSize: 14.0,
-    color: Color(AppColors.TitleColor),
+    color: Color(AppColor.TitleColor),
   );
 
   static const DescStyle = TextStyle(
     fontSize: 12.0,
-    color: Color(AppColors.DescTextColor),
+    color: Color(AppColor.DescTextColor),
   );
   static const UnreadMsgCountDotStyle = TextStyle(
     fontSize: 12.0,
-    color: Color(AppColors.NotifyDotText),
+    color: Color(AppColor.NotifyDotText),
   );
 
   static const GroupTitleItemTextStyle =
-      TextStyle(color: Color(AppColors.ContactGroupTitleColor), fontSize: 14.0);
+      TextStyle(color: Color(AppColor.ContactGroupTitleColor), fontSize: 14.0);
 
   static const IndexLetterBoxTextStyle = TextStyle(
     fontSize: 64.0,
@@ -79,7 +53,7 @@ abstract class AppStyles {
   );
 }
 
-abstract class Constants {
+abstract class Constant {
   static const IconFontFamily = "appIconFont";
   static const ConversationAvatarSize = 48.0;
   static const DividerWidth = 0.5;
@@ -92,7 +66,7 @@ abstract class Constants {
   static const FullWidthIconButtonIconSize = 24.0;
   static const ProfileHeaderIconSize = 60.0;
 
-  static const ConversationAvatarDefaultIocn = Icon(
+  static const ConversationAvatarDefaultIcon = Icon(
     IconData(
       0xe642,
       fontFamily: IconFontFamily,
@@ -100,7 +74,7 @@ abstract class Constants {
     size: ConversationAvatarSize,
   );
 
-  static const ContactAvatarDefaultIocn = Icon(
+  static const ContactAvatarDefaultIcon = Icon(
     IconData(
       0xe642,
       fontFamily: IconFontFamily,
@@ -108,7 +82,7 @@ abstract class Constants {
     size: ContactAvatarSize,
   );
 
-  static const ProfileAvatarDefaultIocn = Icon(
+  static const ProfileAvatarDefaultIcon = Icon(
     IconData(
       0xe642,
       fontFamily: IconFontFamily,

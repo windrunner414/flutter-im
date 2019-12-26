@@ -2,10 +2,12 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dartin/dartin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wechat/app.dart';
+import 'package:wechat/constant.dart';
 import 'package:wechat/di.dart';
+import 'package:wechat/model/user.dart';
 import 'package:wechat/route.dart';
 import 'package:wechat/service/base.dart';
+import 'package:wechat/state.dart';
 import 'package:wechat/util/screen_util.dart';
 import 'package:wechat/util/storage.dart';
 import 'package:wechat/util/worker.dart';
@@ -23,8 +25,8 @@ void main() {
       onGenerateRoute: Router.generator,
       title: Config.AppName,
       theme: ThemeData.light().copyWith(
-          primaryColor: Color(AppColors.AppBarColor),
-          cardColor: Color(AppColors.AppBarColor)),
+          primaryColor: Color(AppColor.AppBarColor),
+          cardColor: Color(AppColor.AppBarColor)),
       home: FutureBuilder(
         future: init(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -83,9 +85,9 @@ Widget errorPage(error) {
 }
 
 Widget rootPage() => StreamBuilder(
-      stream: AppState.userSession,
-      builder: (BuildContext context, AsyncSnapshot snapshot) =>
+      stream: AppState.ownUserInfo,
+      builder: (BuildContext context, AsyncSnapshot<User> snapshot) =>
           snapshot.connectionState != ConnectionState.active
               ? Container()
-              : (snapshot.hasData ? HomePage() : LoginPage()),
+              : (snapshot.data?.userSession != null ? HomePage() : LoginPage()),
     );

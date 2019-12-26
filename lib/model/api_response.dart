@@ -1,3 +1,4 @@
+import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:wechat/model/base.dart';
 import 'package:wechat/model/model_generic_json_converter.dart';
@@ -5,11 +6,12 @@ import 'package:wechat/model/model_generic_json_converter.dart';
 part 'api_response.g.dart';
 
 @JsonSerializable()
+@CopyWith()
 class ApiResponse<T extends Object> extends BaseModel {
-  int code;
+  final int code;
   @ModelGenericJsonConverter()
-  T result;
-  String msg;
+  final T result;
+  final String msg;
 
   ApiResponse({this.code, this.result, this.msg});
 

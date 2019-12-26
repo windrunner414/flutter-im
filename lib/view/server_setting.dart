@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wechat/app.dart';
+import 'package:wechat/constant.dart';
 import 'package:wechat/route.dart';
-import 'package:wechat/util/layer.dart';
 import 'package:wechat/util/screen_util.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/server_setting.dart';
@@ -75,12 +74,8 @@ class ServerSettingPage extends BaseView<ServerSettingViewModel> {
               ),
               SizedBox(height: 30.height),
               FlatButton(
-                onPressed: () {
-                  viewModel.save();
-                  LayerUtil.showToast("保存成功");
-                  Router.pop(true);
-                },
-                color: Color(AppColors.LoginInputActive),
+                onPressed: () => viewModel.save() ? Router.pop(true) : null,
+                color: Color(AppColor.LoginInputActive),
                 padding: EdgeInsets.symmetric(vertical: 10.height),
                 child: Center(
                   child: Text(

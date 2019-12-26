@@ -40,7 +40,12 @@ class _HttpClient extends ChopperClient {
 }
 
 class _HttpConverter implements Converter, ErrorConverter {
-  Request convertRequest(Request request) => request;
+  Request convertRequest(Request request) => applyHeader(
+        request,
+        contentTypeKey,
+        formEncodedHeaders,
+        override: false,
+      );
 
   Future<Response<BodyType>> convertResponse<BodyType, InnerType>(
     Response response,

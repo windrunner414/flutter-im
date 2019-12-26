@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wechat/app.dart';
+import 'package:wechat/constant.dart';
 import 'package:wechat/util/screen_util.dart';
 
 class LoginInput extends StatelessWidget {
@@ -24,7 +24,7 @@ class LoginInput extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 12.height),
         child: Theme(
           data: ThemeData(
-            primaryColor: Color(AppColors.LoginInputActive),
+            primaryColor: Color(AppColor.LoginInputActive),
             hintColor: Colors.black87,
           ),
           child: TextField(
@@ -37,7 +37,7 @@ class LoginInput extends StatelessWidget {
                 labelText: label == null ? null : label + "：",
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color(AppColors.LoginInputNormal),
+                    color: Color(AppColor.LoginInputNormal),
                   ),
                 )),
             inputFormatters: inputFormatters,

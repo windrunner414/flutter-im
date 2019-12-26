@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wechat/app.dart';
+import 'package:wechat/constant.dart';
 import 'package:wechat/util/screen_util.dart';
 import 'package:wechat/view/home/contacts.dart';
 import 'package:wechat/view/home/conversation.dart';
@@ -35,18 +35,18 @@ class _HomePageState extends State<HomePage> {
     _navigationViews = [
       NavigationIconView(
         title: Config.AppName,
-        icon: IconData(0xe608, fontFamily: Constants.IconFontFamily),
-        activeIcon: IconData(0xe603, fontFamily: Constants.IconFontFamily),
+        icon: IconData(0xe608, fontFamily: Constant.IconFontFamily),
+        activeIcon: IconData(0xe603, fontFamily: Constant.IconFontFamily),
       ),
       NavigationIconView(
         title: '通讯录',
-        icon: IconData(0xe601, fontFamily: Constants.IconFontFamily),
-        activeIcon: IconData(0xe602, fontFamily: Constants.IconFontFamily),
+        icon: IconData(0xe601, fontFamily: Constant.IconFontFamily),
+        activeIcon: IconData(0xe602, fontFamily: Constant.IconFontFamily),
       ),
       NavigationIconView(
         title: '我',
-        icon: IconData(0xe607, fontFamily: Constants.IconFontFamily),
-        activeIcon: IconData(0xe630, fontFamily: Constants.IconFontFamily),
+        icon: IconData(0xe607, fontFamily: Constant.IconFontFamily),
+        activeIcon: IconData(0xe630, fontFamily: Constant.IconFontFamily),
       ),
     ];
     _pageController = PageController(initialPage: _currentIndex);
@@ -61,14 +61,14 @@ class _HomePageState extends State<HomePage> {
     return Row(
       children: <Widget>[
         Icon(
-          IconData(iconName, fontFamily: Constants.IconFontFamily),
+          IconData(iconName, fontFamily: Constant.IconFontFamily),
           size: 22.0,
-          color: const Color(AppColors.AppBarPopupMenuColor),
+          color: Color(AppColor.AppBarPopupMenuColor),
         ),
         Container(width: 12.0),
         Text(
           title,
-          style: TextStyle(color: const Color(AppColors.AppBarPopupMenuColor)),
+          style: TextStyle(color: Color(AppColor.AppBarPopupMenuColor)),
         ),
       ],
     );
@@ -81,7 +81,7 @@ class _HomePageState extends State<HomePage> {
           _navigationViews.map((NavigationIconView view) => view.item).toList(),
       currentIndex: _currentIndex,
       type: BottomNavigationBarType.fixed,
-      fixedColor: const Color(AppColors.TabIconActive),
+      fixedColor: Color(AppColor.TabIconActive),
       selectedFontSize: 14,
       unselectedFontSize: 14,
       onTap: (int index) {
@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage> {
                   ];
                 },
                 icon: Icon(
-                  IconData(0xe66b, fontFamily: Constants.IconFontFamily),
+                  IconData(0xe66b, fontFamily: Constant.IconFontFamily),
                   size: 22.0,
                 ),
                 onSelected: (_ActionItems selected) {

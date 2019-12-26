@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wechat/app.dart';
+import 'package:wechat/constant.dart';
 import 'package:wechat/util/screen_util.dart';
 
 class FullWidthButton extends StatelessWidget {
@@ -29,8 +29,8 @@ class FullWidthButton extends StatelessWidget {
       children: <Widget>[
         Image.asset(
           iconPath,
-          width: Constants.FullWidthIconButtonIconSize.minWidthHeight,
-          height: Constants.FullWidthIconButtonIconSize.minWidthHeight,
+          width: Constant.FullWidthIconButtonIconSize.minWidthHeight,
+          height: Constant.FullWidthIconButtonIconSize.minWidthHeight,
         ),
         SizedBox(width: HORIZONTAL_PADDING.width),
         Expanded(
@@ -39,10 +39,10 @@ class FullWidthButton extends StatelessWidget {
         Icon(
           IconData(
             0xe664,
-            fontFamily: Constants.IconFontFamily,
+            fontFamily: Constant.IconFontFamily,
           ),
           size: 22.minWidthHeight,
-          color: Color(AppColors.TabIconNormal),
+          color: Color(AppColor.TabIconNormal),
         ),
       ],
     );
@@ -51,8 +51,8 @@ class FullWidthButton extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
             bottom: BorderSide(
-                color: Color(AppColors.DividerColor),
-                width: Constants.DividerWidth)),
+                color: Color(AppColor.DividerColor),
+                width: Constant.DividerWidth)),
       ),
       padding: EdgeInsets.only(bottom: VERTICAL_PADDING),
       child: pureButton,

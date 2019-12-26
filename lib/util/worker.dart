@@ -3,7 +3,7 @@ import 'dart:convert' as convert;
 import 'dart:math';
 
 import 'package:system_info/system_info.dart';
-import 'package:wechat/app.dart';
+import 'package:wechat/constant.dart';
 import 'package:worker_manager/worker_manager.dart';
 
 abstract class WorkerUtil {

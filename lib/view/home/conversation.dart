@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:wechat/app.dart';
+import 'package:wechat/constant.dart';
 import 'package:wechat/model/conversation.dart';
 
 class _ConversationItem extends StatefulWidget {
@@ -23,24 +23,24 @@ class _ConversationItemState extends State<_ConversationItem> {
   Widget build(BuildContext context) {
     Widget avatar = CachedNetworkImage(
       imageUrl: _conversation.avatar,
-      placeholder: (context, url) => Constants.ConversationAvatarDefaultIocn,
-      width: Constants.ConversationAvatarSize,
-      height: Constants.ConversationAvatarSize,
+      placeholder: (context, url) => Constant.ConversationAvatarDefaultIcon,
+      width: Constant.ConversationAvatarSize,
+      height: Constant.ConversationAvatarSize,
     );
 
     Widget avatarContainer;
     if (_conversation.unreadMsgCount > 0) {
       Widget unreadMsgCountText = Container(
-        width: Constants.UnReadMsgNotifyDotSize,
-        height: Constants.UnReadMsgNotifyDotSize,
+        width: Constant.UnReadMsgNotifyDotSize,
+        height: Constant.UnReadMsgNotifyDotSize,
         alignment: Alignment.center,
         decoration: BoxDecoration(
           borderRadius:
-              BorderRadius.circular(Constants.UnReadMsgNotifyDotSize / 2.0),
-          color: Color(AppColors.NotifyDotBgColor),
+              BorderRadius.circular(Constant.UnReadMsgNotifyDotSize / 2.0),
+          color: Color(AppColor.NotifyDotBgColor),
         ),
         child: Text(_conversation.unreadMsgCount.toString(),
-            style: AppStyles.UnreadMsgCountDotStyle),
+            style: AppStyle.UnreadMsgCountDotStyle),
       );
 
       avatarContainer = Stack(
@@ -58,7 +58,7 @@ class _ConversationItemState extends State<_ConversationItem> {
       avatarContainer = avatar;
     }
 
-    var _rightArea = [Text(_conversation.updateAt, style: AppStyles.DescStyle)];
+    var _rightArea = [Text(_conversation.updateAt, style: AppStyle.DescStyle)];
 
     return GestureDetector(
       onTapDown: (_) {
@@ -78,12 +78,12 @@ class _ConversationItemState extends State<_ConversationItem> {
         padding: const EdgeInsets.all(10.0),
         decoration: BoxDecoration(
             color: Color(_active
-                ? AppColors.ConversationItemActiveBgColor
-                : AppColors.ConversationItemBgColor),
+                ? AppColor.ConversationItemActiveBgColor
+                : AppColor.ConversationItemBgColor),
             border: Border(
                 bottom: BorderSide(
-                    color: Color(AppColors.DividerColor),
-                    width: Constants.DividerWidth))),
+                    color: Color(AppColor.DividerColor),
+                    width: Constant.DividerWidth))),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
@@ -93,8 +93,8 @@ class _ConversationItemState extends State<_ConversationItem> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(_conversation.title, style: AppStyles.TitleStyle),
-                  Text(_conversation.desc, style: AppStyles.DescStyle)
+                  Text(_conversation.title, style: AppStyle.TitleStyle),
+                  Text(_conversation.desc, style: AppStyle.DescStyle)
                 ],
               ),
             ),
@@ -123,7 +123,7 @@ class _ConversationPageState extends State<ConversationPage> {
       onRefresh: () async {
         await Future.delayed(Duration(milliseconds: 1000));
       },
-      color: Color(AppColors.TabIconActive),
+      color: Color(AppColor.TabIconActive),
       child: ListView.builder(
           itemBuilder: (BuildContext context, int index) =>
               _ConversationItem(data.conversations[index]),

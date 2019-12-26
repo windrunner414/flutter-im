@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wechat/app.dart';
+import 'package:wechat/constant.dart';
+import 'package:wechat/model/verify_code.dart';
 import 'package:wechat/route.dart';
 import 'package:wechat/util/screen_util.dart';
 import 'package:wechat/view/base.dart';
@@ -28,13 +29,13 @@ class LoginPage extends BaseView<LoginViewModel> {
                     child: Text(
                       "服务器设置",
                       style: TextStyle(
-                          color: const Color(AppColors.AppBarPopupMenuColor)),
+                          color: Color(AppColor.AppBarPopupMenuColor)),
                     ),
                     value: _ActionItems.SERVER_SETTINGS,
                   ),
                 ],
                 icon: Icon(
-                  IconData(0xe66b, fontFamily: Constants.IconFontFamily),
+                  IconData(0xe66b, fontFamily: Constant.IconFontFamily),
                   size: 22.minWidthHeight,
                 ),
                 onSelected: (_ActionItems selected) async {
@@ -66,8 +67,8 @@ class LoginPage extends BaseView<LoginViewModel> {
               ),
               SizedBox(height: 40.height),
               LoginInput(
-                label: "用户名",
-                controller: viewModel.usernameEditingController,
+                label: "账号",
+                controller: viewModel.accountEditingController,
               ),
               LoginInput(
                 label: "密码",
@@ -88,7 +89,8 @@ class LoginPage extends BaseView<LoginViewModel> {
                     bottom: 16.height,
                     child: StreamBuilder(
                       stream: viewModel.verifyCode,
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      builder: (BuildContext context,
+                          AsyncSnapshot<VerifyCode> snapshot) {
                         Widget widget;
                         if (snapshot.hasData) {
                           widget = Image.memory(
@@ -122,8 +124,8 @@ class LoginPage extends BaseView<LoginViewModel> {
               ),
               SizedBox(height: 30.height),
               FlatButton(
-                onPressed: () {},
-                color: Color(AppColors.LoginInputActive),
+                onPressed: () => viewModel.login(),
+                color: Color(AppColor.LoginInputActive),
                 padding: EdgeInsets.symmetric(vertical: 10.height),
                 child: Center(
                   child: Text(

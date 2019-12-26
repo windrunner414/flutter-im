@@ -1,3 +1,4 @@
+import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:wechat/model/base.dart';
 
@@ -11,19 +12,22 @@ enum UserState {
 }
 
 @JsonSerializable()
+@CopyWith()
 class User extends BaseModel {
-  String userAccount;
-  String userName;
-  int userId;
-  String userAvatar;
-  UserState state;
+  final String userAccount;
+  final String userName;
+  final int userId;
+  final String userAvatar;
+  final UserState state;
+  final String userSession;
 
   User(
       {this.userAccount,
       this.userName,
       this.userId,
       this.userAvatar,
-      this.state});
+      this.state,
+      this.userSession});
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
   Map<String, dynamic> toJson() => _$UserToJson(this);
