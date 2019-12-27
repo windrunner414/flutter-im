@@ -31,13 +31,23 @@ class _RoutePage {
   };
 }
 
-class _RouterNavigatorObserver extends NavigatorObserver {}
+class RouterNavigatorObserver extends NavigatorObserver {
+  static RouterNavigatorObserver _instance;
+
+  factory RouterNavigatorObserver() {
+    if (_instance == null) {
+      _instance = RouterNavigatorObserver._();
+    }
+
+    return _instance;
+  }
+
+  RouterNavigatorObserver._();
+}
 
 abstract class Router {
   static final Fluro.Router _router = Fluro.Router();
   static RouteFactory get generator => _router.generator;
-  static final _RouterNavigatorObserver navigatorObserver =
-      _RouterNavigatorObserver();
 
   static void init() {
     for (_RoutePage page in _RoutePage._pages.values) {
@@ -57,11 +67,11 @@ abstract class Router {
     assert(replace != null);
     assert(clearStack != null);
 
-    NavigatorState navigator = navigatorObserver.navigator;
+    NavigatorState navigator = RouterNavigatorObserver().navigator;
     String path = _RoutePage._pages[page].routePath +
         ((parameters ?? []).isNotEmpty ? ("/" + parameters.join("/")) : "");
     if (clearStack) {
-      return navigator.pushNamedAndRemoveUntil(path, (check) => false);
+      return navigator.pushNamedAndRemoveUntil(path, (_) => false);
     } else if (replace) {
       return navigator.pushReplacementNamed(path);
     } else {
@@ -70,5 +80,5 @@ abstract class Router {
   }
 
   static bool pop<T extends Object>([T result]) =>
-      navigatorObserver.navigator.pop(result);
+      RouterNavigatorObserver().navigator.pop(result);
 }

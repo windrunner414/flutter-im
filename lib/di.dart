@@ -9,13 +9,17 @@ import 'package:wechat/service/interceptors/auth.dart';
 import 'package:wechat/service/interceptors/throw_error.dart';
 import 'package:wechat/service/user.dart';
 import 'package:wechat/viewmodel/login.dart';
+import 'package:wechat/viewmodel/profile.dart';
 import 'package:wechat/viewmodel/server_setting.dart';
+import 'package:wechat/viewmodel/splash.dart';
 
 const HttpInterceptorScope = DartInScope("http_interceptors");
 
 final viewModelModule = Module([
   factory<LoginViewModel>(({params}) => LoginViewModel()),
   factory<ServerSettingViewModel>(({params}) => ServerSettingViewModel()),
+  factory<ProfileViewModel>(({params}) => ProfileViewModel()),
+  factory<SplashViewModel>(({params}) => SplashViewModel(params.params)),
 ]);
 
 final repositoryModule = Module([

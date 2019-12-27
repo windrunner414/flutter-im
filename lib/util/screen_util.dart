@@ -4,7 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart'
     as FlutterScreenUtil;
 
-class ScreenUtil {
+abstract class ScreenUtil {
+  static bool get ready => FlutterScreenUtil.ScreenUtil.mediaQueryData != null;
+
   static init(
           {@required double width,
           @required double height,
@@ -16,9 +18,15 @@ class ScreenUtil {
 }
 
 extension ScreenUtilExtension on num {
-  num get width => FlutterScreenUtil.ScreenUtil.getInstance().setWidth(this);
-  num get height => FlutterScreenUtil.ScreenUtil.getInstance().setHeight(this);
-  num get sp => FlutterScreenUtil.ScreenUtil.getInstance().setSp(this);
-  num get minWidthHeight => min(width, height);
-  num get maxWidthHeight => max(width, height);
+  double get width => ScreenUtil.ready
+      ? FlutterScreenUtil.ScreenUtil.getInstance().setWidth(this).toDouble()
+      : this.toDouble();
+  double get height => ScreenUtil.ready
+      ? FlutterScreenUtil.ScreenUtil.getInstance().setHeight(this).toDouble()
+      : this.toDouble();
+  double get sp => ScreenUtil.ready
+      ? FlutterScreenUtil.ScreenUtil.getInstance().setSp(this).toDouble()
+      : this.toDouble();
+  double get minWidthHeight => min(width, height);
+  double get maxWidthHeight => max(width, height);
 }

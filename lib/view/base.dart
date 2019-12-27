@@ -5,8 +5,8 @@ import 'package:wechat/viewmodel/base.dart';
 
 abstract class BaseView<T extends BaseViewModel> extends StatefulWidget {
   final bool keepAlive = false;
+  final List viewModelParameters = null;
 
-  @protected
   Widget build(BuildContext context, T viewModel);
 
   @override
@@ -16,13 +16,14 @@ abstract class BaseView<T extends BaseViewModel> extends StatefulWidget {
 }
 
 class _BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
-  final T _viewModel = inject();
+  T _viewModel;
 
   @override
   Widget build(BuildContext context) => widget.build(context, _viewModel);
 
   @override
   void initState() {
+    _viewModel = inject(params: widget.viewModelParameters);
     _viewModel.init();
     super.initState();
   }
@@ -30,6 +31,7 @@ class _BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
   @override
   void dispose() {
     _viewModel.dispose();
+    _viewModel = null;
     super.dispose();
   }
 }

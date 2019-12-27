@@ -6,7 +6,7 @@ import 'package:wechat/util/layer.dart';
 
 class AuthInterceptor implements RequestInterceptor, ResponseInterceptor {
   Request onRequest(Request request) {
-    String userSession = AppState.ownUserInfo.value ?? "";
+    String userSession = AppState.ownUserInfo.value?.userSession ?? "";
     Map<String, dynamic> parameters = Map.from(request.parameters);
     parameters["userSession"] = userSession;
     return request.replace(parameters: parameters);

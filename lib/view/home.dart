@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wechat/constant.dart';
 import 'package:wechat/util/screen_util.dart';
-import 'package:wechat/view/home/contacts.dart';
-import 'package:wechat/view/home/conversation.dart';
-import 'package:wechat/view/home/profile.dart';
+import 'package:wechat/view/contacts.dart';
+import 'package:wechat/view/conversation.dart';
+import 'package:wechat/view/profile.dart';
 
 enum _ActionItems { GROUP_CHAT, ADD_FRIEND, QR_SCAN }
 
