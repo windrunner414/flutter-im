@@ -12,7 +12,7 @@ abstract class AppState {
     String json = StorageUtil.get(_OwnUserInfoStorageKey);
     ownUserInfo.value =
         json == null ? null : User.fromJson(await WorkerUtil.jsonDecode(json));
-    ownUserInfo.listen((User value) async => StorageUtil.setString(
+    ownUserInfo.listen((User value) async => await StorageUtil.setString(
         _OwnUserInfoStorageKey,
         value == null ? null : await WorkerUtil.jsonEncode(value)));
   }

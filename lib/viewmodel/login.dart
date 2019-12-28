@@ -58,6 +58,7 @@ class LoginViewModel extends BaseViewModel {
         LayerUtil.showToast((error.error as ApiResponse).msg);
       } else {
         LayerUtil.showToast("网络错误");
+        print(error.toString());
       }
     }
     LayerUtil.closeLoading(loadingKey);
@@ -67,7 +68,7 @@ class LoginViewModel extends BaseViewModel {
   void init() {
     super.init();
     accountEditingController.text =
-        AppState.ownUserInfo.value?.userAvatar ?? "";
+        AppState.ownUserInfo.value?.userAccount ?? "";
     refreshVerifyCode();
   }
 

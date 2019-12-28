@@ -28,7 +28,7 @@ class _ProfileHeaderView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 CachedNetworkImage(
-                  imageUrl: null, //TODO: snapshot.data.userAvatar
+                  imageUrl: snapshot.data.userAvatar,
                   placeholder: (context, url) =>
                       Constant.ProfileAvatarDefaultIcon,
                   width: Constant.ProfileHeaderIconSize.minWidthHeight,

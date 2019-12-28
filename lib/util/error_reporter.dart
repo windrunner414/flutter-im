@@ -6,6 +6,8 @@ import 'package:flutter/material.dart' hide runApp;
 typedef ErrorBuilder = Widget Function(String errorDetail);
 
 //TODO:支持原生代码异常上报，比如flutter engine
+//TODO:好像flutter错误不能全部捕获到，比如在viewModel init里面throw
+//TODO:可能是flutter的bug
 abstract class ErrorReporterUtil {
   static void runApp({
     @required Widget builder(),

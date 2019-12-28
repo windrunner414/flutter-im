@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
 
 @immutable
-abstract class BaseModel {}
+abstract class BaseModel {
+  const BaseModel();
+}

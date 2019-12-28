@@ -16,7 +16,7 @@ class AuthInterceptor implements RequestInterceptor, ResponseInterceptor {
     if (response.statusCode == 401) {
       LayerUtil.showToast((response.error as ApiResponse).msg ?? "登陆已过期，请重新登录");
       AppState.ownUserInfo.value =
-          AppState.ownUserInfo.value.copyWith(userSession: null);
+          AppState.ownUserInfo.value.copyWith(userSession: "");
     }
     return response;
   }
