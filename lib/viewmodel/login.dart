@@ -29,6 +29,7 @@ class LoginViewModel extends BaseViewModel {
           await manageFuture(_commonRepository.getVerifyCode(), #getVerifyCode);
     } on CancelException {} catch (error) {
       verifyCode.addError(error);
+      print(error.toString());
     }
   }
 
@@ -43,6 +44,10 @@ class LoginViewModel extends BaseViewModel {
     }
     if (verifyCodeEditingController.text.isEmpty) {
       LayerUtil.showToast("请填写验证码");
+      return;
+    }
+    if (verifyCode.value == null) {
+      LayerUtil.showToast("验证码错误");
       return;
     }
     UniqueKey loadingKey = LayerUtil.showLoading();

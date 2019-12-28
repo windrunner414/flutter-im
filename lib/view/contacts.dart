@@ -177,7 +177,7 @@ class _ContactsPageState extends State<ContactsPage> {
           print("点击了群聊");
         }),
   ];
-  final Map _letterPosMap = {INDEX_BAR_WORDS[0]: 0.0};
+  final Map<String, double> _letterPosMap = {INDEX_BAR_WORDS[0]: 0.0};
 
   @override
   void initState() {
@@ -217,12 +217,9 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 
   void _jumpToIndex(String letter) {
-    if (_letterPosMap.isNotEmpty) {
-      final _pos = _letterPosMap[letter];
-      if (_pos != null) {
-        _scrollController.animateTo(_letterPosMap[letter],
-            curve: Curves.easeInOut, duration: Duration(microseconds: 200));
-      }
+    double pos = _letterPosMap[letter];
+    if (pos != null) {
+      _scrollController.jumpTo(pos);
     }
   }
 

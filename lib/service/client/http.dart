@@ -1,6 +1,8 @@
 part of '../base.dart';
 
 class HttpClient extends ChopperClient {
+  static const Duration Timeout = Duration(seconds: 15);
+
   String _baseUrl;
   String get baseUrl => _baseUrl;
 
@@ -9,22 +11,12 @@ class HttpClient extends ChopperClient {
     Iterable interceptors = const [],
     Converter converter,
     ErrorConverter errorConverter,
-    Iterable<ChopperService> services = const [],
   })  : _baseUrl = baseUrl,
         super(
-          client: http.IOClient(
-              io.HttpClient()..connectionTimeout = Duration(seconds: 5)),
           interceptors: interceptors,
           converter: converter,
           errorConverter: errorConverter,
-          services: services,
         );
-
-  @override
-  void dispose() {
-    super.dispose();
-    httpClient.close();
-  }
 
   @override
   Future<Response<BodyType>> send<BodyType, InnerType>(
@@ -36,8 +28,8 @@ class HttpClient extends ChopperClient {
         super.send<BodyType, InnerType>(request,
             requestConverter: requestConverter,
             responseConverter: responseConverter),
-        Future.delayed(Duration(seconds: 15),
-            () => throw io.SocketException("http request timeout")),
+        Future.delayed(Timeout,
+            () => throw TimeoutException("http request timeout", Timeout)),
       ]);
 }
 

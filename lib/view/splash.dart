@@ -12,10 +12,13 @@ class SplashPage extends BaseView<SplashViewModel> {
 
   SplashPage(List<_WaitFunction> waitFunctions)
       : viewModelParameters = Set<_WaitFunction>.from(waitFunctions).toList()
-          ..add(() => Future.delayed(Duration(microseconds: 500)));
+          ..add(() => Future.delayed(Duration(milliseconds: 500)));
 
   @override
-  Widget build(BuildContext context, SplashViewModel viewModel) => Container(
-        child: Text("启动屏"),
+  Widget build(BuildContext context, SplashViewModel viewModel) => WillPopScope(
+        onWillPop: () async => false,
+        child: Container(
+          child: Text("启动屏"),
+        ),
       );
 }

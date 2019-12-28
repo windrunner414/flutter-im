@@ -40,9 +40,9 @@ void main() {
             stream: AppState.ownUserInfo.distinct((User prev, User next) =>
                 prev?.userSession == next?.userSession),
             builder: (BuildContext context, AsyncSnapshot<User> snapshot) =>
-                !snapshot.hasData
+                snapshot.connectionState != ConnectionState.active
                     ? Container()
-                    : ((snapshot.data.userSession ?? "").isNotEmpty
+                    : ((snapshot.data?.userSession ?? "").isNotEmpty
                         ? HomePage()
                         : LoginPage()),
           ),

@@ -1,12 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' as io;
 
 import 'package:chopper/chopper.dart';
 import 'package:dartin/dartin.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/io_client.dart' as http;
 import 'package:wechat/di.dart';
 import 'package:wechat/model/api_response.dart';
 import 'package:wechat/model/api_server_config.dart';

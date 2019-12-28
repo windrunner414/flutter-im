@@ -9,14 +9,12 @@ class SplashViewModel extends BaseViewModel {
   SplashViewModel(this.waitFunctions);
 
   @override
-  void init() {
+  void init() async {
     super.init();
-    // 确保启动页渲染出来后再执行waitFunctions
-    Timer.run(() async {
-      try {
-        await manageFuture(Future.wait(waitFunctions.map((func) => func())));
-        Router.pop();
-      } on CancelException {}
-    });
+    try {
+      await manageFuture(Future.wait(
+          waitFunctions.map((func) => Future.delayed(Duration.zero, func))));
+      Router.pop();
+    } on CancelException {}
   }
 }
