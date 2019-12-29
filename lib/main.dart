@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dartin/dartin.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wechat/constant.dart';
@@ -86,8 +87,12 @@ class _AppInitState extends State<_AppInit> {
 
   Future<void> _initBeforeShowSplash() async {
     startDartIn(appModule);
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+    if (!kIsWeb) {
+      SystemChrome.setSystemUIOverlayStyle(
+          SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+      await SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    }
   }
 
   Future<void> _initApp() async {

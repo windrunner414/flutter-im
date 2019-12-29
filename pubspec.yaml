@@ -22,6 +22,7 @@ dependencies:
   flutter_screenutil: ^0.7.0
   chopper: ^3.0.1+1
   copy_with_extension: ^1.0.7
+  websocket: ^0.0.5
 
 dev_dependencies:
   flutter_test:

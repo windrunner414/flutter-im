@@ -16,14 +16,14 @@ abstract class AppColor {
   static const AppBarPopupMenuColor = 0xffffffff;
   static const TitleColor = 0xff353535;
   static const ConversationItemBgColor = 0xffffffff;
-  static const ConversationItemActiveBgColor = 0xeeeeeeee;
+  static const ConversationItemActiveBgColor = 0xffeeeeee;
   static const DescTextColor = 0xff9e9e9e;
   static const DividerColor = 0xffd9d9d9;
   static const NotifyDotBgColor = 0xffff3e3e;
   static const NotifyDotText = 0xffffffff;
   static const ContactGroupTitleBgColor = 0xffebebeb;
   static const ContactGroupTitleColor = 0xff888888;
-  static const ContactItemActiveBgColor = 0xeeeeeeee;
+  static const ContactItemActiveBgColor = 0xffeeeeee;
   static const IndexLetterBoxBgColor = Colors.black45;
   static const LoginInputNormal = 0xff57c22b;
   static const LoginInputActive = 0xff46c11b;

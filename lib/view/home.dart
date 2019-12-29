@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wechat/constant.dart';
+import 'package:wechat/service/base.dart';
 import 'package:wechat/util/screen_util.dart';
 import 'package:wechat/view/contacts.dart';
 import 'package:wechat/view/conversation.dart';
@@ -32,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    Service.webSocketClient.connect();
     _navigationViews = [
       NavigationIconView(
         title: Config.AppName,
@@ -55,6 +57,12 @@ class _HomePageState extends State<HomePage> {
       ContactsPage(),
       ProfilePage(),
     ];
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    Service.webSocketClient.close();
   }
 
   _buildPopupMenuItem(int iconName, String title) {
