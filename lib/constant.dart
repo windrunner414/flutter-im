@@ -5,7 +5,7 @@ abstract class Config {
 
   /// worker数量，解析json等在worker内执行
   /// 会优先设置为cpu核心数 - 2，如果小于该值，或获取不到，会设置成该值
-  static const MinimalWorkerPoolSize = 2;
+  static const MinimalWorkerNum = 2;
 }
 
 abstract class AppColor {

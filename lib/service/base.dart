@@ -10,7 +10,7 @@ import 'package:wechat/di.dart';
 import 'package:wechat/model/api_response.dart';
 import 'package:wechat/model/api_server_config.dart';
 import 'package:wechat/util/storage.dart';
-import 'package:wechat/util/worker.dart';
+import 'package:wechat/util/worker/worker.dart';
 
 part 'client/http.dart';
 part 'client/websocket.dart';
@@ -85,7 +85,7 @@ abstract class Service {
 
   /// 可以确保调用时WebSocketClient不在连接状态，只有HomePage加载了才会连接，但只能在HomePage未加载时设置
   static void _updateWebSocketClient() {
-    assert(_webSocketClient.connection == null);
+    assert(_webSocketClient?.connection == null);
     _webSocketClient = WebSocketClient._(url: webSocketBaseUrl);
   }
 }

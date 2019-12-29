@@ -1,7 +1,7 @@
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/model/user.dart';
 import 'package:wechat/util/storage.dart';
-import 'package:wechat/util/worker.dart';
+import 'package:wechat/util/worker/worker.dart';
 
 abstract class AppState {
   static BehaviorSubject<User> ownUserInfo = BehaviorSubject();
