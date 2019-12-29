@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:wechat/util/worker/worker_interface.dart';
+import 'package:wechat/util/worker/worker_task.dart';
 
 class WorkerImpl extends Worker {
   WorkerImpl();

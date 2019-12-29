@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:wechat/route.dart';
 import 'package:wechat/viewmodel/base.dart';
@@ -12,7 +13,9 @@ class SplashViewModel extends BaseViewModel {
   @override
   void init() async {
     super.init();
-    SystemChrome.setEnabledSystemUIOverlays([]);
+    if (!kIsWeb) {
+      SystemChrome.setEnabledSystemUIOverlays([]);
+    }
     try {
       await manageFuture(Future.wait(
           waitFunctions.map((func) => Future.delayed(Duration.zero, func))));
@@ -23,6 +26,8 @@ class SplashViewModel extends BaseViewModel {
   @override
   void dispose() {
     super.dispose();
-    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    if (!kIsWeb) {
+      SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    }
   }
 }

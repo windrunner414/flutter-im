@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:system_info/system_info.dart';
 import 'package:wechat/constant.dart';
 import 'package:wechat/util/worker/worker_interface.dart';
+import 'package:wechat/util/worker/worker_task.dart';
 import 'package:worker_manager/worker_manager.dart';
 
 class WorkerImpl extends Worker {

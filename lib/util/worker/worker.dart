@@ -4,8 +4,9 @@ import 'dart:convert' as convert;
 import 'package:wechat/util/worker/worker_interface.dart';
 import 'package:wechat/util/worker/worker_isolate_impl.dart'
     if (dart.library.html) 'package:wechat/util/worker/worker_web_impl.dart';
+import 'package:wechat/util/worker/worker_task.dart';
 
-export 'package:wechat/util/worker/worker_interface.dart';
+export 'package:wechat/util/worker/worker_task.dart';
 
 abstract class WorkerUtil {
   static Worker _worker;
