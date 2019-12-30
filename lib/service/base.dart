@@ -16,7 +16,12 @@ part 'client/http.dart';
 part 'client/websocket.dart';
 
 const ApiServerConfig _DefaultApiServerConfig = ApiServerConfig(
-    domain: "im.php20.cn", httpPort: 80, webSocketPort: 9701, ssl: false);
+  staticFileDomain: "im.php20.cn",
+  domain: "im.php20.cn",
+  httpPort: 80,
+  webSocketPort: 9701,
+  ssl: false,
+);
 
 abstract class Service {
   static const _StorageKey = "config.service_config";
@@ -54,6 +59,8 @@ abstract class Service {
       config.domain +
       ":" +
       config.webSocketPort.toString();
+  static String get staticFileUrl =>
+      (config.ssl ? "https" : "http") + "://" + config.staticFileDomain;
 
   static Future<void> init() async {
     if (config != null) {

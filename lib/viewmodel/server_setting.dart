@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:wechat/model/api_server_config.dart';
 import 'package:wechat/service/base.dart';
 import 'package:wechat/util/layer.dart';
@@ -6,6 +6,8 @@ import 'package:wechat/viewmodel/base.dart';
 
 class ServerSettingViewModel extends BaseViewModel {
   TextEditingController domainEditingController = TextEditingController();
+  TextEditingController staticFileDomainEditingController =
+      TextEditingController();
   TextEditingController httpPortEditingController = TextEditingController();
   TextEditingController webSocketPortEditingController =
       TextEditingController();
@@ -14,6 +16,7 @@ class ServerSettingViewModel extends BaseViewModel {
   @override
   void init() {
     super.init();
+    staticFileDomainEditingController.text = Service.config.staticFileDomain;
     domainEditingController.text = Service.config.domain;
     httpPortEditingController.text = Service.config.httpPort.toString();
     webSocketPortEditingController.text =
@@ -22,6 +25,10 @@ class ServerSettingViewModel extends BaseViewModel {
   }
 
   bool save() {
+    if (staticFileDomainEditingController.text.isEmpty) {
+      LayerUtil.showToast("请填写静态文件服务器域名");
+      return false;
+    }
     if (domainEditingController.text.isEmpty) {
       LayerUtil.showToast("请填写服务器域名");
       return false;
@@ -37,6 +44,7 @@ class ServerSettingViewModel extends BaseViewModel {
       return false;
     }
     Service.config = ApiServerConfig(
+      staticFileDomain: staticFileDomainEditingController.text,
       domain: domainEditingController.text,
       httpPort: httpPort,
       webSocketPort: webSocketPort,

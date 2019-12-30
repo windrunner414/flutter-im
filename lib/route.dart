@@ -2,8 +2,9 @@ import 'package:fluro/fluro.dart' as Fluro show Router;
 import 'package:fluro/fluro.dart' show TransitionType, Handler;
 import 'package:flutter/material.dart';
 import 'package:wechat/view/server_setting.dart';
+import 'package:wechat/view/setting.dart';
 
-enum Page { ServerSetting }
+enum Page { ServerSetting, Setting }
 
 class _RoutePage {
   final String routePath;
@@ -22,12 +23,12 @@ class _RoutePage {
 
   static final Map<Page, _RoutePage> _pages = {
     Page.ServerSetting: _RoutePage(
-      routePath: "/serverSetting",
-      transitionType: TransitionType.cupertinoFullScreenDialog,
-      handler: Handler(
-        handlerFunc: (_, __) => ServerSettingPage(),
-      ),
-    ),
+        routePath: "/serverSetting",
+        transitionType: TransitionType.cupertinoFullScreenDialog,
+        handler: Handler(handlerFunc: (_, __) => ServerSettingPage())),
+    Page.Setting: _RoutePage(
+        routePath: "/setting",
+        handler: Handler(handlerFunc: (_, __) => SettingPage()))
   };
 }
 

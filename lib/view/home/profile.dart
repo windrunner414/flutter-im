@@ -1,11 +1,12 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wechat/constant.dart';
 import 'package:wechat/model/user.dart';
+import 'package:wechat/route.dart';
 import 'package:wechat/state.dart';
 import 'package:wechat/util/screen_util.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/profile.dart';
+import 'package:wechat/widget/cached_image.dart';
 import 'package:wechat/widget/full_width_button.dart';
 
 class _ProfileHeaderView extends StatelessWidget {
@@ -21,18 +22,19 @@ class _ProfileHeaderView extends StatelessWidget {
         child: StreamBuilder(
           stream: AppState.ownUserInfo,
           builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-            if (!snapshot.hasData) {
+            User info = AppState.ownUserInfo.value;
+            if (info == null) {
               return Container();
             }
             return Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                CachedNetworkImage(
-                  imageUrl: snapshot.data.userAvatar,
+                CachedImage(
+                  url: info.userAvatar,
                   placeholder: (context, url) =>
                       Constant.ProfileAvatarDefaultIcon,
-                  width: Constant.ProfileHeaderIconSize.minWidthHeight,
-                  height: Constant.ProfileHeaderIconSize.minWidthHeight,
+                  size: Size.square(
+                      Constant.ProfileHeaderIconSize.minWidthHeight),
                 ),
                 SizedBox(width: 10.width),
                 Expanded(
@@ -40,7 +42,7 @@ class _ProfileHeaderView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        snapshot.data.userName,
+                        info.userName,
                         style: TextStyle(
                           color: Color(AppColor.TitleColor),
                           fontSize: 16.sp,
@@ -49,7 +51,7 @@ class _ProfileHeaderView extends StatelessWidget {
                       ),
                       SizedBox(height: 10.height),
                       Text(
-                        "账号: ${snapshot.data.userAccount}",
+                        "账号: ${info.userAccount}",
                         style: TextStyle(
                           color: Color(AppColor.DescTextColor),
                           fontSize: 13.sp,
@@ -101,7 +103,7 @@ class ProfilePage extends BaseView<ProfileViewModel> {
                 iconPath: 'assets/images/ic_settings.png',
                 title: '设置',
                 showDivider: true,
-                onPressed: () {},
+                onPressed: () => Router.navigateTo(Page.Setting),
               ),
             ],
           ),

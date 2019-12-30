@@ -6,6 +6,7 @@ import 'package:wechat/route.dart';
 import 'package:wechat/util/screen_util.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/server_setting.dart';
+import 'package:wechat/widget/app_bar.dart';
 import 'package:wechat/widget/login_input.dart';
 
 class ServerSettingPage extends BaseView<ServerSettingViewModel> {
@@ -13,12 +14,7 @@ class ServerSettingPage extends BaseView<ServerSettingViewModel> {
   Widget build(BuildContext context, ServerSettingViewModel viewModel) =>
       Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: PreferredSize(
-            preferredSize: Size.fromHeight(kToolbarHeight.height),
-            child: AppBar(
-              title: Text("服务器设置"),
-              elevation: 0.0,
-            )),
+        appBar: IAppBar(title: "服务器设置"),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 32.width),
           child: Column(
@@ -32,6 +28,14 @@ class ServerSettingPage extends BaseView<ServerSettingViewModel> {
                 ),
               ),
               SizedBox(height: 40.height),
+              LoginInput(
+                label: "静态文件服务器域名",
+                controller: viewModel.staticFileDomainEditingController,
+                inputFormatters: [
+                  WhitelistingTextInputFormatter(RegExp(r"[a-zA-Z0-9\.-]")),
+                ],
+                keyboardType: TextInputType.url,
+              ),
               LoginInput(
                 label: "服务器域名",
                 controller: viewModel.domainEditingController,

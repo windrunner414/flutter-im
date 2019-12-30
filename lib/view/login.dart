@@ -8,6 +8,7 @@ import 'package:wechat/route.dart';
 import 'package:wechat/util/screen_util.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/login.dart';
+import 'package:wechat/widget/app_bar.dart';
 import 'package:wechat/widget/login_input.dart';
 
 enum _ActionItems { SERVER_SETTINGS }
@@ -16,42 +17,38 @@ class LoginPage extends BaseView<LoginViewModel> {
   @override
   Widget build(BuildContext context, LoginViewModel viewModel) => Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(kToolbarHeight.height),
-          child: AppBar(
-            title: Text("登录"),
-            elevation: 0.0,
-            actions: <Widget>[
-              PopupMenuButton(
-                itemBuilder: (BuildContext context) =>
-                    <PopupMenuItem<_ActionItems>>[
-                  PopupMenuItem(
-                    child: Text(
-                      "服务器设置",
-                      style: TextStyle(
-                          color: Color(AppColor.AppBarPopupMenuColor)),
-                    ),
-                    value: _ActionItems.SERVER_SETTINGS,
+        appBar: IAppBar(
+          title: "登录",
+          actions: <Widget>[
+            PopupMenuButton(
+              itemBuilder: (BuildContext context) =>
+                  <PopupMenuItem<_ActionItems>>[
+                PopupMenuItem(
+                  child: Text(
+                    "服务器设置",
+                    style:
+                        TextStyle(color: Color(AppColor.AppBarPopupMenuColor)),
                   ),
-                ],
-                icon: Icon(
-                  IconData(0xe66b, fontFamily: Constant.IconFontFamily),
-                  size: 22.minWidthHeight,
+                  value: _ActionItems.SERVER_SETTINGS,
                 ),
-                onSelected: (_ActionItems selected) async {
-                  switch (selected) {
-                    case _ActionItems.SERVER_SETTINGS:
-                      if (await Router.navigateTo(Page.ServerSetting) == true) {
-                        viewModel.refreshVerifyCode();
-                      }
-                      break;
-                  }
-                },
-                tooltip: "菜单",
+              ],
+              icon: Icon(
+                IconData(0xe66b, fontFamily: Constant.IconFontFamily),
+                size: 22.minWidthHeight,
               ),
-              SizedBox(width: 16.width)
-            ],
-          ),
+              onSelected: (_ActionItems selected) async {
+                switch (selected) {
+                  case _ActionItems.SERVER_SETTINGS:
+                    if (await Router.navigateTo(Page.ServerSetting) == true) {
+                      viewModel.refreshVerifyCode();
+                    }
+                    break;
+                }
+              },
+              tooltip: "菜单",
+            ),
+            SizedBox(width: 16.width)
+          ],
         ),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 32.width),

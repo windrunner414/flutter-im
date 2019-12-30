@@ -24,7 +24,7 @@ class FullWidthButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pureButton = Row(
+    final Widget pureButton = Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Image.asset(
@@ -47,26 +47,29 @@ class FullWidthButton extends StatelessWidget {
       ],
     );
 
-    final borderButton = Container(
-      decoration: BoxDecoration(
-        border: Border(
-            bottom: BorderSide(
-                color: Color(AppColor.DividerColor),
-                width: Constant.DividerWidth)),
-      ),
-      padding: EdgeInsets.only(bottom: VERTICAL_PADDING),
-      child: pureButton,
-    );
-
     return FlatButton(
-      onPressed: () {},
+      onPressed: onPressed,
       padding: EdgeInsets.only(
-          left: HORIZONTAL_PADDING.width,
-          right: HORIZONTAL_PADDING.width,
-          top: VERTICAL_PADDING.height,
-          bottom: showDivider ? 0.0 : VERTICAL_PADDING.height),
+        left: HORIZONTAL_PADDING.width,
+        right: HORIZONTAL_PADDING.width,
+        top: VERTICAL_PADDING.height,
+        bottom: showDivider ? 0.0 : VERTICAL_PADDING.height,
+      ),
       color: Colors.white,
-      child: showDivider ? borderButton : pureButton,
+      child: showDivider
+          ? Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Color(AppColor.DividerColor),
+                    width: Constant.DividerWidth,
+                  ),
+                ),
+              ),
+              padding: EdgeInsets.only(bottom: VERTICAL_PADDING),
+              child: pureButton,
+            )
+          : pureButton,
     );
   }
 }
