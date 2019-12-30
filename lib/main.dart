@@ -17,7 +17,7 @@ import 'package:wechat/util/screen_util.dart';
 import 'package:wechat/util/storage.dart';
 import 'package:wechat/util/worker/worker.dart';
 import 'package:wechat/view/error.dart';
-import 'package:wechat/view/home.dart';
+import 'package:wechat/view/home/home.dart';
 import 'package:wechat/view/login.dart';
 import 'package:wechat/view/splash.dart';
 

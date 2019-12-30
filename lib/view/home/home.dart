@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:wechat/constant.dart';
 import 'package:wechat/service/base.dart';
 import 'package:wechat/util/screen_util.dart';
-import 'package:wechat/view/contacts.dart';
-import 'package:wechat/view/conversation.dart';
-import 'package:wechat/view/profile.dart';
+import 'package:wechat/view/home/contact.dart';
+import 'package:wechat/view/home/conversation.dart';
+import 'package:wechat/view/home/profile.dart';
 
 enum _ActionItems { GROUP_CHAT, ADD_FRIEND, QR_SCAN }
 
@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
     _pageController = PageController(initialPage: _currentIndex);
     _pages = [
       ConversationPage(),
-      ContactsPage(),
+      ContactPage(),
       ProfilePage(),
     ];
   }
