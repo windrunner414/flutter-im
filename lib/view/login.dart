@@ -5,49 +5,51 @@ import 'package:flutter/services.dart';
 import 'package:wechat/constant.dart';
 import 'package:wechat/model/verify_code.dart';
 import 'package:wechat/route.dart';
-import 'package:wechat/util/screen_util.dart';
+import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/login.dart';
 import 'package:wechat/widget/app_bar.dart';
 import 'package:wechat/widget/login_input.dart';
 
-enum _ActionItems { SERVER_SETTINGS }
+enum _PopupMenuItems { SERVER_SETTINGS }
 
 class LoginPage extends BaseView<LoginViewModel> {
   @override
   Widget build(BuildContext context, LoginViewModel viewModel) => Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: IAppBar(
-          title: "登录",
+          title: '登录',
           actions: <Widget>[
-            PopupMenuButton(
+            PopupMenuButton<_PopupMenuItems>(
               itemBuilder: (BuildContext context) =>
-                  <PopupMenuItem<_ActionItems>>[
-                PopupMenuItem(
+                  <PopupMenuItem<_PopupMenuItems>>[
+                PopupMenuItem<_PopupMenuItems>(
                   child: Text(
-                    "服务器设置",
-                    style:
-                        TextStyle(color: Color(AppColor.AppBarPopupMenuColor)),
+                    '服务器设置',
+                    style: TextStyle(
+                      color: const Color(AppColor.AppBarPopupMenuColor),
+                      fontSize: 16.sp,
+                    ),
                   ),
-                  value: _ActionItems.SERVER_SETTINGS,
+                  value: _PopupMenuItems.SERVER_SETTINGS,
                 ),
               ],
               icon: Icon(
-                IconData(0xe66b, fontFamily: Constant.IconFontFamily),
+                const IconData(0xe66b, fontFamily: Constant.IconFontFamily),
                 size: 22.minWidthHeight,
               ),
-              onSelected: (_ActionItems selected) async {
+              onSelected: (_PopupMenuItems selected) async {
                 switch (selected) {
-                  case _ActionItems.SERVER_SETTINGS:
-                    if (await Router.navigateTo(Page.ServerSetting) == true) {
+                  case _PopupMenuItems.SERVER_SETTINGS:
+                    if (await router.push(Page.ServerSetting) == true) {
                       viewModel.refreshVerifyCode();
                     }
                     break;
                 }
               },
-              tooltip: "菜单",
+              tooltip: '菜单',
             ),
-            SizedBox(width: 16.width)
+            const SizedBox(width: 16)
           ],
         ),
         body: Padding(
@@ -57,58 +59,69 @@ class LoginPage extends BaseView<LoginViewModel> {
               SizedBox(height: 40.height),
               Center(
                 child: Image.asset(
-                  "assets/images/logo.png",
+                  'assets/images/logo.png',
                   width: 96.minWidthHeight,
                   height: 96.minWidthHeight,
                 ),
               ),
               SizedBox(height: 40.height),
               LoginInput(
-                label: "账号",
+                label: '账号',
                 controller: viewModel.accountEditingController,
               ),
               LoginInput(
-                label: "密码",
+                label: '密码',
                 obscureText: true,
                 controller: viewModel.passwordEditingController,
               ),
               Stack(
                 children: <Widget>[
                   LoginInput(
-                    label: "验证码",
-                    inputFormatters: [
-                      WhitelistingTextInputFormatter(RegExp(r"[0-9a-zA-Z]")),
+                    label: '验证码',
+                    inputFormatters: <TextInputFormatter>[
+                      WhitelistingTextInputFormatter(RegExp(r'[0-9a-zA-Z]')),
                     ],
                     controller: viewModel.verifyCodeEditingController,
                   ),
                   Positioned(
                     right: 0,
                     bottom: 16.height,
-                    child: StreamBuilder(
+                    child: StreamBuilder<VerifyCode>(
                       stream: viewModel.verifyCode,
                       builder: (BuildContext context,
                           AsyncSnapshot<VerifyCode> snapshot) {
+                        Widget buildPlaceholder({bool hasError = false}) =>
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  bottom: 6.height, right: 16.width),
+                              child: Text(
+                                hasError ? '加载失败' : '加载中',
+                                style: TextStyle(
+                                    fontSize: 18.sp, color: Colors.black87),
+                              ),
+                            );
                         Widget widget;
+                        bool canRefresh = true;
                         if (snapshot.hasData) {
-                          widget = Image.memory(
-                            base64Decode(
-                                snapshot.data.verifyCode.split(",")[1]),
-                            width: 162.width,
-                            height: 50.height,
-                            fit: BoxFit.fill,
-                          );
+                          try {
+                            widget = Image.memory(
+                              base64Decode(
+                                  snapshot.data.verifyCode.split(',')[1]),
+                              width: 162.width,
+                              height: 50.height,
+                              fit: BoxFit.fill,
+                            );
+                          } catch (error) {
+                            widget = buildPlaceholder(hasError: true);
+                          }
                         } else {
-                          widget = Padding(
-                            padding: EdgeInsets.only(
-                                bottom: 6.height, right: 16.width),
-                            child: Text(
-                              snapshot.hasError ? "加载失败" : "加载中",
-                              style: TextStyle(
-                                  fontSize: 18.sp, color: Colors.black87),
-                            ),
-                          );
+                          widget =
+                              buildPlaceholder(hasError: snapshot.hasError);
+                          if (!snapshot.hasError) {
+                            canRefresh = false;
+                          }
                         }
-                        return !snapshot.hasData && !snapshot.hasError
+                        return !canRefresh
                             ? widget
                             : GestureDetector(
                                 onTap: () => viewModel.refreshVerifyCode(),
@@ -126,7 +139,7 @@ class LoginPage extends BaseView<LoginViewModel> {
                 padding: EdgeInsets.symmetric(vertical: 10.height),
                 child: Center(
                   child: Text(
-                    "登录",
+                    '登录',
                     style: TextStyle(fontSize: 20.sp, color: Colors.white),
                   ),
                 ),

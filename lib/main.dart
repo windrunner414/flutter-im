@@ -13,7 +13,7 @@ import 'package:wechat/route.dart';
 import 'package:wechat/service/base.dart';
 import 'package:wechat/state.dart';
 import 'package:wechat/util/error_reporter.dart';
-import 'package:wechat/util/screen_util.dart';
+import 'package:wechat/util/screen.dart';
 import 'package:wechat/util/storage.dart';
 import 'package:wechat/util/worker/worker.dart';
 import 'package:wechat/view/error.dart';
@@ -21,16 +21,17 @@ import 'package:wechat/view/home/home.dart';
 import 'package:wechat/view/login.dart';
 import 'package:wechat/view/splash.dart';
 
+// TODO(AManWhoDoNotWantToTellHisNameAndUsingEnglishWithUpperCamelCaseAndWithoutBlankSpaceForAvoidingDartAnalysisReportWarningBecauseOfTodoStyleDoesNotMatchFlutterTodoStyle): 优化常量，fontIcon啊什么的用常量。这是一个简单&艰巨的任务，有缘人得之
 void main() {
   ErrorReporterUtil.runApp(
     builder: () => BotToastInit(
       child: MaterialApp(
-        navigatorObservers: [
+        navigatorObservers: <NavigatorObserver>[
           BotToastNavigatorObserver(),
           RouterNavigatorObserver(),
           ErrorReportUtilNavigatorObserver(),
         ],
-        onGenerateRoute: Router.generator,
+        onGenerateRoute: router.generator,
         title: Config.AppName,
         theme: ThemeData.light().copyWith(
           primaryColor: Color(AppColor.AppBarColor),
@@ -44,16 +45,17 @@ void main() {
 }
 
 class _AppInit extends StatefulWidget {
+  @override
   _AppInitState createState() => _AppInitState();
 }
 
 class _AppInitState extends State<_AppInit> {
-  final BehaviorSubject<bool> _loginStateSubject = BehaviorSubject();
+  final BehaviorSubject<bool> _loginStateSubject = BehaviorSubject<bool>();
 
   @override
   Widget build(BuildContext context) {
     _initOnEveryBuild();
-    return StreamBuilder(
+    return StreamBuilder<bool>(
       stream: _loginStateSubject,
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (!snapshot.hasData) {
@@ -81,48 +83,53 @@ class _AppInitState extends State<_AppInit> {
   }
 
   Future<void> _initOnAppStartup() async {
-    startDartIn(appModule);
+    startDartIn(modules);
 
     if (!kIsWeb) {
       SystemChrome.setSystemUIOverlayStyle(
           SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-      await SystemChrome.setPreferredOrientations(
-          [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+      await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
     }
 
-    NavigatorState navigator = Navigator.of(context);
-    navigator.push(PageRouteBuilder(
+    final NavigatorState navigator = Navigator.of(context);
+    navigator.push(PageRouteBuilder<dynamic>(
       pageBuilder: (_, __, ___) => SplashPage(),
       transitionDuration: Duration.zero,
     ));
 
-    await Future.wait([
+    await Future.wait(<Future<void>>[
       // delay一下，先让启动屏显示出来
-      Future.delayed(Duration.zero, () async {
-        Router.init();
-        await Future.wait([
+      Future<void>.delayed(Duration.zero, () async {
+        initRoute();
+        await Future.wait(<Future<void>>[
           StorageUtil.init(),
-          WorkerUtil.init(),
+          initWorker(),
         ]);
-        await Future.wait([
+        await Future.wait(<Future<void>>[
           Service.init(),
-          AppState.init(),
+          initAppState(),
         ]);
 
-        AppState.ownUserInfo
+        ownUserInfo
             .distinct((User prev, User next) =>
                 prev?.userSession == next?.userSession)
             .listen((User user) {
-          _loginStateSubject
-              .add((user?.userSession ?? "").isEmpty ? false : true);
+          if ((user?.userSession ?? '').isNotEmpty) {
+            _loginStateSubject.add(true);
+          } else {
+            _loginStateSubject.add(false);
+          }
         });
       }),
       // 多给点时间让页面加载好
-      Future.delayed(Duration(milliseconds: 500)),
+      Future<void>.delayed(const Duration(milliseconds: 500)),
     ]);
 
     _loginStateSubject.listen((_) {
-      navigator.popUntil((route) => route.isFirst);
+      navigator.popUntil((Route<dynamic> route) => route.isFirst);
     });
   }
 }

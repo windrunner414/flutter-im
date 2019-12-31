@@ -3,17 +3,15 @@ import 'package:wechat/model/user.dart';
 import 'package:wechat/util/storage.dart';
 import 'package:wechat/util/worker/worker.dart';
 
-abstract class AppState {
-  static BehaviorSubject<User> ownUserInfo = BehaviorSubject();
+BehaviorSubject<User> ownUserInfo = BehaviorSubject<User>();
 
-  static const String _OwnUserInfoStorageKey = "auth.own_user_info";
+const String _OwnUserInfoStorageKey = 'auth.own_user_info';
 
-  static Future<void> init() async {
-    String json = StorageUtil.get(_OwnUserInfoStorageKey);
-    ownUserInfo.value =
-        json == null ? null : User.fromJson(await WorkerUtil.jsonDecode(json));
-    ownUserInfo.listen((User value) async => await StorageUtil.setString(
-        _OwnUserInfoStorageKey,
-        value == null ? null : await WorkerUtil.jsonEncode(value)));
-  }
+Future<void> initAppState() async {
+  final String json = StorageUtil.get(_OwnUserInfoStorageKey);
+  ownUserInfo.value =
+      json == null ? null : User.fromJson(await executeJsonDecode(json));
+  ownUserInfo.listen((User value) async => await StorageUtil.setString(
+      _OwnUserInfoStorageKey,
+      value == null ? null : await executeJsonEncode(value)));
 }

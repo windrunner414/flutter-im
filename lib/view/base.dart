@@ -4,8 +4,8 @@ import 'package:meta/meta.dart';
 import 'package:wechat/viewmodel/base.dart';
 
 abstract class BaseView<T extends BaseViewModel> extends StatefulWidget {
-  final bool keepAlive = false;
-  final List viewModelParameters = null;
+  bool get keepAlive => false;
+  final List<dynamic> viewModelParameters = null;
 
   Widget build(BuildContext context, T viewModel);
 

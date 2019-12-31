@@ -4,7 +4,6 @@ import 'package:wechat/viewmodel/base.dart';
 
 class SettingViewModel extends BaseViewModel {
   void logout() {
-    AppState.ownUserInfo.value =
-        AppState.ownUserInfo.value.copyWith(userSession: "");
+    ownUserInfo.value = ownUserInfo.value.copyWith(userSession: '');
   }
 }

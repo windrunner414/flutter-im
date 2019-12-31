@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wechat/constant.dart';
 import 'package:wechat/model/contacts.dart';
+import 'package:wechat/util/screen.dart';
 
 class _ContactItem extends StatefulWidget {
   _ContactItem({
@@ -105,11 +106,16 @@ class _ContactItemState extends State<_ContactItem> {
         children: <Widget>[
           Container(
             height: _ContactItem.GROUP_TITLE_HEIGHT,
-            padding: EdgeInsets.only(left: 16.0, right: 16.0),
-            color: Color(AppColor.ContactGroupTitleBgColor),
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            color: const Color(AppColor.ContactGroupTitleBgColor),
             alignment: Alignment.centerLeft,
-            child: Text(widget.groupTitle,
-                style: AppStyle.GroupTitleItemTextStyle),
+            child: Text(
+              widget.groupTitle,
+              style: TextStyle(
+                color: const Color(AppColor.ContactGroupTitleColor),
+                fontSize: 14.sp,
+              ),
+            ),
           ),
           _button,
         ],
@@ -309,13 +315,18 @@ class _ContactPageState extends State<ContactPage> {
           width: Constant.IndexLetterBoxSize,
           height: Constant.IndexLetterBoxSize,
           decoration: BoxDecoration(
-            color: AppColor.IndexLetterBoxBgColor,
+            color: const Color(AppColor.IndexLetterBoxBgColor),
             borderRadius: BorderRadius.all(
                 Radius.circular(Constant.IndexLetterBoxRadius)),
           ),
           child: Center(
-            child:
-                Text(_currentLetter, style: AppStyle.IndexLetterBoxTextStyle),
+            child: Text(
+              _currentLetter,
+              style: TextStyle(
+                fontSize: 64.sp,
+                color: Colors.white,
+              ),
+            ),
           ),
         ),
       ));

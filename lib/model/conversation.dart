@@ -28,7 +28,7 @@ class ConversationPageData {
 
   ConversationPageData({this.conversations});
 
-  static mock() {
+  static ConversationPageData mock() {
     return ConversationPageData(conversations: [
       Conversation(
         avatar:

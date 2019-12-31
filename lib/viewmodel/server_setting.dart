@@ -26,21 +26,22 @@ class ServerSettingViewModel extends BaseViewModel {
 
   bool save() {
     if (staticFileDomainEditingController.text.isEmpty) {
-      LayerUtil.showToast("请填写静态文件服务器域名");
+      LayerUtil.showToast('请填写静态文件服务器域名');
       return false;
     }
     if (domainEditingController.text.isEmpty) {
-      LayerUtil.showToast("请填写服务器域名");
+      LayerUtil.showToast('请填写服务器域名');
       return false;
     }
-    int httpPort = int.tryParse(httpPortEditingController.text) ?? 0;
-    int webSocketPort = int.tryParse(webSocketPortEditingController.text) ?? 0;
+    final int httpPort = int.tryParse(httpPortEditingController.text) ?? 0;
+    final int webSocketPort =
+        int.tryParse(webSocketPortEditingController.text) ?? 0;
     if (httpPort <= 0 || httpPort > 65535) {
-      LayerUtil.showToast("请填写合法的http端口");
+      LayerUtil.showToast('请填写合法的http端口');
       return false;
     }
     if (webSocketPort <= 0 || webSocketPort > 65535) {
-      LayerUtil.showToast("请填写合法的websocket端口");
+      LayerUtil.showToast('请填写合法的websocket端口');
       return false;
     }
     Service.config = ApiServerConfig(
@@ -50,7 +51,7 @@ class ServerSettingViewModel extends BaseViewModel {
       webSocketPort: webSocketPort,
       ssl: useSsl,
     );
-    LayerUtil.showToast("保存成功");
+    LayerUtil.showToast('保存成功');
     return true;
   }
 }

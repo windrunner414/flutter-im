@@ -5,9 +5,9 @@ import 'package:flutter/material.dart' hide runApp;
 
 typedef ErrorBuilder = Widget Function(String errorDetail);
 
-//TODO:支持原生代码异常上报，比如flutter engine
-//TODO:好像flutter错误不能全部捕获到，比如在viewModel init里面throw
-//TODO:可能是flutter的bug
+// TODO(windrunner): 支持原生代码异常上报，比如flutter engine
+// TODO(windrunner): 好像flutter错误不能全部捕获到，比如在viewModel init里面throw
+// TODO(windrunner): 可能是flutter的bug
 abstract class ErrorReporterUtil {
   static void runApp({
     @required Widget builder(),
@@ -23,7 +23,8 @@ abstract class ErrorReporterUtil {
 
     runZoned(() => flutter.runApp(builder()),
         onError: (Object error, StackTrace stack) async {
-      String errorDetail = _formatError(error.toString(), stack.toString());
+      final String errorDetail =
+          _formatError(error.toString(), stack.toString());
       _showErrorPage(errorBuilder, errorDetail);
       await _reportError(errorDetail);
     });
@@ -32,7 +33,7 @@ abstract class ErrorReporterUtil {
   static void _showErrorPage(ErrorBuilder errorBuilder, String errorDetail) =>
       Timer.run(() =>
           ErrorReportUtilNavigatorObserver().navigator?.pushAndRemoveUntil(
-                PageRouteBuilder(
+                PageRouteBuilder<dynamic>(
                   pageBuilder: (_, __, ___) => errorBuilder(errorDetail),
                   transitionDuration: Duration.zero,
                 ),
@@ -41,26 +42,23 @@ abstract class ErrorReporterUtil {
 
   static Future<void> _reportError(String errorDetail) async {
     assert(() {
-      print("====== Error caught by ErrorReporter ======\n" + errorDetail);
+      print('====== Error caught by ErrorReporter ======\n' + errorDetail);
       return true;
     }());
-    //TODO:开个后台上报
+    // TODO(windrunner): 开个后台上报
   }
 
   static String _formatError(String error, String stack) =>
-      "$error\n====== Stack ======\n$stack";
+      '$error\n====== Stack ======\n$stack';
 }
 
 class ErrorReportUtilNavigatorObserver extends NavigatorObserver {
-  static ErrorReportUtilNavigatorObserver _instance;
-
   factory ErrorReportUtilNavigatorObserver() {
-    if (_instance == null) {
-      _instance = ErrorReportUtilNavigatorObserver._();
-    }
-
+    _instance ??= ErrorReportUtilNavigatorObserver._();
     return _instance;
   }
 
   ErrorReportUtilNavigatorObserver._();
+
+  static ErrorReportUtilNavigatorObserver _instance;
 }

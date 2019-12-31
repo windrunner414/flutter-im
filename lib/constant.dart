@@ -1,72 +1,48 @@
 import 'package:flutter/material.dart';
 
 abstract class Config {
-  static const AppName = "微信";
+  static const String AppName = '微信';
 
   /// worker数量，解析json等在worker内执行
   /// 会优先设置为cpu核心数 - 2，如果小于该值，或获取不到，会设置成该值
-  static const MinimalWorkerNum = 2;
+  static const int MinimalWorkerNum = 2;
 }
 
 abstract class AppColor {
-  static const BackgroundColor = 0xffebebeb;
-  static const AppBarColor = 0xff303030;
-  static const TabIconNormal = 0xff999999;
-  static const TabIconActive = 0xff46c11b;
-  static const AppBarPopupMenuColor = 0xffffffff;
-  static const TitleColor = 0xff353535;
-  static const ConversationItemBgColor = 0xffffffff;
-  static const ConversationItemActiveBgColor = 0xffeeeeee;
-  static const DescTextColor = 0xff9e9e9e;
-  static const DividerColor = 0xffd9d9d9;
-  static const NotifyDotBgColor = 0xffff3e3e;
-  static const NotifyDotText = 0xffffffff;
-  static const ContactGroupTitleBgColor = 0xffebebeb;
-  static const ContactGroupTitleColor = 0xff888888;
-  static const ContactItemActiveBgColor = 0xffeeeeee;
-  static const IndexLetterBoxBgColor = Colors.black45;
-  static const LoginInputNormal = 0xff57c22b;
-  static const LoginInputActive = 0xff46c11b;
-}
-
-abstract class AppStyle {
-  static const TitleStyle = TextStyle(
-    fontSize: 14.0,
-    color: Color(AppColor.TitleColor),
-  );
-
-  static const DescStyle = TextStyle(
-    fontSize: 12.0,
-    color: Color(AppColor.DescTextColor),
-  );
-  static const UnreadMsgCountDotStyle = TextStyle(
-    fontSize: 12.0,
-    color: Color(AppColor.NotifyDotText),
-  );
-
-  static const GroupTitleItemTextStyle =
-      TextStyle(color: Color(AppColor.ContactGroupTitleColor), fontSize: 14.0);
-
-  static const IndexLetterBoxTextStyle = TextStyle(
-    fontSize: 64.0,
-    color: Colors.white,
-  );
+  static const int BackgroundColor = 0xffebebeb;
+  static const int AppBarColor = 0xff303030;
+  static const int TabIconNormal = 0xff999999;
+  static const int TabIconActive = 0xff46c11b;
+  static const int AppBarPopupMenuColor = 0xffffffff;
+  static const int TitleColor = 0xff353535;
+  static const int ConversationItemBgColor = 0xffffffff;
+  static const int ConversationItemActiveBgColor = 0xffeeeeee;
+  static const int DescTextColor = 0xff9e9e9e;
+  static const int DividerColor = 0xffd9d9d9;
+  static const int NotifyDotBgColor = 0xffff3e3e;
+  static const int NotifyDotText = 0xffffffff;
+  static const int ContactGroupTitleBgColor = 0xffebebeb;
+  static const int ContactGroupTitleColor = 0xff888888;
+  static const int ContactItemActiveBgColor = 0xffeeeeee;
+  static const int IndexLetterBoxBgColor = 0x73000000;
+  static const int LoginInputNormal = 0xff57c22b;
+  static const int LoginInputActive = 0xff46c11b;
 }
 
 abstract class Constant {
-  static const IconFontFamily = "appIconFont";
-  static const ConversationAvatarSize = 48.0;
-  static const DividerWidth = 0.5;
-  static const UnReadMsgNotifyDotSize = 20.0;
-  static const ConversationMuteIcon = 18.0;
-  static const ContactAvatarSize = 36.0;
-  static const IndexBarWidth = 24.0;
-  static const IndexLetterBoxSize = 114.0;
-  static const IndexLetterBoxRadius = 4.0;
-  static const FullWidthIconButtonIconSize = 24.0;
-  static const ProfileHeaderIconSize = 60.0;
+  static const String IconFontFamily = 'appIconFont';
+  static const double ConversationAvatarSize = 48.0;
+  static const double DividerWidth = 0.5;
+  static const double UnReadMsgNotifyDotSize = 20.0;
+  static const double ConversationMuteIcon = 18.0;
+  static const double ContactAvatarSize = 36.0;
+  static const double IndexBarWidth = 24.0;
+  static const double IndexLetterBoxSize = 114.0;
+  static const double IndexLetterBoxRadius = 4.0;
+  static const double FullWidthIconButtonIconSize = 24.0;
+  static const double ProfileHeaderIconSize = 60.0;
 
-  static const ConversationAvatarDefaultIcon = Icon(
+  static const Icon ConversationAvatarDefaultIcon = Icon(
     IconData(
       0xe642,
       fontFamily: IconFontFamily,
@@ -74,7 +50,7 @@ abstract class Constant {
     size: ConversationAvatarSize,
   );
 
-  static const ContactAvatarDefaultIcon = Icon(
+  static const Icon ContactAvatarDefaultIcon = Icon(
     IconData(
       0xe642,
       fontFamily: IconFontFamily,
@@ -82,7 +58,7 @@ abstract class Constant {
     size: ContactAvatarSize,
   );
 
-  static const ProfileAvatarDefaultIcon = Icon(
+  static const Icon ProfileAvatarDefaultIcon = Icon(
     IconData(
       0xe642,
       fontFamily: IconFontFamily,

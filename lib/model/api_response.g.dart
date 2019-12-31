@@ -24,8 +24,7 @@ extension ApiResponseCopyWithExtension<T> on ApiResponse<T> {
 // JsonSerializableGenerator
 // **************************************************************************
 
-ApiResponse<T> _$ApiResponseFromJson<T extends Object>(
-    Map<String, dynamic> json) {
+ApiResponse<T> _$ApiResponseFromJson<T>(Map<String, dynamic> json) {
   return ApiResponse<T>(
     code: json['code'] as int,
     result: ModelGenericJsonConverter<T>().fromJson(json['result']),
@@ -33,8 +32,7 @@ ApiResponse<T> _$ApiResponseFromJson<T extends Object>(
   );
 }
 
-Map<String, dynamic> _$ApiResponseToJson<T extends Object>(
-        ApiResponse<T> instance) =>
+Map<String, dynamic> _$ApiResponseToJson<T>(ApiResponse<T> instance) =>
     <String, dynamic>{
       'code': instance.code,
       'result': ModelGenericJsonConverter<T>().toJson(instance.result),

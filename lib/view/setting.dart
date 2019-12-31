@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wechat/util/screen_util.dart';
+import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/setting.dart';
 import 'package:wechat/widget/app_bar.dart';
@@ -7,7 +7,7 @@ import 'package:wechat/widget/app_bar.dart';
 class SettingPage extends BaseView<SettingViewModel> {
   @override
   Widget build(BuildContext context, SettingViewModel viewModel) => Scaffold(
-        appBar: IAppBar(title: "设置"),
+        appBar: IAppBar(title: '设置'),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 32.width),
           child: Column(
@@ -15,7 +15,7 @@ class SettingPage extends BaseView<SettingViewModel> {
               SizedBox(height: 40.height),
               Center(
                 child: Image.asset(
-                  "assets/images/logo.png",
+                  'assets/images/logo.png',
                   width: 96.minWidthHeight,
                   height: 96.minWidthHeight,
                 ),
@@ -27,7 +27,7 @@ class SettingPage extends BaseView<SettingViewModel> {
                 padding: EdgeInsets.symmetric(vertical: 10.height),
                 child: Center(
                   child: Text(
-                    "退出登录",
+                    '退出登录',
                     style: TextStyle(fontSize: 20.sp, color: Colors.white),
                   ),
                 ),

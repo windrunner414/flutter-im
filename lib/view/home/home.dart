@@ -1,62 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:wechat/constant.dart';
 import 'package:wechat/service/base.dart';
+import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/home/contact.dart';
 import 'package:wechat/view/home/conversation.dart';
 import 'package:wechat/view/home/profile.dart';
 import 'package:wechat/widget/app_bar.dart';
 
-enum _ActionItems { GROUP_CHAT, ADD_FRIEND, QR_SCAN }
-
-class NavigationIconView {
-  final BottomNavigationBarItem item;
-
-  NavigationIconView(
-      {Key key, String title, IconData icon, IconData activeIcon})
-      : item = new BottomNavigationBarItem(
-            icon: Icon(icon),
-            activeIcon: Icon(activeIcon),
-            title: Text(title),
-            backgroundColor: Colors.white);
-}
+enum _PopupMenuItems { GROUP_CHAT, ADD_FRIEND, QR_SCAN }
 
 class HomePage extends StatefulWidget {
+  @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  PageController _pageController;
-  List<Widget> _pages;
   int _currentIndex = 0;
-  List<NavigationIconView> _navigationViews;
+  final PageController _pageController = PageController(initialPage: 0);
+  final List<Widget> _pages = <Widget>[
+    ConversationPage(),
+    ContactPage(),
+    ProfilePage(),
+  ];
 
   @override
   void initState() {
     super.initState();
     Service.webSocketClient.connect();
-    _navigationViews = [
-      NavigationIconView(
-        title: Config.AppName,
-        icon: IconData(0xe608, fontFamily: Constant.IconFontFamily),
-        activeIcon: IconData(0xe603, fontFamily: Constant.IconFontFamily),
-      ),
-      NavigationIconView(
-        title: '通讯录',
-        icon: IconData(0xe601, fontFamily: Constant.IconFontFamily),
-        activeIcon: IconData(0xe602, fontFamily: Constant.IconFontFamily),
-      ),
-      NavigationIconView(
-        title: '我',
-        icon: IconData(0xe607, fontFamily: Constant.IconFontFamily),
-        activeIcon: IconData(0xe630, fontFamily: Constant.IconFontFamily),
-      ),
-    ];
-    _pageController = PageController(initialPage: _currentIndex);
-    _pages = [
-      ConversationPage(),
-      ContactPage(),
-      ProfilePage(),
-    ];
   }
 
   @override
@@ -65,85 +35,90 @@ class _HomePageState extends State<HomePage> {
     Service.webSocketClient.close();
   }
 
-  _buildPopupMenuItem(int iconName, String title) {
-    return Row(
-      children: <Widget>[
-        Icon(
-          IconData(iconName, fontFamily: Constant.IconFontFamily),
-          size: 22.0,
-          color: Color(AppColor.AppBarPopupMenuColor),
-        ),
-        Container(width: 12.0),
-        Text(
-          title,
-          style: TextStyle(color: Color(AppColor.AppBarPopupMenuColor)),
-        ),
-      ],
-    );
-  }
+  Widget _buildPopupMenuItem(int iconName, String title) => Row(
+        children: <Widget>[
+          Icon(
+            IconData(iconName, fontFamily: Constant.IconFontFamily),
+            size: 22.minWidthHeight,
+            color: const Color(AppColor.AppBarPopupMenuColor),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            title,
+            style: TextStyle(
+              color: const Color(AppColor.AppBarPopupMenuColor),
+              fontSize: 16.sp,
+            ),
+          ),
+        ],
+      );
 
   @override
-  Widget build(BuildContext context) {
-    final bottomNavBar = BottomNavigationBar(
-      items:
-          _navigationViews.map((NavigationIconView view) => view.item).toList(),
-      currentIndex: _currentIndex,
-      type: BottomNavigationBarType.fixed,
-      fixedColor: Color(AppColor.TabIconActive),
-      selectedFontSize: 14,
-      unselectedFontSize: 14,
-      onTap: (int index) {
-        setState(() {
-          _currentIndex = index;
-          _pageController.jumpToPage(_currentIndex);
-        });
-      },
-    );
-    return Scaffold(
-      appBar: IAppBar(
-        title: Config.AppName,
-        actions: <Widget>[
-          PopupMenuButton(
-            itemBuilder: (BuildContext context) =>
-                <PopupMenuItem<_ActionItems>>[
-              PopupMenuItem(
-                child: _buildPopupMenuItem(0xe606, "发起群聊"),
-                value: _ActionItems.GROUP_CHAT,
+  Widget build(BuildContext context) => Scaffold(
+        appBar: IAppBar(
+          title: Config.AppName,
+          actions: <Widget>[
+            PopupMenuButton<_PopupMenuItems>(
+              itemBuilder: (BuildContext context) =>
+                  <PopupMenuItem<_PopupMenuItems>>[
+                PopupMenuItem<_PopupMenuItems>(
+                  child: _buildPopupMenuItem(0xe606, '发起群聊'),
+                  value: _PopupMenuItems.GROUP_CHAT,
+                ),
+                PopupMenuItem<_PopupMenuItems>(
+                  child: _buildPopupMenuItem(0xe638, '添加朋友'),
+                  value: _PopupMenuItems.ADD_FRIEND,
+                ),
+                PopupMenuItem<_PopupMenuItems>(
+                  child: _buildPopupMenuItem(0xe79b, '扫一扫'),
+                  value: _PopupMenuItems.QR_SCAN,
+                ),
+              ],
+              icon: Icon(
+                const IconData(0xe66b, fontFamily: Constant.IconFontFamily),
+                size: 22.minWidthHeight,
               ),
-              PopupMenuItem(
-                child: _buildPopupMenuItem(0xe638, "添加朋友"),
-                value: _ActionItems.ADD_FRIEND,
-              ),
-              PopupMenuItem(
-                child: _buildPopupMenuItem(0xe79b, "扫一扫"),
-                value: _ActionItems.QR_SCAN,
-              ),
-            ],
-            icon: Icon(
-              IconData(0xe66b, fontFamily: Constant.IconFontFamily),
-              size: 22.0,
+              onSelected: (_PopupMenuItems selected) {
+                print('点击的是$selected');
+              },
+              tooltip: '菜单',
             ),
-            onSelected: (_ActionItems selected) {
-              print('点击的是$selected');
-            },
-            tooltip: "菜单",
-          ),
-          SizedBox(width: 16.0)
-        ],
-      ),
-      body: PageView.builder(
-        itemBuilder: (BuildContext context, int index) {
-          return _pages[index];
-        },
-        controller: _pageController,
-        itemCount: _pages.length,
-        onPageChanged: (int index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
-      bottomNavigationBar: bottomNavBar,
-    );
-  }
+            const SizedBox(width: 16),
+          ],
+        ),
+        body: PageView.builder(
+          itemBuilder: (BuildContext context, int index) => _pages[index],
+          controller: _pageController,
+          itemCount: _pages.length,
+          onPageChanged: (int index) => _currentIndex = index,
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              title: Text(Config.AppName),
+              icon: Icon(IconData(0xe608, fontFamily: Constant.IconFontFamily)),
+              activeIcon:
+                  Icon(IconData(0xe603, fontFamily: Constant.IconFontFamily)),
+            ),
+            BottomNavigationBarItem(
+              title: Text('通讯录'),
+              icon: Icon(IconData(0xe601, fontFamily: Constant.IconFontFamily)),
+              activeIcon:
+                  Icon(IconData(0xe602, fontFamily: Constant.IconFontFamily)),
+            ),
+            BottomNavigationBarItem(
+              title: Text('我'),
+              icon: Icon(IconData(0xe607, fontFamily: Constant.IconFontFamily)),
+              activeIcon:
+                  Icon(IconData(0xe630, fontFamily: Constant.IconFontFamily)),
+            ),
+          ],
+          currentIndex: _currentIndex,
+          type: BottomNavigationBarType.fixed,
+          fixedColor: const Color(AppColor.TabIconActive),
+          selectedFontSize: 14.sp,
+          unselectedFontSize: 14.sp,
+          onTap: (int index) => _pageController.jumpToPage(index),
+        ),
+      );
 }

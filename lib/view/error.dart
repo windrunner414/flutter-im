@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wechat/util/screen_util.dart';
+import 'package:wechat/util/screen.dart';
 
 class ErrorPage extends StatelessWidget {
-  final String errorDetail;
+  const ErrorPage({this.errorDetail});
 
-  ErrorPage({this.errorDetail});
+  final String errorDetail;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -15,7 +15,7 @@ class ErrorPage extends StatelessWidget {
           children: <Widget>[
             SizedBox(height: 70.height),
             Text(
-              "啊哦，崩溃了",
+              '啊哦，崩溃了',
               style: TextStyle(
                 fontSize: 24.sp,
                 decoration: TextDecoration.none,

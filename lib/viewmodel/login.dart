@@ -14,7 +14,7 @@ class LoginViewModel extends BaseViewModel {
   final CommonRepository _commonRepository = inject();
   final AuthRepository _authRepository = inject();
 
-  final BehaviorSubject<VerifyCode> verifyCode = BehaviorSubject();
+  final BehaviorSubject<VerifyCode> verifyCode = BehaviorSubject<VerifyCode>();
   final TextEditingController accountEditingController =
       TextEditingController();
   final TextEditingController passwordEditingController =
@@ -35,22 +35,22 @@ class LoginViewModel extends BaseViewModel {
 
   Future<void> login() async {
     if (accountEditingController.text.isEmpty) {
-      LayerUtil.showToast("请填写账号");
+      LayerUtil.showToast('请填写账号');
       return;
     }
     if (passwordEditingController.text.isEmpty) {
-      LayerUtil.showToast("请填写密码");
+      LayerUtil.showToast('请填写密码');
       return;
     }
     if (verifyCodeEditingController.text.isEmpty) {
-      LayerUtil.showToast("请填写验证码");
+      LayerUtil.showToast('请填写验证码');
       return;
     }
     if (verifyCode.value == null) {
-      LayerUtil.showToast("验证码错误");
+      LayerUtil.showToast('验证码错误');
       return;
     }
-    UniqueKey loadingKey = LayerUtil.showLoading();
+    final UniqueKey loadingKey = LayerUtil.showLoading();
     try {
       await _authRepository.login(
           userAccount: accountEditingController.text,
@@ -60,9 +60,9 @@ class LoginViewModel extends BaseViewModel {
           verifyCode: verifyCodeEditingController.text);
     } on CancelException {} catch (error) {
       if (error is Response && error.error is ApiResponse) {
-        LayerUtil.showToast((error.error as ApiResponse).msg);
+        LayerUtil.showToast((error.error as ApiResponse<dynamic>).msg);
       } else {
-        LayerUtil.showToast("网络错误");
+        LayerUtil.showToast('网络错误');
         print(error.toString());
       }
     }
@@ -72,8 +72,7 @@ class LoginViewModel extends BaseViewModel {
   @override
   void init() {
     super.init();
-    accountEditingController.text =
-        AppState.ownUserInfo.value?.userAccount ?? "";
+    accountEditingController.text = ownUserInfo.value?.userAccount ?? '';
     refreshVerifyCode();
   }
 

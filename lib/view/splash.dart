@@ -7,7 +7,7 @@ class SplashPage extends BaseView<SplashViewModel> {
   Widget build(BuildContext context, SplashViewModel viewModel) => WillPopScope(
         onWillPop: () async => false,
         child: Container(
-          child: Text("启动屏"),
+          child: const Text('启动屏'),
         ),
       );
 }

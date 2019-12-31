@@ -7,15 +7,15 @@ part 'api_response.g.dart';
 
 @JsonSerializable()
 @CopyWith()
-class ApiResponse<T extends Object> extends BaseModel {
-  final int code;
-  @ModelGenericJsonConverter()
-  final T result;
-  final String msg;
-
-  ApiResponse({this.code, this.result, this.msg});
+class ApiResponse<T> extends BaseModel {
+  const ApiResponse({this.code, this.result, this.msg});
 
   factory ApiResponse.fromJson(Map<String, dynamic> json) =>
       _$ApiResponseFromJson(json);
   Map<String, dynamic> toJson() => _$ApiResponseToJson(this);
+
+  final int code;
+  @ModelGenericJsonConverter()
+  final T result;
+  final String msg;
 }

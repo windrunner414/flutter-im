@@ -3,26 +3,22 @@ import 'package:wechat/constant.dart';
 import 'package:wechat/model/user.dart';
 import 'package:wechat/route.dart';
 import 'package:wechat/state.dart';
-import 'package:wechat/util/screen_util.dart';
+import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/profile.dart';
 import 'package:wechat/widget/cached_image.dart';
 import 'package:wechat/widget/full_width_button.dart';
 
 class _ProfileHeaderView extends StatelessWidget {
-  static const HORIZONTAL_PADDING = 20;
-  static const VERTICAL_PADDING = 13;
-
   @override
   Widget build(BuildContext context) => Container(
         color: Colors.white,
-        padding: EdgeInsets.symmetric(
-            vertical: VERTICAL_PADDING.height,
-            horizontal: HORIZONTAL_PADDING.width),
-        child: StreamBuilder(
-          stream: AppState.ownUserInfo,
+        padding:
+            EdgeInsets.symmetric(vertical: 13.height, horizontal: 20.width),
+        child: StreamBuilder<User>(
+          stream: ownUserInfo,
           builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-            User info = AppState.ownUserInfo.value;
+            final User info = ownUserInfo.value;
             if (info == null) {
               return Container();
             }
@@ -31,7 +27,7 @@ class _ProfileHeaderView extends StatelessWidget {
               children: <Widget>[
                 CachedImage(
                   url: info.userAvatar,
-                  placeholder: (context, url) =>
+                  placeholder: (BuildContext context, String url) =>
                       Constant.ProfileAvatarDefaultIcon,
                   size: Size.square(
                       Constant.ProfileHeaderIconSize.minWidthHeight),
@@ -51,7 +47,7 @@ class _ProfileHeaderView extends StatelessWidget {
                       ),
                       SizedBox(height: 10.height),
                       Text(
-                        "账号: ${info.userAccount}",
+                        '账号: ${info.userAccount}',
                         style: TextStyle(
                           color: Color(AppColor.DescTextColor),
                           fontSize: 13.sp,
@@ -86,13 +82,13 @@ class _ProfileHeaderView extends StatelessWidget {
 
 class ProfilePage extends BaseView<ProfileViewModel> {
   @override
-  final bool keepAlive = true;
+  bool get keepAlive => true;
 
-  static const SEPARATE_SIZE = 20;
+  static const double SEPARATE_SIZE = 20.0;
 
   @override
   Widget build(BuildContext context, ProfileViewModel viewModel) => Container(
-        color: Color(AppColor.BackgroundColor),
+        color: const Color(AppColor.BackgroundColor),
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
@@ -103,7 +99,7 @@ class ProfilePage extends BaseView<ProfileViewModel> {
                 iconPath: 'assets/images/ic_settings.png',
                 title: '设置',
                 showDivider: true,
-                onPressed: () => Router.navigateTo(Page.Setting),
+                onPressed: () => router.push(Page.Setting),
               ),
             ],
           ),

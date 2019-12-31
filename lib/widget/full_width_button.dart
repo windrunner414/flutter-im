@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:wechat/constant.dart';
-import 'package:wechat/util/screen_util.dart';
+import 'package:wechat/util/screen.dart';
 
 class FullWidthButton extends StatelessWidget {
-  static const HORIZONTAL_PADDING = 20.0;
-  static const VERTICAL_PADDING = 13.0;
-
   const FullWidthButton({
     Key key,
     @required this.title,
@@ -16,6 +13,9 @@ class FullWidthButton extends StatelessWidget {
         assert(title != null),
         assert(onPressed != null),
         super(key: key);
+
+  static const double HORIZONTAL_PADDING = 20.0;
+  static const double VERTICAL_PADDING = 13.0;
 
   final String title;
   final String iconPath;
@@ -34,7 +34,7 @@ class FullWidthButton extends StatelessWidget {
         ),
         SizedBox(width: HORIZONTAL_PADDING.width),
         Expanded(
-          child: Text(title),
+          child: Text(title, style: TextStyle(fontSize: 16.sp)),
         ),
         Icon(
           IconData(
@@ -53,12 +53,12 @@ class FullWidthButton extends StatelessWidget {
         left: HORIZONTAL_PADDING.width,
         right: HORIZONTAL_PADDING.width,
         top: VERTICAL_PADDING.height,
-        bottom: showDivider ? 0.0 : VERTICAL_PADDING.height,
+        bottom: showDivider ? 0 : VERTICAL_PADDING.height,
       ),
       color: Colors.white,
       child: showDivider
           ? Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
                     color: Color(AppColor.DividerColor),
@@ -66,7 +66,7 @@ class FullWidthButton extends StatelessWidget {
                   ),
                 ),
               ),
-              padding: EdgeInsets.only(bottom: VERTICAL_PADDING),
+              padding: const EdgeInsets.only(bottom: VERTICAL_PADDING),
               child: pureButton,
             )
           : pureButton,
