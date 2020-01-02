@@ -26,13 +26,13 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    Service.webSocketClient.connect();
+    webSocketClient.connect();
   }
 
   @override
   void dispose() {
     super.dispose();
-    Service.webSocketClient.close();
+    webSocketClient.close();
   }
 
   Widget _buildPopupMenuItem(int iconName, String title) => Row(

@@ -78,7 +78,7 @@ class _AppInitState extends State<_AppInit> {
   }
 
   void _initOnEveryBuild() {
-    ScreenUtil.init(
+    initScreenUtil(
         width: 414, height: 736, allowFontScaling: true, context: context);
   }
 
@@ -87,8 +87,8 @@ class _AppInitState extends State<_AppInit> {
 
     if (!kIsWeb) {
       SystemChrome.setSystemUIOverlayStyle(
-          SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-      await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
+          const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+      await SystemChrome.setPreferredOrientations(const <DeviceOrientation>[
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,
       ]);
@@ -109,7 +109,7 @@ class _AppInitState extends State<_AppInit> {
           initWorker(),
         ]);
         await Future.wait(<Future<void>>[
-          Service.init(),
+          initService(),
           initAppState(),
         ]);
 

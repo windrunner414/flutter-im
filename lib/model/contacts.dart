@@ -5,23 +5,25 @@ part 'contacts.g.dart';
 
 @CopyWith()
 class Contact extends BaseModel {
-  final String avatar;
-  final String name;
-  final String nameIndex;
-
-  Contact({
+  const Contact({
     this.avatar,
     this.name,
     this.nameIndex,
   });
+
+  final String avatar;
+  final String name;
+  final String nameIndex;
 }
 
 @CopyWith()
 class ContactsPageData extends BaseModel {
+  const ContactsPageData({this.contacts});
+
   final List<Contact> contacts;
 
   static ContactsPageData mock() {
-    return ContactsPageData(contacts: [
+    return const ContactsPageData(contacts: [
       Contact(
         avatar: 'https://randomuser.me/api/portraits/men/50.jpg',
         name: '仙士可',
@@ -99,6 +101,4 @@ class ContactsPageData extends BaseModel {
       )
     ]);
   }
-
-  ContactsPageData({this.contacts});
 }

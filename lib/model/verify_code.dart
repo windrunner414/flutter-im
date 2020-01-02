@@ -7,13 +7,13 @@ part 'verify_code.g.dart';
 @JsonSerializable()
 @CopyWith()
 class VerifyCode extends BaseModel {
-  final String verifyCode;
-  final int verifyCodeTime;
-  final String verifyCodeHash;
-
-  VerifyCode({this.verifyCode, this.verifyCodeTime, this.verifyCodeHash});
+  const VerifyCode({this.verifyCode, this.verifyCodeTime, this.verifyCodeHash});
 
   factory VerifyCode.fromJson(Map<String, dynamic> json) =>
       _$VerifyCodeFromJson(json);
   Map<String, dynamic> toJson() => _$VerifyCodeToJson(this);
+
+  final String verifyCode;
+  final int verifyCodeTime;
+  final String verifyCodeHash;
 }

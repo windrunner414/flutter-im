@@ -37,8 +37,6 @@ abstract class Constant {
   static const double ConversationMuteIcon = 18.0;
   static const double ContactAvatarSize = 36.0;
   static const double IndexBarWidth = 24.0;
-  static const double IndexLetterBoxSize = 114.0;
-  static const double IndexLetterBoxRadius = 4.0;
   static const double FullWidthIconButtonIconSize = 24.0;
   static const double ProfileHeaderIconSize = 60.0;
 

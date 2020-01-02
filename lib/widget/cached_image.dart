@@ -21,7 +21,7 @@ class CachedImage extends StatelessWidget {
   Widget build(BuildContext context) {
     String imageUrl = url ?? '';
     if (!imageUrl.startsWith('http')) {
-      imageUrl = Service.staticFileUrl +
+      imageUrl = staticFileBaseUrl +
           (imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl);
     }
     return CachedNetworkImage(

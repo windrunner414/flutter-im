@@ -6,7 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart'
 
 bool get _ready => flutter_screen_util.ScreenUtil.mediaQueryData != null;
 
-void init({
+void initScreenUtil({
   @required double width,
   @required double height,
   bool allowFontScaling = false,

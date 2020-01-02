@@ -6,11 +6,11 @@ import 'package:wechat/service/base.dart';
 
 part 'auth.chopper.dart';
 
-@ChopperApi(baseUrl: "/User/Auth")
+@ChopperApi(baseUrl: '/User/Auth')
 abstract class AuthService extends BaseService {
   static AuthService create([ChopperClient client]) => _$AuthService(client);
 
-  @Post(path: "/login")
+  @Post(path: '/login')
   Future<Response<ApiResponse<User>>> login(
       {@Field() @required String userAccount,
       @Field() @required String userPassword,
@@ -18,6 +18,6 @@ abstract class AuthService extends BaseService {
       @Field() @required int verifyCodeTime,
       @Field() @required String verifyCode});
 
-  @Get(path: "/getInfo")
+  @Get(path: '/getInfo')
   Future<Response<ApiResponse<User>>> getSelfInfo();
 }

@@ -13,7 +13,7 @@ abstract class StorageUtil {
     }
   }
 
-  static T get<T>(String key) => _prefs.get(key);
+  static T get<T>(String key) => _prefs.get(key) as T;
   static Future<void> setInt(String key, int value) =>
       _prefs.setInt(key, value);
   static Future<void> setBool(String key, bool value) =>

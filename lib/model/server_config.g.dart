@@ -1,20 +1,20 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'api_server_config.dart';
+part of 'server_config.dart';
 
 // **************************************************************************
 // CopyWithGenerator
 // **************************************************************************
 
-extension ApiServerConfigCopyWithExtension on ApiServerConfig {
-  ApiServerConfig copyWith({
+extension ServerConfigCopyWithExtension on ServerConfig {
+  ServerConfig copyWith({
     String domain,
     int httpPort,
     bool ssl,
     String staticFileDomain,
     int webSocketPort,
   }) {
-    return ApiServerConfig(
+    return ServerConfig(
       domain: domain ?? this.domain,
       httpPort: httpPort ?? this.httpPort,
       ssl: ssl ?? this.ssl,
@@ -28,8 +28,8 @@ extension ApiServerConfigCopyWithExtension on ApiServerConfig {
 // JsonSerializableGenerator
 // **************************************************************************
 
-ApiServerConfig _$ApiServerConfigFromJson(Map<String, dynamic> json) {
-  return ApiServerConfig(
+ServerConfig _$ServerConfigFromJson(Map<String, dynamic> json) {
+  return ServerConfig(
     staticFileDomain: json['staticFileDomain'] as String,
     domain: json['domain'] as String,
     httpPort: json['httpPort'] as int,
@@ -38,7 +38,7 @@ ApiServerConfig _$ApiServerConfigFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$ApiServerConfigToJson(ApiServerConfig instance) =>
+Map<String, dynamic> _$ServerConfigToJson(ServerConfig instance) =>
     <String, dynamic>{
       'staticFileDomain': instance.staticFileDomain,
       'domain': instance.domain,

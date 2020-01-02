@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wechat/model/api_server_config.dart';
+import 'package:wechat/model/server_config.dart';
 import 'package:wechat/service/base.dart';
 import 'package:wechat/util/layer.dart';
 import 'package:wechat/viewmodel/base.dart';
@@ -16,42 +16,41 @@ class ServerSettingViewModel extends BaseViewModel {
   @override
   void init() {
     super.init();
-    staticFileDomainEditingController.text = Service.config.staticFileDomain;
-    domainEditingController.text = Service.config.domain;
-    httpPortEditingController.text = Service.config.httpPort.toString();
-    webSocketPortEditingController.text =
-        Service.config.webSocketPort.toString();
-    useSsl = Service.config.ssl;
+    staticFileDomainEditingController.text = serverConfig.staticFileDomain;
+    domainEditingController.text = serverConfig.domain;
+    httpPortEditingController.text = serverConfig.httpPort.toString();
+    webSocketPortEditingController.text = serverConfig.webSocketPort.toString();
+    useSsl = serverConfig.ssl;
   }
 
   bool save() {
     if (staticFileDomainEditingController.text.isEmpty) {
-      LayerUtil.showToast('请填写静态文件服务器域名');
+      showToast('请填写静态文件服务器域名');
       return false;
     }
     if (domainEditingController.text.isEmpty) {
-      LayerUtil.showToast('请填写服务器域名');
+      showToast('请填写服务器域名');
       return false;
     }
     final int httpPort = int.tryParse(httpPortEditingController.text) ?? 0;
     final int webSocketPort =
         int.tryParse(webSocketPortEditingController.text) ?? 0;
     if (httpPort <= 0 || httpPort > 65535) {
-      LayerUtil.showToast('请填写合法的http端口');
+      showToast('请填写合法的http端口');
       return false;
     }
     if (webSocketPort <= 0 || webSocketPort > 65535) {
-      LayerUtil.showToast('请填写合法的websocket端口');
+      showToast('请填写合法的websocket端口');
       return false;
     }
-    Service.config = ApiServerConfig(
+    serverConfig = ServerConfig(
       staticFileDomain: staticFileDomainEditingController.text,
       domain: domainEditingController.text,
       httpPort: httpPort,
       webSocketPort: webSocketPort,
       ssl: useSsl,
     );
-    LayerUtil.showToast('保存成功');
+    showToast('保存成功');
     return true;
   }
 }

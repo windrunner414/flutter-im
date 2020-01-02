@@ -5,7 +5,7 @@ import 'package:wechat/model/verify_code.dart';
 
 part 'model_generic_json_converter.g.dart';
 
-@GenericJsonConverter([VerifyCode, User])
+@GenericJsonConverter(<Type>[VerifyCode, User])
 class ModelGenericJsonConverter<T extends Object>
     with _$ModelGenericJsonConverterMixin<T>
     implements JsonConverter<T, Object> {

@@ -5,7 +5,7 @@ import 'package:wechat/service/auth.dart';
 import 'package:wechat/state.dart';
 
 class AuthRepository extends BaseRepository {
-  AuthService _authService = inject();
+  final AuthService _authService = inject();
 
   Future<User> login(
       {String userAccount,
@@ -13,7 +13,7 @@ class AuthRepository extends BaseRepository {
       String verifyCodeHash,
       int verifyCodeTime,
       String verifyCode}) async {
-    User info = (await _authService.login(
+    final User info = (await _authService.login(
             userAccount: userAccount,
             userPassword: userPassword,
             verifyCode: verifyCode,
@@ -21,16 +21,16 @@ class AuthRepository extends BaseRepository {
             verifyCodeTime: verifyCodeTime))
         .body
         .result;
-    AppState.ownUserInfo.value = info;
+    ownUserInfo.value = info;
     return info;
   }
 
   Future<User> getSelfInfo() async {
-    User info = (await _authService.getSelfInfo())
+    final User info = (await _authService.getSelfInfo())
         .body
         .result
-        .copyWith(userSession: AppState.ownUserInfo.value.userSession);
-    AppState.ownUserInfo.value = info;
+        .copyWith(userSession: ownUserInfo.value.userSession);
+    ownUserInfo.value = info;
     return info;
   }
 }

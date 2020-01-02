@@ -29,7 +29,7 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^1.7.2
   json_serializable: ^3.2.5
-  generic_json_converter_generator: ^0.0.3
+  generic_json_converter_generator: ^0.0.4
   chopper_generator:
     path: C:\Users\windr\AndroidStudioProjects\chopper\chopper_generator
   copy_with_extension_gen:

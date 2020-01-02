@@ -6,30 +6,30 @@ part 'conversation.g.dart';
 
 @CopyWith()
 class Conversation extends BaseModel {
-  final String avatar;
-  final String title;
-  final int titleColor;
-  final String desc;
-  final String updateAt;
-  final int unreadMsgCount;
-
-  Conversation(
+  const Conversation(
       {this.avatar,
       this.title,
       this.titleColor = AppColor.TitleColor,
       this.desc,
       this.updateAt,
       this.unreadMsgCount = 0});
+
+  final String avatar;
+  final String title;
+  final int titleColor;
+  final String desc;
+  final String updateAt;
+  final int unreadMsgCount;
 }
 
 @CopyWith()
 class ConversationPageData {
+  const ConversationPageData({this.conversations});
+
   final List<Conversation> conversations;
 
-  ConversationPageData({this.conversations});
-
   static ConversationPageData mock() {
-    return ConversationPageData(conversations: [
+    return const ConversationPageData(conversations: [
       Conversation(
         avatar:
             'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=919597481,2630034837&fm=26&gp=0.jpg',

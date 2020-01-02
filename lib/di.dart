@@ -32,9 +32,9 @@ final Module repositoryModule = Module([
 ]);
 
 final Module serviceModule = Module([
-  single<AuthService>(({params}) => AuthService.create(Service.httpClient)),
-  single<CommonService>(({params}) => CommonService.create(Service.httpClient)),
-  single<UserService>(({params}) => UserService.create(Service.httpClient)),
+  single<AuthService>(({params}) => AuthService.create(httpClient)),
+  single<CommonService>(({params}) => CommonService.create(httpClient)),
+  single<UserService>(({params}) => UserService.create(httpClient)),
 ])
   ..withScope(HttpInterceptorScope, [
     factory<Set<BaseInterceptor>>(({params}) => <BaseInterceptor>{

@@ -8,15 +8,17 @@ import 'package:wechat/util/worker/worker_task.dart';
 import 'package:worker_manager/worker_manager.dart';
 
 class WorkerImpl extends Worker {
-  final Executor _executor;
-
   WorkerImpl()
       : _executor = Executor(
             isolatePoolSize:
                 max(SysInfo.processors.length - 2, Config.MinimalWorkerNum));
 
+  final Executor _executor;
+
+  @override
   Future<void> warmUp() => _executor.warmUp();
 
+  @override
   Future<O> execute<I extends Object, O extends Object>(WorkerTask<I, O> task,
       {WorkerTaskPriority priority = WorkerTaskPriority.regular}) {
     WorkPriority _priority;
@@ -30,14 +32,14 @@ class WorkerImpl extends Worker {
       default:
         _priority = WorkPriority.regular;
     }
-    Completer<O> completer = Completer<O>();
+    final Completer<O> completer = Completer<O>();
     _executor
         .addTask(task: task, priority: _priority)
         .listen((O result) => completer.complete(result))
-        .onError((error) {
+        .onError((Object error) {
       if (error == TimeoutException) {
         completer.completeError(
-            TimeoutException("worker execute timeout", task.timeout));
+            TimeoutException('worker execute timeout', task.timeout));
       } else {
         completer.completeError(error);
       }

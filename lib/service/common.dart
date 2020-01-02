@@ -5,11 +5,11 @@ import 'package:wechat/service/base.dart';
 
 part 'common.chopper.dart';
 
-@ChopperApi(baseUrl: "/Common")
+@ChopperApi(baseUrl: '/Common')
 abstract class CommonService extends BaseService {
   static CommonService create([ChopperClient client]) =>
       _$CommonService(client);
 
-  @Get(path: "/VerifyCode/verifyCode")
+  @Get(path: '/VerifyCode/verifyCode')
   Future<Response<ApiResponse<VerifyCode>>> getVerifyCode();
 }

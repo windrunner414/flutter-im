@@ -18,8 +18,7 @@ class AuthInterceptor extends BaseInterceptor {
   @override
   Response<dynamic> onResponse(Response<dynamic> response) {
     if (response.statusCode == 401) {
-      LayerUtil.showToast(
-          (response.error as ApiResponse<dynamic>).msg ?? '登陆已过期，请重新登录');
+      showToast((response.error as ApiResponse<dynamic>).msg ?? '登陆已过期，请重新登录');
       ownUserInfo.value = ownUserInfo.value.copyWith(userSession: '');
     }
     return response;
