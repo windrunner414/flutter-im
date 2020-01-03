@@ -9,6 +9,7 @@ import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/login.dart';
 import 'package:wechat/widget/app_bar.dart';
+import 'package:wechat/widget/image.dart';
 import 'package:wechat/widget/login_input.dart';
 
 enum _PopupMenuItems { SERVER_SETTINGS }
@@ -36,7 +37,7 @@ class LoginPage extends BaseView<LoginViewModel> {
               ],
               icon: Icon(
                 const IconData(0xe66b, fontFamily: Constant.IconFontFamily),
-                size: 22.minWidthHeight,
+                size: 21.height,
               ),
               onSelected: (_PopupMenuItems selected) async {
                 switch (selected) {
@@ -58,10 +59,9 @@ class LoginPage extends BaseView<LoginViewModel> {
             children: <Widget>[
               SizedBox(height: 40.height),
               Center(
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  width: 96.minWidthHeight,
-                  height: 96.minWidthHeight,
+                child: UImage(
+                  url: 'asset://assets/images/logo.png',
+                  size: Size.square(96.minWidthHeight),
                 ),
               ),
               SizedBox(height: 40.height),
@@ -85,7 +85,7 @@ class LoginPage extends BaseView<LoginViewModel> {
                   ),
                   Positioned(
                     right: 0,
-                    bottom: 16.height,
+                    bottom: 12.height + 4, // padding.height + contentPadding
                     child: StreamBuilder<VerifyCode>(
                       stream: viewModel.verifyCode,
                       builder: (BuildContext context,

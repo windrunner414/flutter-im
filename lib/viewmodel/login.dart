@@ -80,5 +80,8 @@ class LoginViewModel extends BaseViewModel {
   void dispose() {
     super.dispose();
     verifyCode.close();
+    accountEditingController.dispose();
+    passwordEditingController.dispose();
+    verifyCodeEditingController.dispose();
   }
 }

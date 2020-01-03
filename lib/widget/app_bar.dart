@@ -3,12 +3,11 @@ import 'package:wechat/constant.dart';
 import 'package:wechat/util/screen.dart';
 
 class IAppBar extends StatelessWidget implements PreferredSizeWidget {
-  IAppBar({Key key, @required this.title, this.actions})
-      : preferredSize = Size.fromHeight(56.height),
-        super(key: key);
+  // ignore: prefer_const_constructors_in_immutables, 屏幕大小改变时需要rebuild，若为const不会rebuild
+  IAppBar({Key key, @required this.title, this.actions}) : super(key: key);
 
   @override
-  final Size preferredSize;
+  Size get preferredSize => Size.fromHeight(52.height);
 
   final String title;
   final List<Widget> actions;

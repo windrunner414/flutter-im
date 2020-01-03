@@ -23,6 +23,15 @@ class ServerSettingViewModel extends BaseViewModel {
     useSsl = serverConfig.ssl;
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    domainEditingController.dispose();
+    staticFileDomainEditingController.dispose();
+    httpPortEditingController.dispose();
+    webSocketPortEditingController.dispose();
+  }
+
   bool save() {
     if (staticFileDomainEditingController.text.isEmpty) {
       showToast('请填写静态文件服务器域名');

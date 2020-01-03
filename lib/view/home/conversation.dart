@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wechat/constant.dart';
 import 'package:wechat/model/conversation.dart';
+import 'package:wechat/route.dart';
 import 'package:wechat/util/screen.dart';
-import 'package:wechat/widget/cached_image.dart';
+import 'package:wechat/widget/image.dart';
 
 class _ConversationItem extends StatefulWidget {
   const _ConversationItem(this._conversation) : assert(_conversation != null);
@@ -18,11 +19,16 @@ class _ConversationItemState extends State<_ConversationItem> {
 
   @override
   Widget build(BuildContext context) {
-    final Widget avatar = CachedImage(
+    final Widget avatar = UImage(
       url: widget._conversation.avatar,
-      placeholder: (BuildContext context, String url) =>
-          Constant.ConversationAvatarDefaultIcon,
-      size: Size.square(Constant.ConversationAvatarSize.minWidthHeight),
+      placeholder: (BuildContext context, String url) => Icon(
+        const IconData(
+          0xe642,
+          fontFamily: Constant.IconFontFamily,
+        ),
+        size: 52.sp,
+      ),
+      size: Size.square(52.sp),
     );
 
     Widget avatarContainer;
@@ -32,8 +38,8 @@ class _ConversationItemState extends State<_ConversationItem> {
         height: Constant.UnReadMsgNotifyDotSize,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(
-              Constant.UnReadMsgNotifyDotSize.minWidthHeight / 2.0),
+          borderRadius:
+              BorderRadius.circular(Constant.UnReadMsgNotifyDotSize / 2.0),
           color: const Color(AppColor.NotifyDotBgColor),
         ),
         child: Text(
@@ -50,8 +56,8 @@ class _ConversationItemState extends State<_ConversationItem> {
         children: <Widget>[
           avatar,
           Positioned(
-            right: -6.0.minWidthHeight,
-            top: -6.0.minWidthHeight,
+            right: -6.0,
+            top: -6.0,
             child: unreadMsgCountText,
           )
         ],
@@ -71,7 +77,11 @@ class _ConversationItemState extends State<_ConversationItem> {
         setState(() => _active = false);
       },
       onTap: () {
-        print('233');
+        router.push(Page.Chat, parameters: <Symbol, String>{
+          #id: '0',
+          #type: 'friend',
+          #title: widget._conversation.title,
+        });
       },
       onLongPress: () {},
       child: Container(
@@ -82,8 +92,7 @@ class _ConversationItemState extends State<_ConversationItem> {
                 : const Color(AppColor.ConversationItemBgColor),
             border: const Border(
                 bottom: BorderSide(
-                    color: Color(AppColor.DividerColor),
-                    width: Constant.DividerWidth))),
+                    color: Color(AppColor.DividerColor), width: 0.5))),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
@@ -141,15 +150,18 @@ class _ConversationPageState extends State<ConversationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        await Future<void>.delayed(const Duration(milliseconds: 1000));
-      },
-      color: Color(AppColor.TabIconActive),
-      child: ListView.builder(
-          itemBuilder: (BuildContext context, int index) =>
-              _ConversationItem(data.conversations[index]),
-          itemCount: data.conversations.length),
+    return Container(
+      color: const Color(AppColor.BackgroundColor),
+      child: RefreshIndicator(
+        onRefresh: () async {
+          await Future<void>.delayed(const Duration(milliseconds: 1000));
+        },
+        color: const Color(AppColor.TabIconActive),
+        child: ListView.builder(
+            itemBuilder: (BuildContext context, int index) =>
+                _ConversationItem(data.conversations[index]),
+            itemCount: data.conversations.length),
+      ),
     );
   }
 }

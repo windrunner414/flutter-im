@@ -32,6 +32,7 @@ void main() {
           ErrorReportUtilNavigatorObserver(),
         ],
         onGenerateRoute: router.generator,
+        initialRoute: '/',
         title: Config.AppName,
         theme: ThemeData.light().copyWith(
           primaryColor: Color(AppColor.AppBarColor),
@@ -69,7 +70,7 @@ class _AppInitState extends State<_AppInit> {
   @override
   void initState() {
     super.initState();
-    _initOnAppStartup();
+    Timer.run(_initOnAppStartup);
   }
 
   @override

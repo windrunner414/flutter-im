@@ -7,6 +7,7 @@ import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/server_setting.dart';
 import 'package:wechat/widget/app_bar.dart';
+import 'package:wechat/widget/image.dart';
 import 'package:wechat/widget/login_input.dart';
 
 class ServerSettingPage extends BaseView<ServerSettingViewModel> {
@@ -21,10 +22,9 @@ class ServerSettingPage extends BaseView<ServerSettingViewModel> {
             children: <Widget>[
               SizedBox(height: 40.height),
               Center(
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  width: 96.minWidthHeight,
-                  height: 96.minWidthHeight,
+                child: UImage(
+                  url: 'asset://assets/images/logo.png',
+                  size: Size.square(96.minWidthHeight),
                 ),
               ),
               SizedBox(height: 40.height),

@@ -11,7 +11,7 @@ class HttpClient extends ChopperClient {
     Set<BaseInterceptor> interceptors = const <BaseInterceptor>{},
     Converter converter = const _DefaultConverter(),
     ErrorConverter errorConverter = const _DefaultConverter(),
-    this.timeout = const Duration(seconds: 15),
+    this.timeout,
   }) : super(
           interceptors: interceptors,
           converter: converter,
@@ -38,14 +38,25 @@ class HttpClient extends ChopperClient {
     Request request, {
     ConvertRequest requestConverter,
     ConvertResponse responseConverter,
-  }) =>
-      Future.any<Response<BodyType>>(<Future<Response<BodyType>>>[
-        super.send<BodyType, InnerType>(request,
-            requestConverter: requestConverter,
-            responseConverter: responseConverter),
-        Future<Response<BodyType>>.delayed(timeout,
-            () => throw TimeoutException('http request timeout', timeout)),
-      ]);
+  }) {
+    final Future<Response<BodyType>> response = super.send<BodyType, InnerType>(
+      request,
+      requestConverter: requestConverter,
+      responseConverter: responseConverter,
+    );
+    if (timeout == null) {
+      return response;
+    } else {
+      // TODO(windrunner): 需要测试
+      return response.timeout(
+        timeout,
+        onTimeout: () => throw TimeoutException(
+          'http request finished with timeout ${timeout.toString()}',
+          timeout,
+        ),
+      );
+    }
+  }
 }
 
 class _DefaultConverter implements Converter, ErrorConverter {

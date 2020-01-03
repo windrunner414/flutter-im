@@ -6,8 +6,8 @@ import 'package:wechat/state.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/profile.dart';
-import 'package:wechat/widget/cached_image.dart';
 import 'package:wechat/widget/full_width_button.dart';
+import 'package:wechat/widget/image.dart';
 
 class _ProfileHeaderView extends StatelessWidget {
   @override
@@ -25,12 +25,16 @@ class _ProfileHeaderView extends StatelessWidget {
             return Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                CachedImage(
+                UImage(
                   url: info.userAvatar,
-                  placeholder: (BuildContext context, String url) =>
-                      Constant.ProfileAvatarDefaultIcon,
-                  size: Size.square(
-                      Constant.ProfileHeaderIconSize.minWidthHeight),
+                  placeholder: (BuildContext context, String url) => Icon(
+                    const IconData(
+                      0xe642,
+                      fontFamily: Constant.IconFontFamily,
+                    ),
+                    size: 60.sp,
+                  ),
+                  size: Size.square(60.sp),
                 ),
                 SizedBox(width: 10.width),
                 Expanded(
@@ -40,7 +44,7 @@ class _ProfileHeaderView extends StatelessWidget {
                       Text(
                         info.userName,
                         style: TextStyle(
-                          color: Color(AppColor.TitleColor),
+                          color: const Color(AppColor.TitleColor),
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w500,
                         ),
@@ -49,7 +53,7 @@ class _ProfileHeaderView extends StatelessWidget {
                       Text(
                         '账号: ${info.userAccount}',
                         style: TextStyle(
-                          color: Color(AppColor.DescTextColor),
+                          color: const Color(AppColor.DescTextColor),
                           fontSize: 13.sp,
                         ),
                       )
@@ -57,7 +61,7 @@ class _ProfileHeaderView extends StatelessWidget {
                   ),
                 ),
                 Icon(
-                  IconData(
+                  const IconData(
                     0xe620,
                     fontFamily: Constant.IconFontFamily,
                   ),
@@ -66,7 +70,7 @@ class _ProfileHeaderView extends StatelessWidget {
                 ),
                 SizedBox(width: 5.width),
                 Icon(
-                  IconData(
+                  const IconData(
                     0xe664,
                     fontFamily: Constant.IconFontFamily,
                   ),
@@ -96,7 +100,7 @@ class ProfilePage extends BaseView<ProfileViewModel> {
               _ProfileHeaderView(),
               SizedBox(height: SEPARATE_SIZE.height),
               FullWidthButton(
-                iconPath: 'assets/images/ic_settings.png',
+                iconPath: 'asset://assets/images/ic_settings.png',
                 title: '设置',
                 showDivider: true,
                 onPressed: () => router.push(Page.Setting),

@@ -70,6 +70,7 @@ Future<void> initService() async {
 
 void _updateClient() {
   _httpClient ??= HttpClient(
+    timeout: const Duration(seconds: 15),
     interceptors: inject(scope: HttpInterceptorScope),
   );
   _httpClient.baseUrl = httpBaseUrl;

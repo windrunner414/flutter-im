@@ -2,14 +2,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wechat/service/base.dart';
 
-class CachedImage extends StatelessWidget {
-  const CachedImage(
-      {this.placeholder,
+class UImage extends StatelessWidget {
+  const UImage(
+      {Key key,
+      this.placeholder,
       @required this.size,
-      @required this.url,
+      @required String url,
       this.filterQuality = FilterQuality.low,
       this.fit = BoxFit.fill})
-      : assert(size != null);
+      : assert(size != null),
+        url = url ?? '',
+        super(key: key);
 
   final PlaceholderWidgetBuilder placeholder;
   final Size size;
@@ -19,14 +22,21 @@ class CachedImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String imageUrl = url ?? '';
-    if (!imageUrl.startsWith('http')) {
-      imageUrl = staticFileBaseUrl +
-          (imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl);
+    const String assetUrlStart = 'asset://';
+    if (url.startsWith(assetUrlStart)) {
+      return Image.asset(
+        url.substring(assetUrlStart.length),
+        filterQuality: filterQuality,
+        fit: fit,
+        width: size.width,
+        height: size.height,
+      );
     }
     return CachedNetworkImage(
       placeholder: placeholder,
-      imageUrl: imageUrl,
+      imageUrl: (!url.startsWith('http://') && !url.startsWith('https://'))
+          ? staticFileBaseUrl + (url.startsWith('/') ? url : '/' + url)
+          : url,
       width: size.width,
       height: size.height,
       fadeInDuration: Duration.zero,

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart' hide runApp;
 
 typedef ErrorBuilder = Widget Function(String errorDetail);
 
-// TODO(windrunner): 支持原生代码异常上报，比如flutter engine
+// TODO(windrunner): 支持原生代码异常上报，比如flutter engine，捕获rootZone的错误，Isolate.current.addErrorListener
 // TODO(windrunner): 好像flutter错误不能全部捕获到，比如在viewModel init里面throw
 // TODO(windrunner): 可能是flutter的bug
 abstract class ErrorReporterUtil {

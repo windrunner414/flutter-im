@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wechat/constant.dart';
+import 'package:wechat/route.dart';
 import 'package:wechat/service/base.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/home/contact.dart';
@@ -76,10 +77,15 @@ class _HomePageState extends State<HomePage> {
               ],
               icon: Icon(
                 const IconData(0xe66b, fontFamily: Constant.IconFontFamily),
-                size: 22.minWidthHeight,
+                size: 21.height,
               ),
               onSelected: (_PopupMenuItems selected) {
-                print('点击的是$selected');
+                switch (selected) {
+                  case _PopupMenuItems.ADD_FRIEND:
+                    router.push(Page.AddFriend);
+                    break;
+                  default:
+                }
               },
               tooltip: '菜单',
             ),
@@ -90,7 +96,7 @@ class _HomePageState extends State<HomePage> {
           itemBuilder: (BuildContext context, int index) => _pages[index],
           controller: _pageController,
           itemCount: _pages.length,
-          onPageChanged: (int index) => _currentIndex = index,
+          onPageChanged: (int index) => setState(() => _currentIndex = index),
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[

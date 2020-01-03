@@ -9,20 +9,22 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cached_network_image: ^2.0.0-rc
+  cached_network_image: ^2.0.0
   shared_preferences: ^0.5.6
   bot_toast: ^2.2.0
   fluro: ^1.5.1
   json_annotation: ^3.0.1
   dartin: ^0.1.5
   rxdart: ^0.23.1
-  worker_manager: ^2.1.4
+  worker_manager: ^2.1.6
   system_info: ^0.1.1
   generic_json_converter_annotation: ^0.0.2
   flutter_screenutil: ^0.7.0
   chopper: ^3.0.1+1
   copy_with_extension: ^1.0.7
   websocket: ^0.0.5
+  flutter_easyrefresh: ^2.0.8
+  flutter_spinkit: ^4.1.1
 
 dev_dependencies:
   flutter_test:

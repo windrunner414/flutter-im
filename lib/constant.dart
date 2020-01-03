@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 abstract class Config {
   static const String AppName = '微信';
 
@@ -8,8 +6,10 @@ abstract class Config {
   static const int MinimalWorkerNum = 2;
 }
 
+// TODO(windrunner): 类型换成Color，不要int
 abstract class AppColor {
   static const int BackgroundColor = 0xffebebeb;
+  static const int ChatInputSectionBgColor = 0xffe8e8e8;
   static const int AppBarColor = 0xff303030;
   static const int TabIconNormal = 0xff999999;
   static const int TabIconActive = 0xff46c11b;
@@ -24,43 +24,17 @@ abstract class AppColor {
   static const int ContactGroupTitleBgColor = 0xffebebeb;
   static const int ContactGroupTitleColor = 0xff888888;
   static const int ContactItemActiveBgColor = 0xffeeeeee;
-  static const int IndexLetterBoxBgColor = 0x73000000;
+  static const int ContactGroupIndexBarBgColor = 0x73000000;
   static const int LoginInputNormal = 0xff57c22b;
   static const int LoginInputActive = 0xff46c11b;
 }
 
 abstract class Constant {
   static const String IconFontFamily = 'appIconFont';
-  static const double ConversationAvatarSize = 48.0;
-  static const double DividerWidth = 0.5;
+
   static const double UnReadMsgNotifyDotSize = 20.0;
   static const double ConversationMuteIcon = 18.0;
-  static const double ContactAvatarSize = 36.0;
+
   static const double IndexBarWidth = 24.0;
   static const double FullWidthIconButtonIconSize = 24.0;
-  static const double ProfileHeaderIconSize = 60.0;
-
-  static const Icon ConversationAvatarDefaultIcon = Icon(
-    IconData(
-      0xe642,
-      fontFamily: IconFontFamily,
-    ),
-    size: ConversationAvatarSize,
-  );
-
-  static const Icon ContactAvatarDefaultIcon = Icon(
-    IconData(
-      0xe642,
-      fontFamily: IconFontFamily,
-    ),
-    size: ContactAvatarSize,
-  );
-
-  static const Icon ProfileAvatarDefaultIcon = Icon(
-    IconData(
-      0xe642,
-      fontFamily: IconFontFamily,
-    ),
-    size: ProfileHeaderIconSize,
-  );
 }

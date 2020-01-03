@@ -4,7 +4,8 @@ import 'package:wechat/constant.dart';
 import 'package:wechat/util/screen.dart';
 
 class LoginInput extends StatelessWidget {
-  const LoginInput(
+  // ignore: prefer_const_constructors_in_immutables, 屏幕大小改变时需要rebuild，若为const不会rebuild
+  LoginInput(
       {Key key,
       @required this.label,
       this.controller,
@@ -24,7 +25,7 @@ class LoginInput extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 12.height),
         child: Theme(
           data: ThemeData(
-            primaryColor: Color(AppColor.LoginInputActive),
+            primaryColor: const Color(AppColor.LoginInputActive),
             hintColor: Colors.black87,
           ),
           child: TextField(
@@ -33,9 +34,10 @@ class LoginInput extends StatelessWidget {
               fontSize: 18.sp,
             ),
             decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(vertical: 4.height),
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(vertical: 4),
                 labelText: label == null ? null : label + '：',
-                enabledBorder: UnderlineInputBorder(
+                enabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(
                     color: Color(AppColor.LoginInputNormal),
                   ),

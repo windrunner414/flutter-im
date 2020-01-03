@@ -12,15 +12,16 @@ final Worker _worker = WorkerImpl();
 
 Future<void> initWorker() => _worker.warmUp();
 
-Future<O> execute<I extends Object, O extends Object>(WorkerTask<I, O> task,
+Future<O> execute<I, O>(WorkerTask<I, O> task,
         {WorkerTaskPriority priority = WorkerTaskPriority.regular}) =>
     _worker.execute(task, priority: priority);
 
-Future<T> executeJsonDecode<T extends Object>(String json) => execute(
+T _jsonDecode<T>(String source) => convert.jsonDecode(source) as T;
+
+Future<T> executeJsonDecode<T>(String json) => execute(
     WorkerTask<String, T>(
-      function: convert.jsonDecode as T Function(String),
+      function: _jsonDecode,
       arg: json,
-      timeout: const Duration(seconds: 30),
     ),
     priority: WorkerTaskPriority.high);
 
@@ -28,6 +29,5 @@ Future<String> executeJsonEncode(Object object) => execute(
     WorkerTask<Object, String>(
       function: convert.jsonEncode,
       arg: object,
-      timeout: const Duration(seconds: 30),
     ),
     priority: WorkerTaskPriority.high);

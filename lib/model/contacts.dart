@@ -23,82 +23,57 @@ class ContactsPageData extends BaseModel {
   final List<Contact> contacts;
 
   static ContactsPageData mock() {
-    return const ContactsPageData(contacts: [
-      Contact(
+    return ContactsPageData(contacts: <Contact>[
+      const Contact(
         avatar: 'https://randomuser.me/api/portraits/men/50.jpg',
         name: '仙士可',
         nameIndex: 'X',
       ),
-      Contact(
+      const Contact(
         avatar: 'https://randomuser.me/api/portraits/men/51.jpg',
         name: '如果的如果',
         nameIndex: 'R',
       ),
-      Contact(
+      const Contact(
         avatar: 'https://randomuser.me/api/portraits/women/10.jpg',
         name: 'xxx',
         nameIndex: 'X',
       ),
-      Contact(
+      const Contact(
         avatar: 'https://randomuser.me/api/portraits/men/50.jpg',
         name: '仙士可',
         nameIndex: 'X',
       ),
-      Contact(
+      const Contact(
         avatar: 'https://randomuser.me/api/portraits/men/51.jpg',
         name: '如果的如果',
         nameIndex: 'R',
       ),
-      Contact(
+      const Contact(
         avatar: 'https://randomuser.me/api/portraits/women/10.jpg',
         name: 'xxx',
         nameIndex: 'X',
       ),
-      Contact(
-        avatar: 'https://randomuser.me/api/portraits/men/50.jpg',
-        name: '仙士可',
-        nameIndex: 'X',
-      ),
-      Contact(
+      const Contact(
         avatar: 'https://randomuser.me/api/portraits/men/51.jpg',
         name: '如果的如果',
         nameIndex: 'R',
       ),
-      Contact(
+      const Contact(
         avatar: 'https://randomuser.me/api/portraits/women/10.jpg',
         name: 'xxx',
         nameIndex: 'X',
       ),
-      Contact(
-        avatar: 'https://randomuser.me/api/portraits/men/50.jpg',
-        name: '仙士可',
-        nameIndex: 'X',
-      ),
-      Contact(
+      const Contact(
         avatar: 'https://randomuser.me/api/portraits/men/51.jpg',
         name: '如果的如果',
         nameIndex: 'R',
       ),
-      Contact(
+      const Contact(
         avatar: 'https://randomuser.me/api/portraits/women/10.jpg',
         name: 'xxx',
         nameIndex: 'X',
       ),
-      Contact(
-        avatar: 'https://randomuser.me/api/portraits/men/50.jpg',
-        name: '仙士可',
-        nameIndex: 'X',
-      ),
-      Contact(
-        avatar: 'https://randomuser.me/api/portraits/men/51.jpg',
-        name: '如果的如果',
-        nameIndex: 'R',
-      ),
-      Contact(
-        avatar: 'https://randomuser.me/api/portraits/women/10.jpg',
-        name: 'xxx',
-        nameIndex: 'X',
-      )
     ]);
   }
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:wechat/constant.dart';
 import 'package:wechat/util/screen.dart';
+import 'package:wechat/widget/image.dart';
 
 class FullWidthButton extends StatelessWidget {
-  const FullWidthButton({
+  // ignore: prefer_const_constructors_in_immutables, 屏幕大小改变时需要rebuild，若为const不会rebuild
+  FullWidthButton({
     Key key,
     @required this.title,
     @required this.iconPath,
@@ -27,22 +29,22 @@ class FullWidthButton extends StatelessWidget {
     final Widget pureButton = Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Image.asset(
-          iconPath,
-          width: Constant.FullWidthIconButtonIconSize.minWidthHeight,
-          height: Constant.FullWidthIconButtonIconSize.minWidthHeight,
+        UImage(
+          url: iconPath,
+          size:
+              Size.square(Constant.FullWidthIconButtonIconSize.minWidthHeight),
         ),
-        SizedBox(width: HORIZONTAL_PADDING.width),
+        const SizedBox(width: HORIZONTAL_PADDING),
         Expanded(
           child: Text(title, style: TextStyle(fontSize: 16.sp)),
         ),
         Icon(
-          IconData(
+          const IconData(
             0xe664,
             fontFamily: Constant.IconFontFamily,
           ),
           size: 22.minWidthHeight,
-          color: Color(AppColor.TabIconNormal),
+          color: const Color(AppColor.TabIconNormal),
         ),
       ],
     );
@@ -62,7 +64,7 @@ class FullWidthButton extends StatelessWidget {
                 border: Border(
                   bottom: BorderSide(
                     color: Color(AppColor.DividerColor),
-                    width: Constant.DividerWidth,
+                    width: 0.5,
                   ),
                 ),
               ),
