@@ -26,6 +26,18 @@ extension UserCopyWithExtension on User {
   }
 }
 
+extension UserListCopyWithExtension on UserList {
+  UserList copyWith({
+    List list,
+    int total,
+  }) {
+    return UserList(
+      list: list ?? this.list,
+      total: total ?? this.total,
+    );
+  }
+}
+
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
@@ -86,3 +98,18 @@ const _$UserStateEnumMap = {
   UserState.disabled: 0,
   UserState.normal: 1,
 };
+
+UserList _$UserListFromJson(Map<String, dynamic> json) {
+  return UserList(
+    total: json['total'] as int,
+    list: (json['list'] as List)
+        ?.map(
+            (e) => e == null ? null : User.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
+}
+
+Map<String, dynamic> _$UserListToJson(UserList instance) => <String, dynamic>{
+      'total': instance.total,
+      'list': instance.list,
+    };

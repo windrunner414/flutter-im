@@ -32,3 +32,16 @@ class User extends BaseModel {
   final UserState state;
   final String userSession;
 }
+
+@JsonSerializable()
+@CopyWith()
+class UserList extends BaseModel {
+  const UserList({this.total, this.list});
+
+  factory UserList.fromJson(Map<String, dynamic> json) =>
+      _$UserListFromJson(json);
+  Map<String, dynamic> toJson() => _$UserListToJson(this);
+
+  final int total;
+  final List<User> list;
+}

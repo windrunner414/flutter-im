@@ -88,14 +88,13 @@ class _DefaultConverter implements Converter, ErrorConverter {
       _decodeJson<BodyType, InnerType>(response);
 
   @override
-  Future<Response<ApiResponse<Object>>> convertError<BodyType, InnerType>(
+  Future<Response<ApiResponse<dynamic>>> convertError<BodyType, InnerType>(
           Response<Object> response) =>
-      _decodeJson<ApiResponse<Object>, dynamic>(response);
+      _decodeJson<ApiResponse<dynamic>, dynamic>(response);
 
   Future<Response<BodyType>> _decodeJson<BodyType, InnerType>(
-      Response<Object> response) async {
-    return response.replace<BodyType>(
-        body: ApiResponse<InnerType>.fromJson(
-            await executeJsonDecode(response.body as String)) as BodyType);
-  }
+          Response<Object> response) async =>
+      response.replace<BodyType>(
+          body: ApiResponse<InnerType>.fromJson(
+              await executeJsonDecode(response.body as String)) as BodyType);
 }

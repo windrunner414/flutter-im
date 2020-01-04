@@ -5,6 +5,8 @@ import 'package:dartin/dartin.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/constant.dart';
 import 'package:wechat/di.dart';
@@ -26,6 +28,14 @@ void main() {
   ErrorReporterUtil.runApp(
     builder: () => BotToastInit(
       child: MaterialApp(
+        localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalEasyRefreshLocalizations.delegate,
+        ],
+        supportedLocales: const <Locale>[
+          Locale('zh', 'CN'),
+        ],
         navigatorObservers: <NavigatorObserver>[
           BotToastNavigatorObserver(),
           RouterNavigatorObserver(),
@@ -35,8 +45,8 @@ void main() {
         initialRoute: '/',
         title: Config.AppName,
         theme: ThemeData.light().copyWith(
-          primaryColor: Color(AppColor.AppBarColor),
-          cardColor: Color(AppColor.AppBarColor),
+          primaryColor: const Color(AppColor.AppBarColor),
+          cardColor: const Color(AppColor.AppBarColor),
         ),
         home: _AppInit(),
       ),

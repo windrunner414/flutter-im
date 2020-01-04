@@ -22,7 +22,7 @@ class SettingPage extends BaseView<SettingViewModel> {
               ),
               SizedBox(height: 40.height),
               FlatButton(
-                onPressed: () => viewModel.logout(),
+                onPressed: viewModel.logout,
                 color: Colors.red,
                 padding: EdgeInsets.symmetric(vertical: 10.height),
                 child: Center(

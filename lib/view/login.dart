@@ -124,7 +124,7 @@ class LoginPage extends BaseView<LoginViewModel> {
                         return !canRefresh
                             ? widget
                             : GestureDetector(
-                                onTap: () => viewModel.refreshVerifyCode(),
+                                onTap: viewModel.refreshVerifyCode,
                                 child: widget,
                               );
                       },
@@ -134,7 +134,7 @@ class LoginPage extends BaseView<LoginViewModel> {
               ),
               SizedBox(height: 30.height),
               FlatButton(
-                onPressed: () => viewModel.login(),
+                onPressed: viewModel.login,
                 color: Color(AppColor.LoginInputActive),
                 padding: EdgeInsets.symmetric(vertical: 10.height),
                 child: Center(

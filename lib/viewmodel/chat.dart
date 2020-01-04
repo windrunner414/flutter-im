@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/model/message.dart';
@@ -7,20 +9,25 @@ import 'package:wechat/viewmodel/base.dart';
 enum ChatType { FRIEND, GROUP }
 
 class ChatViewModel extends BaseViewModel {
-  ChatViewModel({@required this.id, @required this.type})
-      : messages = BehaviorSubject<List<Message>>.seeded(<Message>[]);
+  ChatViewModel({@required this.id, @required this.type});
 
   final int id;
   final ChatType type;
   final TextEditingController messageEditingController =
       TextEditingController();
-  final BehaviorSubject<List<Message>> messages;
+  final BehaviorSubject<List<Message>> messages =
+      BehaviorSubject<List<Message>>.seeded(<Message>[]);
 
   void _addMessages(List<Message> list) {
     messages.value = messages.value..addAll(list);
   }
 
+  void _addMessage(Message message) {
+    messages.value = messages.value..add(message);
+  }
+
   Future<void> loadMore() async {
+    print('loadMore');
     await Future<void>.delayed(const Duration(seconds: 1));
     _addMessages(<Message>[
       const Message(fromUserId: 1, msgId: 0, msg: '测试消息123'),
@@ -58,5 +65,6 @@ class ChatViewModel extends BaseViewModel {
   void dispose() {
     super.dispose();
     messageEditingController.dispose();
+    messages.close();
   }
 }

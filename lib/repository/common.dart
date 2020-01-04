@@ -4,7 +4,7 @@ import 'package:wechat/repository/base.dart';
 import 'package:wechat/service/common.dart';
 
 class CommonRepository extends BaseRepository {
-  CommonService _commonService = inject();
+  final CommonService _commonService = inject();
 
   Future<VerifyCode> getVerifyCode() async =>
       (await _commonService.getVerifyCode()).body.result;

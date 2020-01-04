@@ -19,3 +19,21 @@ extension MessageCopyWithExtension on Message {
     );
   }
 }
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+Message _$MessageFromJson(Map<String, dynamic> json) {
+  return Message(
+    fromUserId: json['fromUserId'] as int,
+    msgId: json['msgId'] as int,
+    msg: json['msg'] as String,
+  );
+}
+
+Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
+      'fromUserId': instance.fromUserId,
+      'msgId': instance.msgId,
+      'msg': instance.msg,
+    };

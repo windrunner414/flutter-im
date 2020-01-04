@@ -13,6 +13,12 @@ abstract class _$ModelGenericJsonConverterMixin<T extends Object> {
         return VerifyCode.fromJson(json as Map<String, dynamic>) as T;
       case User:
         return User.fromJson(json as Map<String, dynamic>) as T;
+      case UserList:
+        return UserList.fromJson(json as Map<String, dynamic>) as T;
+      case ServerConfig:
+        return ServerConfig.fromJson(json as Map<String, dynamic>) as T;
+      case Message:
+        return Message.fromJson(json as Map<String, dynamic>) as T;
       default:
         return json as T;
     }
@@ -24,6 +30,12 @@ abstract class _$ModelGenericJsonConverterMixin<T extends Object> {
         return (value as VerifyCode).toJson();
       case User:
         return (value as User).toJson();
+      case UserList:
+        return (value as UserList).toJson();
+      case ServerConfig:
+        return (value as ServerConfig).toJson();
+      case Message:
+        return (value as Message).toJson();
       default:
         return value;
     }
