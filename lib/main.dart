@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io' if (dart.library.html) 'dart:html';
+import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dartin/dartin.dart';
