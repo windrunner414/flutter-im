@@ -1,21 +1,28 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:extended_image/extended_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wechat/service/base.dart';
 
 class UImage extends StatelessWidget {
-  const UImage(
-      {Key key,
-      this.placeholder,
-      @required this.size,
-      @required String url,
-      this.filterQuality = FilterQuality.low,
-      this.fit = BoxFit.fill})
-      : assert(size != null),
-        url = url ?? '',
+  UImage(
+    this.url, {
+    Key key,
+    this.width,
+    this.height,
+    this.filterQuality = FilterQuality.low,
+    this.fit = BoxFit.fill,
+    Widget placeholder,
+    this.onComplete,
+    this.onFailed,
+  })  : assert(url != null),
+        placeholder = placeholder ?? SizedBox(width: width, height: height),
         super(key: key);
 
-  final PlaceholderWidgetBuilder placeholder;
-  final Size size;
+  final Widget placeholder;
+  final VoidCallback onComplete;
+  final Widget Function() onFailed;
+  final double width;
+  final double height;
   final String url;
   final FilterQuality filterQuality;
   final BoxFit fit;
@@ -24,26 +31,50 @@ class UImage extends StatelessWidget {
   Widget build(BuildContext context) {
     const String assetUrlStart = 'asset://';
     if (url.startsWith(assetUrlStart)) {
-      return Image.asset(
+      return ExtendedImage.asset(
         url.substring(assetUrlStart.length),
         filterQuality: filterQuality,
         fit: fit,
-        width: size.width,
-        height: size.height,
+        width: width,
+        height: height,
+        enableLoadState: true,
+        enableMemoryCache: true,
+        clearMemoryCacheIfFailed: true,
+        loadStateChanged: _onLoadStateChanged,
       );
     }
-    return CachedNetworkImage(
-      placeholder: placeholder,
-      imageUrl: (!url.startsWith('http://') && !url.startsWith('https://'))
+    return ExtendedImage.network(
+      (!url.startsWith('http://') && !url.startsWith('https://'))
           ? staticFileBaseUrl + (url.startsWith('/') ? url : '/' + url)
           : url,
-      width: size.width,
-      height: size.height,
-      fadeInDuration: Duration.zero,
-      fadeOutDuration: Duration.zero,
-      placeholderFadeInDuration: Duration.zero,
       filterQuality: filterQuality,
       fit: fit,
+      width: width,
+      height: height,
+      enableLoadState: true,
+      enableMemoryCache: true,
+      clearMemoryCacheIfFailed: true,
+      cache: !kIsWeb,
+      loadStateChanged: _onLoadStateChanged,
     );
+  }
+
+  Widget _onLoadStateChanged(ExtendedImageState state) {
+    switch (state.extendedImageLoadState) {
+      case LoadState.completed:
+        if (onComplete != null) {
+          onComplete();
+        }
+        return null;
+      case LoadState.loading:
+        return placeholder;
+      case LoadState.failed:
+        if (onFailed != null) {
+          return onFailed() ?? placeholder;
+        }
+        return placeholder;
+      default:
+        return null;
+    }
   }
 }

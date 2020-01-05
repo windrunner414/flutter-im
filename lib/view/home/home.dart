@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
               ],
               icon: Icon(
                 const IconData(0xe66b, fontFamily: Constant.IconFontFamily),
-                size: 21.height,
+                size: 19.height,
               ),
               onSelected: (_PopupMenuItems selected) {
                 switch (selected) {
@@ -95,6 +95,7 @@ class _HomePageState extends State<HomePage> {
         body: PageView.builder(
           itemBuilder: (BuildContext context, int index) => _pages[index],
           controller: _pageController,
+          physics: const BouncingScrollPhysics(),
           itemCount: _pages.length,
           onPageChanged: (int index) => setState(() => _currentIndex = index),
         ),

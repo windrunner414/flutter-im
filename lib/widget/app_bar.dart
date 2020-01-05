@@ -7,7 +7,7 @@ class IAppBar extends StatelessWidget implements PreferredSizeWidget {
   IAppBar({Key key, @required this.title, this.actions}) : super(key: key);
 
   @override
-  Size get preferredSize => Size.fromHeight(52.height);
+  Size get preferredSize => Size.fromHeight(46.height);
 
   final String title;
   final List<Widget> actions;
@@ -19,7 +19,7 @@ class IAppBar extends StatelessWidget implements PreferredSizeWidget {
         cardColor: const Color(AppColor.AppBarColor),
       ),
       child: AppBar(
-        title: Text(title, style: TextStyle(fontSize: 21.sp)),
+        title: Text(title, style: TextStyle(fontSize: 19.sp)),
         elevation: 0,
         actions: actions,
       ));

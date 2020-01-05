@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
-import 'package:system_info/system_info.dart';
 import 'package:wechat/constant.dart';
 import 'package:wechat/util/worker/worker_interface.dart';
 import 'package:wechat/util/worker/worker_task.dart';
@@ -11,7 +11,7 @@ class WorkerImpl extends Worker {
   WorkerImpl()
       : _executor = Executor(
             isolatePoolSize:
-                max(SysInfo.processors.length - 2, Config.MinimalWorkerNum));
+                max(Platform.numberOfProcessors - 2, Config.MinimalWorkerNum));
 
   final Executor _executor;
 

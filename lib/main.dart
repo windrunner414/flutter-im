@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' if (dart.library.html) 'dart:html';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dartin/dartin.dart';
@@ -66,14 +67,24 @@ class _AppInitState extends State<_AppInit> {
   @override
   Widget build(BuildContext context) {
     _initOnEveryBuild();
-    return StreamBuilder<bool>(
-      stream: _loginStateSubject,
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        if (!snapshot.hasData) {
-          return Container();
+    return WillPopScope(
+      onWillPop: () async {
+        if (!kIsWeb && Platform.isAndroid) {
+          const MethodChannel('android.move_task_to_back')
+              .invokeMethod('moveTaskToBack');
+          return false;
         }
-        return snapshot.data ? HomePage() : LoginPage();
+        return true;
       },
+      child: StreamBuilder<bool>(
+        stream: _loginStateSubject,
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          if (!snapshot.hasData) {
+            return Container();
+          }
+          return snapshot.data ? HomePage() : LoginPage();
+        },
+      ),
     );
   }
 
@@ -81,11 +92,6 @@ class _AppInitState extends State<_AppInit> {
   void initState() {
     super.initState();
     Timer.run(_initOnAppStartup);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   void _initOnEveryBuild() {

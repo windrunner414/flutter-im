@@ -6,6 +6,7 @@ import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/add_friend.dart';
 import 'package:wechat/widget/app_bar.dart';
+import 'package:wechat/widget/image.dart';
 import 'package:wechat/widget/unfocus_scope.dart';
 
 class AddFriendPage extends BaseView<AddFriendViewModel> {
@@ -17,52 +18,55 @@ class AddFriendPage extends BaseView<AddFriendViewModel> {
           appBar: IAppBar(title: '添加好友'),
           body: Container(
             color: const Color(AppColor.BackgroundColor),
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
             child: Column(
               children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Container(
-                        color: Colors.white,
-                        child: TextField(
-                          controller: viewModel.textEditingController,
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            color: Colors.black87,
-                          ),
-                          decoration: const InputDecoration(
-                            hintText: '账号',
-                            border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(4)),
-                              borderSide: BorderSide.none,
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          color: Colors.white,
+                          child: TextField(
+                            controller: viewModel.textEditingController,
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.black87,
                             ),
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 6),
-                            isDense: true,
+                            decoration: const InputDecoration(
+                              hintText: '账号',
+                              border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(4)),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 6),
+                              isDense: true,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    FlatButton(
-                      onPressed: () {
-                        FocusScope.of(context).unfocus();
-                        viewModel.search();
-                      },
-                      child: Text(
-                        '搜索',
-                        style: TextStyle(fontSize: 16.sp, color: Colors.white),
+                      const SizedBox(width: 10),
+                      FlatButton(
+                        onPressed: () {
+                          FocusScope.of(context).unfocus();
+                          viewModel.search();
+                        },
+                        child: Text(
+                          '搜索',
+                          style:
+                              TextStyle(fontSize: 16.sp, color: Colors.white),
+                        ),
+                        color: const Color(AppColor.LoginInputActive),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
-                      color: const Color(AppColor.LoginInputActive),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 6),
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 15),
                 Expanded(
                   child: StreamBuilder<List<User>>(
                     stream: viewModel.result,
@@ -88,10 +92,67 @@ class AddFriendPage extends BaseView<AddFriendViewModel> {
                         onLoad: viewModel.loadMore,
                         slivers: <Widget>[
                           SliverFixedExtentList(
-                            itemExtent: 50,
+                            itemExtent: 56,
                             delegate: SliverChildBuilderDelegate(
                               (BuildContext context, int index) => Container(
-                                child: Text(snapshot.data[index].userName),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                height: 56.height,
+                                color: Colors.white,
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        width: 0.5,
+                                        color: Color(AppColor.DividerColor),
+                                      ),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Row(
+                                        children: <Widget>[
+                                          UImage(
+                                            snapshot.data[index].userAvatar,
+                                            placeholder: Icon(
+                                              const IconData(
+                                                0xe642,
+                                                fontFamily:
+                                                    Constant.IconFontFamily,
+                                              ),
+                                              size: 36.sp,
+                                            ),
+                                            width: 36.sp,
+                                            height: 36.sp,
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Text(
+                                            snapshot.data[index].userName,
+                                            style: TextStyle(fontSize: 16.sp),
+                                          ),
+                                        ],
+                                      ),
+                                      FlatButton(
+                                        onPressed: () {},
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 6),
+                                        color: const Color(
+                                            AppColor.LoginInputNormal),
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        child: Text(
+                                          '添加',
+                                          style: TextStyle(
+                                            fontSize: 16.sp,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                               childCount: snapshot.data.length,
                               addAutomaticKeepAlives: false,

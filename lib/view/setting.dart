@@ -16,8 +16,9 @@ class SettingPage extends BaseView<SettingViewModel> {
               SizedBox(height: 40.height),
               Center(
                 child: UImage(
-                  url: 'asset://assets/images/logo.png',
-                  size: Size.square(96.minWidthHeight),
+                  'asset://assets/images/logo.png',
+                  width: 96.height,
+                  height: 96.height,
                 ),
               ),
               SizedBox(height: 40.height),

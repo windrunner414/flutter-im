@@ -100,15 +100,16 @@ class _ContactItemState extends State<_ContactItem> {
           child: Row(
             children: <Widget>[
               UImage(
-                url: widget.avatar,
-                placeholder: (BuildContext context, String url) => Icon(
+                widget.avatar,
+                placeholder: Icon(
                   const IconData(
                     0xe642,
                     fontFamily: Constant.IconFontFamily,
                   ),
                   size: 36.sp,
                 ),
-                size: Size.square(36.sp),
+                width: 36.sp,
+                height: 36.sp,
               ),
               const SizedBox(width: 10),
               Text(widget.title, style: TextStyle(fontSize: 16.sp)),
@@ -227,10 +228,10 @@ class _ContactPageState extends State<ContactPage> {
     return INDEX_BAR_WORDS[index];
   }
 
-  void _jumpToGroup(String title) {
-    final double pos = _groupTitlePos[title];
+  void _jumpToGroup(String group) {
+    final double pos = _groupTitlePos[group];
     if (pos != null) {
-      // TODO(windrunner): 由于listview不定高导致每次jumpto都要一个一个item去layout计算得到最后的index，存在性能问题。但是flutter暂未提供jumpTo(index)
+      // TODO(windrunner): 由于listview不定高导致每次jumpto都要一个一个item去layout计算得到最后的index，存在性能问题。但是flutter暂未提供jumpTo(index), https://github.com/flutter/flutter/issues/48108
       _scrollController.jumpTo(
           pos.clamp(0, _scrollController.position.maxScrollExtent).toDouble());
     }
@@ -282,6 +283,7 @@ class _ContactPageState extends State<ContactPage> {
     final List<Widget> body = <Widget>[
       ListView.builder(
         addAutomaticKeepAlives: false,
+        physics: const BouncingScrollPhysics(),
         controller: _scrollController,
         itemBuilder: (BuildContext context, int index) {
           if (index < _functionButtons.length) {

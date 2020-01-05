@@ -38,7 +38,7 @@ class LoginPage extends BaseView<LoginViewModel> {
                 ],
                 icon: Icon(
                   const IconData(0xe66b, fontFamily: Constant.IconFontFamily),
-                  size: 21.height,
+                  size: 19.height,
                 ),
                 onSelected: (_PopupMenuItems selected) async {
                   switch (selected) {
@@ -62,8 +62,9 @@ class LoginPage extends BaseView<LoginViewModel> {
                   SizedBox(height: 40.height),
                   Center(
                     child: UImage(
-                      url: 'asset://assets/images/logo.png',
-                      size: Size.square(96.minWidthHeight),
+                      'asset://assets/images/logo.png',
+                      width: 96.height,
+                      height: 96.height,
                     ),
                   ),
                   SizedBox(height: 40.height),

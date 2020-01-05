@@ -36,5 +36,4 @@ abstract class Constant {
   static const double ConversationMuteIcon = 18.0;
 
   static const double IndexBarWidth = 24.0;
-  static const double FullWidthIconButtonIconSize = 24.0;
 }

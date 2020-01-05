@@ -30,9 +30,9 @@ class FullWidthButton extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         UImage(
-          url: iconPath,
-          size:
-              Size.square(Constant.FullWidthIconButtonIconSize.minWidthHeight),
+          iconPath,
+          width: 24.sp,
+          height: 24.sp,
         ),
         const SizedBox(width: HORIZONTAL_PADDING),
         Expanded(

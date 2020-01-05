@@ -26,15 +26,16 @@ class _ProfileHeaderView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 UImage(
-                  url: info.userAvatar,
-                  placeholder: (BuildContext context, String url) => Icon(
+                  info.userAvatar,
+                  placeholder: Icon(
                     const IconData(
                       0xe642,
                       fontFamily: Constant.IconFontFamily,
                     ),
                     size: 60.sp,
                   ),
-                  size: Size.square(60.sp),
+                  width: 60.sp,
+                  height: 60.sp,
                 ),
                 SizedBox(width: 10.width),
                 Expanded(

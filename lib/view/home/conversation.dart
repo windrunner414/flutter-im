@@ -20,15 +20,16 @@ class _ConversationItemState extends State<_ConversationItem> {
   @override
   Widget build(BuildContext context) {
     final Widget avatar = UImage(
-      url: widget._conversation.avatar,
-      placeholder: (BuildContext context, String url) => Icon(
+      widget._conversation.avatar,
+      placeholder: Icon(
         const IconData(
           0xe642,
           fontFamily: Constant.IconFontFamily,
         ),
         size: 52.sp,
       ),
-      size: Size.square(52.sp),
+      width: 52.sp,
+      height: 52.sp,
     );
 
     Widget avatarContainer;

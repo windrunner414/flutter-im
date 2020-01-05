@@ -99,15 +99,16 @@ class _Message extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Widget avatar = UImage(
-      url: /*ownUserInfo.value.userAvatar*/ 'https://randomuser.me/api/portraits/men/50.jpg',
-      placeholder: (BuildContext context, String url) => Icon(
+      /*ownUserInfo.value.userAvatar*/ 'https://randomuser.me/api/portraits/men/50.jpg',
+      placeholder: Icon(
         const IconData(
           0xe642,
           fontFamily: Constant.IconFontFamily,
         ),
         size: 48.sp,
       ),
-      size: Size.square(48.sp),
+      width: 48.sp,
+      height: 48.sp,
     );
     final Widget messageBox = Expanded(
       child: Column(

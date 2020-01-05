@@ -7,7 +7,8 @@ class SplashViewModel extends BaseViewModel {
   void init() {
     super.init();
     if (!kIsWeb) {
-      SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+      SystemChrome.setEnabledSystemUIOverlays(
+          <SystemUiOverlay>[SystemUiOverlay.bottom]);
     }
   }
 
