@@ -9,86 +9,90 @@ import 'package:wechat/viewmodel/server_setting.dart';
 import 'package:wechat/widget/app_bar.dart';
 import 'package:wechat/widget/image.dart';
 import 'package:wechat/widget/login_input.dart';
+import 'package:wechat/widget/unfocus_scope.dart';
 
 class ServerSettingPage extends BaseView<ServerSettingViewModel> {
   @override
   Widget build(BuildContext context, ServerSettingViewModel viewModel) =>
-      Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: IAppBar(title: '服务器设置'),
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 32.width),
-          child: Column(
-            children: <Widget>[
-              SizedBox(height: 40.height),
-              Center(
-                child: UImage(
-                  url: 'asset://assets/images/logo.png',
-                  size: Size.square(96.minWidthHeight),
-                ),
-              ),
-              SizedBox(height: 40.height),
-              LoginInput(
-                label: '静态文件服务器域名',
-                controller: viewModel.staticFileDomainEditingController,
-                inputFormatters: <TextInputFormatter>[
-                  WhitelistingTextInputFormatter(RegExp(r'[a-zA-Z0-9\.-]')),
-                ],
-                keyboardType: TextInputType.url,
-              ),
-              LoginInput(
-                label: '服务器域名',
-                controller: viewModel.domainEditingController,
-                inputFormatters: <TextInputFormatter>[
-                  WhitelistingTextInputFormatter(RegExp(r'[a-zA-Z0-9\.-]')),
-                ],
-                keyboardType: TextInputType.url,
-              ),
-              LoginInput(
-                label: 'http端口',
-                controller: viewModel.httpPortEditingController,
-                inputFormatters: <TextInputFormatter>[
-                  WhitelistingTextInputFormatter.digitsOnly,
-                ],
-                keyboardType: TextInputType.number,
-              ),
-              LoginInput(
-                label: 'websocket端口',
-                controller: viewModel.webSocketPortEditingController,
-                inputFormatters: <TextInputFormatter>[
-                  WhitelistingTextInputFormatter.digitsOnly,
-                ],
-                keyboardType: TextInputType.number,
-              ),
-              SizedBox(height: 8.height),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      UnFocusScope(
+        child: Scaffold(
+          appBar: IAppBar(title: '服务器设置'),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 32.width),
+              child: Column(
                 children: <Widget>[
-                  Text(
-                    '启用ssl',
-                    style: TextStyle(fontSize: 18.sp),
+                  SizedBox(height: 40.height),
+                  Center(
+                    child: UImage(
+                      url: 'asset://assets/images/logo.png',
+                      size: Size.square(96.minWidthHeight),
+                    ),
                   ),
-                  CupertinoSwitch(
-                    value: viewModel.useSsl,
-                    onChanged: (bool open) {
-                      viewModel.useSsl = open;
-                    },
+                  SizedBox(height: 40.height),
+                  LoginInput(
+                    label: '静态文件服务器域名',
+                    controller: viewModel.staticFileDomainEditingController,
+                    inputFormatters: <TextInputFormatter>[
+                      WhitelistingTextInputFormatter(RegExp(r'[a-zA-Z0-9\.-]')),
+                    ],
+                    keyboardType: TextInputType.url,
+                  ),
+                  LoginInput(
+                    label: '服务器域名',
+                    controller: viewModel.domainEditingController,
+                    inputFormatters: <TextInputFormatter>[
+                      WhitelistingTextInputFormatter(RegExp(r'[a-zA-Z0-9\.-]')),
+                    ],
+                    keyboardType: TextInputType.url,
+                  ),
+                  LoginInput(
+                    label: 'http端口',
+                    controller: viewModel.httpPortEditingController,
+                    inputFormatters: <TextInputFormatter>[
+                      WhitelistingTextInputFormatter.digitsOnly,
+                    ],
+                    keyboardType: TextInputType.number,
+                  ),
+                  LoginInput(
+                    label: 'websocket端口',
+                    controller: viewModel.webSocketPortEditingController,
+                    inputFormatters: <TextInputFormatter>[
+                      WhitelistingTextInputFormatter.digitsOnly,
+                    ],
+                    keyboardType: TextInputType.number,
+                  ),
+                  SizedBox(height: 8.height),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        '启用ssl',
+                        style: TextStyle(fontSize: 18.sp),
+                      ),
+                      CupertinoSwitch(
+                        value: viewModel.useSsl,
+                        onChanged: (bool open) {
+                          viewModel.useSsl = open;
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 30.height),
+                  FlatButton(
+                    onPressed: () => viewModel.save() ? router.pop(true) : null,
+                    color: Color(AppColor.LoginInputActive),
+                    padding: EdgeInsets.symmetric(vertical: 10.height),
+                    child: Center(
+                      child: Text(
+                        '保存',
+                        style: TextStyle(fontSize: 20.sp, color: Colors.white),
+                      ),
+                    ),
                   ),
                 ],
               ),
-              SizedBox(height: 30.height),
-              FlatButton(
-                onPressed: () => viewModel.save() ? router.pop(true) : null,
-                color: Color(AppColor.LoginInputActive),
-                padding: EdgeInsets.symmetric(vertical: 10.height),
-                child: Center(
-                  child: Text(
-                    '保存',
-                    style: TextStyle(fontSize: 20.sp, color: Colors.white),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       );

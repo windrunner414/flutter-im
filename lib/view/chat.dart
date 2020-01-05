@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wechat/constant.dart';
@@ -9,6 +13,7 @@ import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/chat.dart';
 import 'package:wechat/widget/app_bar.dart';
 import 'package:wechat/widget/image.dart';
+import 'package:wechat/widget/unfocus_scope.dart';
 
 export 'package:wechat/viewmodel/chat.dart' show ChatType;
 
@@ -22,117 +27,63 @@ class ChatPage extends BaseView<ChatViewModel> {
   final String title;
 
   @override
-  Widget build(BuildContext context, ChatViewModel viewModel) => Scaffold(
-        appBar: IAppBar(title: title),
-        body: Container(
-          color: const Color(AppColor.BackgroundColor),
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                child: StreamBuilder<List<Message>>(
-                  stream: viewModel.messages,
-                  builder: (BuildContext context,
-                      AsyncSnapshot<List<Message>> snapshot) {
-                    final List<Message> messages = snapshot.data ?? <Message>[];
-                    return EasyRefresh.custom(
-                      reverse: true,
-                      onLoad: viewModel.loadMore,
-                      footer: CustomFooter(
-                        enableInfiniteLoad: true,
-                        extent: 40.0,
-                        triggerDistance: 50.0,
-                        footerBuilder: (
-                          BuildContext context,
-                          LoadMode loadState,
-                          double pulledExtent,
-                          double loadTriggerPullDistance,
-                          double loadIndicatorExtent,
-                          AxisDirection axisDirection,
-                          bool float,
-                          Duration completeDuration,
-                          bool enableInfiniteLoad,
-                          bool success,
-                          bool noMore,
-                        ) =>
-                            Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            SpinKitRing(
-                              color: Colors.black38,
-                              size: 20.sp,
-                              lineWidth: 1,
-                              duration: const Duration(milliseconds: 1000),
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              '加载中',
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                color: Colors.black38,
+  Widget build(BuildContext context, ChatViewModel viewModel) => UnFocusScope(
+        child: Scaffold(
+          appBar: IAppBar(title: title),
+          body: Container(
+            color: const Color(AppColor.BackgroundColor),
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: _MessagesListView(viewModel: viewModel),
+                ),
+                Container(
+                  color: const Color(AppColor.ChatInputSectionBgColor),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          color: Colors.white,
+                          child: TextField(
+                            controller: viewModel.messageEditingController,
+                            maxLines: 5,
+                            minLines: 1,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(4)),
+                                borderSide: BorderSide.none,
                               ),
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              isDense: true,
                             ),
-                          ],
-                        ),
-                      ),
-                      slivers: <Widget>[
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (BuildContext context, int index) =>
-                                RepaintBoundary(
-                              child: _Message(messages[index]),
+                            style: TextStyle(
+                              fontSize: 16.sp,
                             ),
-                            childCount: messages.length,
                           ),
                         ),
-                      ],
-                    );
-                  },
+                      ),
+                      const SizedBox(width: 10),
+                      FlatButton(
+                        onPressed: () {},
+                        child: Text(
+                          '发送',
+                          style:
+                              TextStyle(fontSize: 16.sp, color: Colors.white),
+                        ),
+                        color: const Color(AppColor.LoginInputNormal),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 6),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                color: const Color(AppColor.ChatInputSectionBgColor),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Container(
-                        color: Colors.white,
-                        child: TextField(
-                          controller: viewModel.messageEditingController,
-                          maxLines: 5,
-                          minLines: 1,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(4)),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 8),
-                            isDense: true,
-                          ),
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    FlatButton(
-                      onPressed: () {},
-                      child: Text(
-                        '发送',
-                        style: TextStyle(fontSize: 16.sp, color: Colors.white),
-                      ),
-                      color: const Color(AppColor.LoginInputNormal),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 4, vertical: 6),
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );
@@ -148,7 +99,7 @@ class _Message extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Widget avatar = UImage(
-      url: ownUserInfo.value.userAvatar,
+      url: /*ownUserInfo.value.userAvatar*/ 'https://randomuser.me/api/portraits/men/50.jpg',
       placeholder: (BuildContext context, String url) => Icon(
         const IconData(
           0xe642,
@@ -179,13 +130,12 @@ class _Message extends StatelessWidget {
                   ? const Color(AppColor.LoginInputNormal)
                   : Colors.white,
             ),
-            child: Text(
+            child: SelectableText(
               message.msg,
               style: TextStyle(
                 fontSize: 16.sp,
                 color: Colors.black87,
               ),
-              softWrap: true,
             ),
           ),
         ],
@@ -215,4 +165,132 @@ class _Message extends StatelessWidget {
       ),
     );
   }
+}
+
+class _MessagesListView extends StatefulWidget {
+  // ignore: prefer_const_constructors_in_immutables
+  _MessagesListView({this.viewModel});
+
+  final ChatViewModel viewModel;
+
+  @override
+  _MessagesListViewState createState() => _MessagesListViewState();
+}
+
+class _MessagesListViewState extends State<_MessagesListView> {
+  final GlobalKey historicalMessagesListKey = GlobalKey();
+  final ScrollController wrapScrollController = ScrollController();
+  final EasyRefreshController refreshController = EasyRefreshController();
+  double lastHistoricalMessagesListHeight = 0;
+  bool atBottom = true;
+
+  @override
+  void initState() {
+    super.initState();
+    wrapScrollController.addListener(() {
+      atBottom = wrapScrollController.offset ==
+          wrapScrollController.position.maxScrollExtent;
+    });
+    Timer.run(refreshController.callRefresh);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    wrapScrollController.dispose();
+    refreshController.dispose();
+  }
+
+  // TODO(windrunner): 暂时用此下策，这个函数会在渲染后调用，导致会闪一下
+  // TODO(windrunner): 三个listView，里层两个其中一个铺满屏幕，另一个shrinkWrap，方向和外层一样，或者两个listview，里层一个，方向和外层相反，高度铺满。listview全部NeverScrollablePhysic最外面套一个gesturedetector，创建一个simulation，drag时间自己计算偏移来移动里面两个listview，里层铺满的到顶了就移动外层，外层到顶了就移动里层
+  void _onHistoricalMessagesUpdate() {
+    final double height = (historicalMessagesListKey.currentContext
+            ?.findRenderObject() as RenderBox)
+        ?.size
+        ?.height;
+    if (height != null && height != lastHistoricalMessagesListHeight) {
+      wrapScrollController.jumpTo((wrapScrollController.offset +
+              height -
+              lastHistoricalMessagesListHeight)
+          .clamp(0, wrapScrollController.position.maxScrollExtent)
+          .toDouble());
+      lastHistoricalMessagesListHeight = height;
+    }
+  }
+
+  void _onNewMessagesUpdate() {
+    if (atBottom) {
+      wrapScrollController
+          .jumpTo(wrapScrollController.position.maxScrollExtent);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => EasyRefresh.custom(
+        scrollController: wrapScrollController,
+        onRefresh: widget.viewModel.loadHistoricalMessages,
+        controller: refreshController,
+        bottomBouncing: false,
+        header: CustomHeader(
+          extent: 40.0,
+          triggerDistance: 50.0,
+          headerBuilder: (BuildContext context,
+                  RefreshMode refreshState,
+                  double pulledExtent,
+                  double refreshTriggerPullDistance,
+                  double refreshIndicatorExtent,
+                  AxisDirection axisDirection,
+                  bool float,
+                  Duration completeDuration,
+                  bool enableInfiniteRefresh,
+                  bool success,
+                  bool noMore) =>
+              SpinKitRing(
+            color: Colors.black45,
+            size: 24.sp,
+            lineWidth: 1,
+          ),
+        ),
+        slivers: <Widget>[
+          SliverList(
+            delegate: SliverChildListDelegate(
+              <Widget>[
+                StreamBuilder<List<Message>>(
+                  stream: widget.viewModel.historicalMessages,
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<Message>> snapshot) {
+                    Timer.run(_onHistoricalMessagesUpdate);
+                    return ListView.builder(
+                      key: historicalMessagesListKey,
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      addAutomaticKeepAlives: false,
+                      reverse: true,
+                      itemBuilder: (BuildContext context, int index) =>
+                          _Message(snapshot.data[index]),
+                      itemCount: snapshot.data?.length ?? 0,
+                    );
+                  },
+                ),
+                StreamBuilder<List<Message>>(
+                  stream: widget.viewModel.newMessages,
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<Message>> snapshot) {
+                    Timer.run(_onNewMessagesUpdate);
+                    return ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      addAutomaticKeepAlives: false,
+                      itemBuilder: (BuildContext context, int index) =>
+                          _Message(snapshot.data[index]),
+                      itemCount: snapshot.data?.length ?? 0,
+                    );
+                  },
+                ),
+              ],
+              addAutomaticKeepAlives: false,
+            ),
+          ),
+        ],
+      );
 }

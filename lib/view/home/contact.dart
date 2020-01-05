@@ -281,7 +281,7 @@ class _ContactPageState extends State<ContactPage> {
   Widget build(BuildContext context) {
     final List<Widget> body = <Widget>[
       ListView.builder(
-        addRepaintBoundaries: true,
+        addAutomaticKeepAlives: false,
         controller: _scrollController,
         itemBuilder: (BuildContext context, int index) {
           if (index < _functionButtons.length) {

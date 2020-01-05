@@ -15,56 +15,67 @@ class ChatViewModel extends BaseViewModel {
   final ChatType type;
   final TextEditingController messageEditingController =
       TextEditingController();
-  final BehaviorSubject<List<Message>> messages =
+  final BehaviorSubject<List<Message>> historicalMessages =
+      BehaviorSubject<List<Message>>.seeded(<Message>[]);
+  final BehaviorSubject<List<Message>> newMessages =
       BehaviorSubject<List<Message>>.seeded(<Message>[]);
 
-  void _addMessages(List<Message> list) {
-    messages.value = messages.value..addAll(list);
+  int _debug = 0;
+
+  // TODO(windrunner): 限制消息数量，超出一定数量就把之前的删除，需要下拉重新加载，同时限制历史消息加载的最大数量
+  void _addMessages(List<Message> list, {bool isHistorical = false}) {
+    if (newMessages.isClosed || historicalMessages.isClosed) {
+      return;
+    }
+
+    if (!isHistorical) {
+      newMessages.value = newMessages.value..addAll(list);
+    } else {
+      historicalMessages.value = historicalMessages.value
+        ..addAll(list.reversed);
+    }
   }
 
-  void _addMessage(Message message) {
-    messages.value = messages.value..add(message);
-  }
-
-  Future<void> loadMore() async {
-    print('loadMore');
+  Future<void> loadHistoricalMessages() async {
     await Future<void>.delayed(const Duration(seconds: 1));
-    _addMessages(<Message>[
-      const Message(fromUserId: 1, msgId: 0, msg: '测试消息123'),
+    final List<Message> _messages = <Message>[
+      Message(fromUserId: 1, msgId: 0, msg: '${_debug++}'),
       Message(
-          fromUserId: ownUserInfo.value.userId,
-          msgId: 0,
-          msg: '行路难！行路难！多歧路，今安在？长风破浪会有时，直挂云帆济沧海。'),
-      const Message(fromUserId: 1, msgId: 0, msg: '这是别人发的消息'),
+          fromUserId: ownUserInfo.value.userId, msgId: 0, msg: '${_debug++}'),
+      Message(fromUserId: 1, msgId: 0, msg: '${_debug++}'),
       Message(
-          fromUserId: ownUserInfo.value.userId,
-          msgId: 0,
-          msg: '君不见黄河之水天上来,奔流到海不复回。君不见高堂明镜悲白发,朝如青丝暮成雪。'),
-    ]);
+          fromUserId: ownUserInfo.value.userId, msgId: 0, msg: '${_debug++}'),
+    ];
+    _addMessages(_messages, isHistorical: true);
   }
 
   @override
   void init() {
     super.init();
     final List<Message> _messages = <Message>[
-      const Message(fromUserId: 1, msgId: 0, msg: '测试消息123'),
+      Message(fromUserId: 1, msgId: 0, msg: '${_debug++}'),
       Message(
-          fromUserId: ownUserInfo.value.userId,
-          msgId: 0,
-          msg: '行路难！行路难！多歧路，今安在？长风破浪会有时，直挂云帆济沧海。'),
-      const Message(fromUserId: 1, msgId: 0, msg: '这是别人发的消息'),
+          fromUserId: ownUserInfo.value.userId, msgId: 0, msg: '${_debug++}'),
+      Message(fromUserId: 1, msgId: 0, msg: '${_debug++}'),
       Message(
-          fromUserId: ownUserInfo.value.userId,
-          msgId: 0,
-          msg: '君不见黄河之水天上来,奔流到海不复回。君不见高堂明镜悲白发,朝如青丝暮成雪。'),
+          fromUserId: ownUserInfo.value.userId, msgId: 0, msg: '${_debug++}'),
     ];
-    _addMessages(_messages);
+    _addMessages(_messages, isHistorical: true);
+    //_addNewMessages(_messages);
+    //_addNewMessages(_messages);
+    Timer.periodic(Duration(milliseconds: 500), (_) {
+      final List<Message> _messages = <Message>[
+        Message(fromUserId: 1, msgId: 0, msg: '${_debug++}'),
+      ];
+      _addMessages(_messages);
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
     messageEditingController.dispose();
-    messages.close();
+    newMessages.close();
+    historicalMessages.close();
   }
 }
