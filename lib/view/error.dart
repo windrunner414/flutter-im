@@ -1,14 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wechat/util/screen.dart';
+import 'package:wechat/view/base.dart';
+import 'package:wechat/viewmodel/base.dart';
 
-class ErrorPage extends StatelessWidget {
-  const ErrorPage({this.errorDetail});
+class ErrorPage extends BaseView<BaseViewModel> {
+  ErrorPage({this.errorDetail});
 
   final String errorDetail;
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context, BaseViewModel viewModel) => Container(
         padding: EdgeInsets.symmetric(horizontal: 32.width),
         color: Colors.white,
         child: Column(

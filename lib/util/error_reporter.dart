@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart' as flutter show runApp;
 import 'package:flutter/material.dart' hide runApp;
+import 'package:wechat/util/layer.dart';
 
 typedef ErrorBuilder = Widget Function(String errorDetail);
 
@@ -23,6 +24,7 @@ abstract class ErrorReporterUtil {
 
     runZoned(() => flutter.runApp(builder()),
         onError: (Object error, StackTrace stack) async {
+      closeAllLayer();
       final String errorDetail =
           _formatError(error.toString(), stack.toString());
       _showErrorPage(errorBuilder, errorDetail);

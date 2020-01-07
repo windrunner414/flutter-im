@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:wechat/common/state.dart';
 import 'package:wechat/model/message.dart';
-import 'package:wechat/state.dart';
 import 'package:wechat/viewmodel/base.dart';
 
-enum ChatType { FRIEND, GROUP }
+enum ChatType { friend, group }
 
 class ChatViewModel extends BaseViewModel {
   ChatViewModel({@required this.id, @required this.type});
@@ -63,7 +63,7 @@ class ChatViewModel extends BaseViewModel {
     _addMessages(_messages, isHistorical: true);
     //_addNewMessages(_messages);
     //_addNewMessages(_messages);
-    Timer.periodic(Duration(milliseconds: 500), (_) {
+    Timer.periodic(const Duration(milliseconds: 500), (_) {
       final List<Message> _messages = <Message>[
         Message(fromUserId: 1, msgId: 0, msg: '${_debug++}'),
       ];

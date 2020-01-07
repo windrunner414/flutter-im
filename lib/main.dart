@@ -9,12 +9,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:wechat/constant.dart';
-import 'package:wechat/di.dart';
+import 'package:wechat/common/constant.dart';
+import 'package:wechat/common/di.dart';
+import 'package:wechat/common/route.dart';
+import 'package:wechat/common/state.dart';
 import 'package:wechat/model/user.dart';
-import 'package:wechat/route.dart';
 import 'package:wechat/service/base.dart';
-import 'package:wechat/state.dart';
 import 'package:wechat/util/error_reporter.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/util/storage.dart';
@@ -67,24 +67,26 @@ class _AppInitState extends State<_AppInit> {
   @override
   Widget build(BuildContext context) {
     _initOnEveryBuild();
-    return WillPopScope(
-      onWillPop: () async {
-        if (!kIsWeb && Platform.isAndroid) {
-          const MethodChannel('android.move_task_to_back')
-              .invokeMethod('moveTaskToBack');
-          return false;
+    return StreamBuilder<bool>(
+      stream: _loginStateSubject,
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if (!snapshot.hasData) {
+          return Container();
         }
-        return true;
+        return snapshot.data
+            ? WillPopScope(
+                onWillPop: () async {
+                  if (!kIsWeb && Platform.isAndroid) {
+                    const MethodChannel('android.move_task_to_back')
+                        .invokeMethod('moveTaskToBack');
+                    return false;
+                  }
+                  return true;
+                },
+                child: HomePage(),
+              )
+            : LoginPage();
       },
-      child: StreamBuilder<bool>(
-        stream: _loginStateSubject,
-        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-          if (!snapshot.hasData) {
-            return Container();
-          }
-          return snapshot.data ? HomePage() : LoginPage();
-        },
-      ),
     );
   }
 

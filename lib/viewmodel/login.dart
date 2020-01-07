@@ -1,13 +1,11 @@
-import 'package:chopper/chopper.dart';
 import 'package:dartin/dartin.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:wechat/model/api_response.dart';
+import 'package:wechat/common/exception.dart';
+import 'package:wechat/common/state.dart';
 import 'package:wechat/model/verify_code.dart';
 import 'package:wechat/repository/auth.dart';
 import 'package:wechat/repository/common.dart';
-import 'package:wechat/state.dart';
-import 'package:wechat/util/layer.dart';
 import 'package:wechat/viewmodel/base.dart';
 
 class LoginViewModel extends BaseViewModel {
@@ -25,48 +23,38 @@ class LoginViewModel extends BaseViewModel {
   Future<void> refreshVerifyCode() async {
     verifyCode.value = null;
     try {
-      verifyCode.value =
-          await manageFuture(_commonRepository.getVerifyCode(), #getVerifyCode);
-    } on CancelException {} catch (error) {
+      verifyCode.value = await _commonRepository
+          .getVerifyCode()
+          .bindTo(this, #getVerifyCode)
+          .wrapError();
+    } catch (error) {
       verifyCode.addError(error);
-      print(error.toString());
     }
   }
 
   Future<void> login() async {
     if (accountEditingController.text.isEmpty) {
-      showToast('请填写账号');
-      return;
+      throw const ViewModelException<String>('请填写账号');
     }
     if (passwordEditingController.text.isEmpty) {
-      showToast('请填写密码');
-      return;
+      throw const ViewModelException<String>('请填写密码');
     }
     if (verifyCodeEditingController.text.isEmpty) {
-      showToast('请填写验证码');
-      return;
+      throw const ViewModelException<String>('请填写验证码');
     }
     if (verifyCode.value == null) {
-      showToast('验证码错误');
-      return;
+      throw const ViewModelException<String>('未获取验证码');
     }
-    final UniqueKey loadingKey = showLoading();
-    try {
-      await _authRepository.login(
+    await _authRepository
+        .login(
           userAccount: accountEditingController.text,
           userPassword: passwordEditingController.text,
           verifyCodeTime: verifyCode.value.verifyCodeTime,
           verifyCodeHash: verifyCode.value.verifyCodeHash,
-          verifyCode: verifyCodeEditingController.text);
-    } on CancelException {} catch (error) {
-      if (error is Response && error.error is ApiResponse) {
-        showToast((error.error as ApiResponse<dynamic>).msg);
-      } else {
-        showToast('网络错误');
-        print(error.toString());
-      }
-    }
-    closeLoading(loadingKey);
+          verifyCode: verifyCodeEditingController.text,
+        )
+        .bindTo(this)
+        .wrapError();
   }
 
   @override

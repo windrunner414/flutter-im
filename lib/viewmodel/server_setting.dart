@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:wechat/common/exception.dart';
 import 'package:wechat/model/server_config.dart';
 import 'package:wechat/service/base.dart';
-import 'package:wechat/util/layer.dart';
 import 'package:wechat/viewmodel/base.dart';
 
 class ServerSettingViewModel extends BaseViewModel {
@@ -32,25 +32,21 @@ class ServerSettingViewModel extends BaseViewModel {
     webSocketPortEditingController.dispose();
   }
 
-  bool save() {
+  void save() {
     if (staticFileDomainEditingController.text.isEmpty) {
-      showToast('请填写静态文件服务器域名');
-      return false;
+      throw const ViewModelException<String>('请填写静态文件服务器域名');
     }
     if (domainEditingController.text.isEmpty) {
-      showToast('请填写服务器域名');
-      return false;
+      throw const ViewModelException<String>('请填写服务器域名');
     }
     final int httpPort = int.tryParse(httpPortEditingController.text) ?? 0;
     final int webSocketPort =
         int.tryParse(webSocketPortEditingController.text) ?? 0;
     if (httpPort <= 0 || httpPort > 65535) {
-      showToast('请填写合法的http端口');
-      return false;
+      throw const ViewModelException<String>('请填写合法的http端口');
     }
     if (webSocketPort <= 0 || webSocketPort > 65535) {
-      showToast('请填写合法的websocket端口');
-      return false;
+      throw const ViewModelException<String>('请填写合法的websocket端口');
     }
     serverConfig = ServerConfig(
       staticFileDomain: staticFileDomainEditingController.text,
@@ -59,7 +55,5 @@ class ServerSettingViewModel extends BaseViewModel {
       webSocketPort: webSocketPort,
       ssl: useSsl,
     );
-    showToast('保存成功');
-    return true;
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wechat/constant.dart';
-import 'package:wechat/route.dart';
+import 'package:wechat/common/constant.dart';
+import 'package:wechat/common/route.dart';
 import 'package:wechat/service/base.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/home/contact.dart';
@@ -8,7 +8,7 @@ import 'package:wechat/view/home/conversation.dart';
 import 'package:wechat/view/home/profile.dart';
 import 'package:wechat/widget/app_bar.dart';
 
-enum _PopupMenuItems { GROUP_CHAT, ADD_FRIEND, QR_SCAN }
+enum _PopupMenuItems { createGroup, addFriend, scanQrCode }
 
 class HomePage extends StatefulWidget {
   @override
@@ -64,15 +64,15 @@ class _HomePageState extends State<HomePage> {
                   <PopupMenuItem<_PopupMenuItems>>[
                 PopupMenuItem<_PopupMenuItems>(
                   child: _buildPopupMenuItem(0xe606, '发起群聊'),
-                  value: _PopupMenuItems.GROUP_CHAT,
+                  value: _PopupMenuItems.createGroup,
                 ),
                 PopupMenuItem<_PopupMenuItems>(
                   child: _buildPopupMenuItem(0xe638, '添加朋友'),
-                  value: _PopupMenuItems.ADD_FRIEND,
+                  value: _PopupMenuItems.addFriend,
                 ),
                 PopupMenuItem<_PopupMenuItems>(
                   child: _buildPopupMenuItem(0xe79b, '扫一扫'),
-                  value: _PopupMenuItems.QR_SCAN,
+                  value: _PopupMenuItems.scanQrCode,
                 ),
               ],
               icon: Icon(
@@ -81,8 +81,8 @@ class _HomePageState extends State<HomePage> {
               ),
               onSelected: (_PopupMenuItems selected) {
                 switch (selected) {
-                  case _PopupMenuItems.ADD_FRIEND:
-                    router.push(Page.AddFriend);
+                  case _PopupMenuItems.addFriend:
+                    router.push(Page.addFriend);
                     break;
                   default:
                 }

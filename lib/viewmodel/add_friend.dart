@@ -1,13 +1,16 @@
 import 'package:dartin/dartin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:wechat/common/exception.dart';
 import 'package:wechat/model/user.dart';
 import 'package:wechat/repository/user.dart';
-import 'package:wechat/util/layer.dart';
+import 'package:wechat/repository/user_friend_apply.dart';
 import 'package:wechat/viewmodel/base.dart';
 
 class AddFriendViewModel extends BaseViewModel {
   final UserRepository _userRepository = inject();
+  final UserFriendApplyRepository _userFriendApplyRepository = inject();
+
   TextEditingController textEditingController = TextEditingController();
   BehaviorSubject<List<User>> result = BehaviorSubject<List<User>>();
   String _searchKeyword = '';
@@ -15,42 +18,43 @@ class AddFriendViewModel extends BaseViewModel {
 
   Future<void> search() async {
     if (textEditingController.text.isEmpty) {
-      return;
+      throw const CancelException('没有输入搜索关键词');
     }
-    final UniqueKey loadingKey = showLoading();
     _searchKeyword = textEditingController.text;
     _nextPage = 1;
     result.value = null;
-    await _loadMore();
-    closeLoading(loadingKey);
+    return await _loadMore();
   }
 
+  Future<void> addFriend({@required int userId}) => _userFriendApplyRepository
+      .addFriend(userId: userId)
+      .bindTo(this)
+      .wrapError();
+
   Future<void> _loadMore() async {
-    try {
-      final UserList userList = await manageFuture(_userRepository.search(
-          keyword: _searchKeyword, limit: 15, page: _nextPage));
-      if (userList.list == null || userList.list.isEmpty) {
-        if (_nextPage == 1) {
-          result.value = <User>[];
-        }
-        return;
+    final UserList userList = await _userRepository
+        .search(keyword: _searchKeyword, limit: 15, page: _nextPage)
+        .bindTo(this, #loadMore)
+        .wrapError();
+    if (userList.list == null || userList.list.isEmpty) {
+      if (_nextPage == 1) {
+        result.value = <User>[];
       }
+    } else {
       ++_nextPage;
       if (result.value == null) {
         result.value = userList.list;
       } else {
         result.value = result.value..addAll(userList.list);
       }
-    } on CancelException {} catch (error) {
-      showToast('加载失败');
     }
   }
 
   Future<void> loadMore() async {
     if (_searchKeyword.isEmpty) {
-      return;
+      throw const CancelException('没有输入搜索关键词');
     }
-    await _loadMore();
+    return await _loadMore();
   }
 
   @override

@@ -1,8 +1,8 @@
 import 'package:dartin/dartin.dart';
+import 'package:wechat/common/state.dart';
 import 'package:wechat/model/user.dart';
 import 'package:wechat/repository/base.dart';
 import 'package:wechat/service/auth.dart';
-import 'package:wechat/state.dart';
 
 class AuthRepository extends BaseRepository {
   final AuthService _authService = inject();

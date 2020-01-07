@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wechat/constant.dart';
-import 'package:wechat/route.dart';
+import 'package:wechat/common/constant.dart';
+import 'package:wechat/common/route.dart';
+import 'package:wechat/util/layer.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/server_setting.dart';
@@ -81,8 +82,15 @@ class ServerSettingPage extends BaseView<ServerSettingViewModel> {
                   ),
                   SizedBox(height: 30.height),
                   FlatButton(
-                    onPressed: () => viewModel.save() ? router.pop(true) : null,
-                    color: Color(AppColor.LoginInputActive),
+                    onPressed: () {
+                      try {
+                        viewModel.save();
+                        router.pop(true);
+                      } catch (error) {
+                        showToast(error.toString());
+                      }
+                    },
+                    color: const Color(AppColor.LoginInputActive),
                     padding: EdgeInsets.symmetric(vertical: 10.height),
                     child: Center(
                       child: Text(

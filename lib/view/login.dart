@@ -2,9 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wechat/constant.dart';
+import 'package:wechat/common/constant.dart';
+import 'package:wechat/common/route.dart';
 import 'package:wechat/model/verify_code.dart';
-import 'package:wechat/route.dart';
+import 'package:wechat/util/layer.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/login.dart';
@@ -13,7 +14,7 @@ import 'package:wechat/widget/image.dart';
 import 'package:wechat/widget/login_input.dart';
 import 'package:wechat/widget/unfocus_scope.dart';
 
-enum _PopupMenuItems { SERVER_SETTINGS }
+enum _PopupMenuItems { serverSetting }
 
 class LoginPage extends BaseView<LoginViewModel> {
   @override
@@ -33,7 +34,7 @@ class LoginPage extends BaseView<LoginViewModel> {
                         fontSize: 16.sp,
                       ),
                     ),
-                    value: _PopupMenuItems.SERVER_SETTINGS,
+                    value: _PopupMenuItems.serverSetting,
                   ),
                 ],
                 icon: Icon(
@@ -42,8 +43,8 @@ class LoginPage extends BaseView<LoginViewModel> {
                 ),
                 onSelected: (_PopupMenuItems selected) async {
                   switch (selected) {
-                    case _PopupMenuItems.SERVER_SETTINGS:
-                      if (await router.push(Page.ServerSetting) == true) {
+                    case _PopupMenuItems.serverSetting:
+                      if (await router.push(Page.serverSetting) == true) {
                         viewModel.refreshVerifyCode();
                       }
                       break;
@@ -141,8 +142,10 @@ class LoginPage extends BaseView<LoginViewModel> {
                   ),
                   SizedBox(height: 30.height),
                   FlatButton(
-                    onPressed: viewModel.login,
-                    color: Color(AppColor.LoginInputActive),
+                    onPressed: () => viewModel.login().catchAll(
+                        (Object error) => showToast(error.toString()),
+                        test: exceptCancelException),
+                    color: const Color(AppColor.LoginInputActive),
                     padding: EdgeInsets.symmetric(vertical: 10.height),
                     child: Center(
                       child: Text(

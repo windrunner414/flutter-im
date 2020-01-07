@@ -1,5 +1,5 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:wechat/constant.dart';
+import 'package:wechat/common/constant.dart';
 import 'package:wechat/model/base.dart';
 
 part 'conversation.g.dart';

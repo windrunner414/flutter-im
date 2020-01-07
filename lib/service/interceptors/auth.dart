@@ -1,8 +1,8 @@
 import 'package:chopper/chopper.dart';
+import 'package:wechat/common/state.dart';
 import 'package:wechat/model/api_response.dart';
 import 'package:wechat/model/user.dart';
 import 'package:wechat/service/interceptors/base.dart';
-import 'package:wechat/state.dart';
 import 'package:wechat/util/layer.dart';
 
 class AuthInterceptor extends BaseInterceptor {

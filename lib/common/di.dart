@@ -2,6 +2,7 @@ import 'package:dartin/dartin.dart';
 import 'package:wechat/repository/auth.dart';
 import 'package:wechat/repository/common.dart';
 import 'package:wechat/repository/user.dart';
+import 'package:wechat/repository/user_friend_apply.dart';
 import 'package:wechat/service/auth.dart';
 import 'package:wechat/service/base.dart';
 import 'package:wechat/service/common.dart';
@@ -9,6 +10,7 @@ import 'package:wechat/service/interceptors/auth.dart';
 import 'package:wechat/service/interceptors/base.dart';
 import 'package:wechat/service/interceptors/throw_error.dart';
 import 'package:wechat/service/user.dart';
+import 'package:wechat/service/user_friend_apply.dart';
 import 'package:wechat/viewmodel/add_friend.dart';
 import 'package:wechat/viewmodel/chat.dart';
 import 'package:wechat/viewmodel/contact.dart';
@@ -36,12 +38,15 @@ final Module repositoryModule = Module([
   single<UserRepository>(({params}) => UserRepository()),
   single<AuthRepository>(({params}) => AuthRepository()),
   single<CommonRepository>(({params}) => CommonRepository()),
+  single<UserFriendApplyRepository>(({params}) => UserFriendApplyRepository()),
 ]);
 
 final Module serviceModule = Module([
   single<AuthService>(({params}) => AuthService.create(httpClient)),
   single<CommonService>(({params}) => CommonService.create(httpClient)),
   single<UserService>(({params}) => UserService.create(httpClient)),
+  single<UserFriendApplyService>(
+      ({params}) => UserFriendApplyService.create(httpClient)),
 ])
   ..withScope(HttpInterceptorScope, [
     factory<Set<BaseInterceptor>>(({params}) => <BaseInterceptor>{

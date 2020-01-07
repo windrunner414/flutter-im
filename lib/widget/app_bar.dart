@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wechat/constant.dart';
+import 'package:wechat/common/constant.dart';
 import 'package:wechat/util/screen.dart';
 
 class IAppBar extends StatelessWidget implements PreferredSizeWidget {

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:chopper/chopper.dart';
 import 'package:dartin/dartin.dart';
-import 'package:wechat/di.dart';
+import 'package:wechat/common/di.dart';
 import 'package:wechat/model/server_config.dart';
 import 'package:wechat/util/storage.dart';
 import 'package:wechat/util/worker/worker.dart';

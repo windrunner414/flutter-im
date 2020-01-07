@@ -27,3 +27,7 @@ void closeAllLoading() {
   _loading.clear();
   BotToast.closeAllLoading();
 }
+
+void closeAllLayer() {
+  BotToast.cleanAll();
+}

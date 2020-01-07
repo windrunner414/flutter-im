@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:wechat/constant.dart';
+import 'package:wechat/common/constant.dart';
 import 'package:wechat/util/worker/worker_interface.dart';
 import 'package:wechat/util/worker/worker_task.dart';
 import 'package:worker_manager/worker_manager.dart';

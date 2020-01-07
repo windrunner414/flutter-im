@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wechat/constant.dart';
+import 'package:wechat/common/constant.dart';
 import 'package:wechat/util/screen.dart';
 
 class LoginInput extends StatelessWidget {

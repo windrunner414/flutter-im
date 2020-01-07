@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wechat/constant.dart';
+import 'package:wechat/common/constant.dart';
 import 'package:wechat/model/contacts.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/util/worker/worker.dart';

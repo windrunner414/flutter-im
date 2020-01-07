@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:wechat/constant.dart';
+import 'package:wechat/common/constant.dart';
+import 'package:wechat/common/route.dart';
 import 'package:wechat/model/conversation.dart';
-import 'package:wechat/route.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/widget/image.dart';
 
@@ -78,7 +78,7 @@ class _ConversationItemState extends State<_ConversationItem> {
         setState(() => _active = false);
       },
       onTap: () {
-        router.push(Page.Chat, parameters: <Symbol, String>{
+        router.push(Page.chat, parameters: <Symbol, String>{
           #id: '0',
           #type: 'friend',
           #title: widget._conversation.title,

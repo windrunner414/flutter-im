@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:wechat/constant.dart';
+import 'package:wechat/common/constant.dart';
+import 'package:wechat/common/route.dart';
+import 'package:wechat/common/state.dart';
 import 'package:wechat/model/user.dart';
-import 'package:wechat/route.dart';
-import 'package:wechat/state.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/profile.dart';
@@ -104,7 +104,7 @@ class ProfilePage extends BaseView<ProfileViewModel> {
                 iconPath: 'asset://assets/images/ic_settings.png',
                 title: '设置',
                 showDivider: true,
-                onPressed: () => router.push(Page.Setting),
+                onPressed: () => router.push(Page.setting),
               ),
             ],
           ),

@@ -25,11 +25,11 @@ class SettingPage extends BaseView<SettingViewModel> {
               FlatButton(
                 onPressed: viewModel.logout,
                 color: Colors.red,
-                padding: EdgeInsets.symmetric(vertical: 10.height),
+                padding: EdgeInsets.symmetric(vertical: 8.height),
                 child: Center(
                   child: Text(
                     '退出登录',
-                    style: TextStyle(fontSize: 20.sp, color: Colors.white),
+                    style: TextStyle(fontSize: 19.sp, color: Colors.white),
                   ),
                 ),
               ),

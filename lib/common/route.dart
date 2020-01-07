@@ -6,7 +6,7 @@ import 'package:wechat/view/chat.dart';
 import 'package:wechat/view/server_setting.dart';
 import 'package:wechat/view/setting.dart';
 
-enum Page { ServerSetting, Setting, AddFriend, Chat }
+enum Page { serverSetting, setting, addFriend, chat }
 
 final Router router = Router._();
 
@@ -26,18 +26,18 @@ class _RoutePage {
   final TransitionType transitionType;
 
   static final Map<Page, _RoutePage> _pages = <Page, _RoutePage>{
-    Page.ServerSetting: _RoutePage(
+    Page.serverSetting: _RoutePage(
         routePath: '/serverSetting',
         transitionType: TransitionType.cupertinoFullScreenDialog,
         handler: Handler(handlerFunc: (_, __) => ServerSettingPage())),
-    Page.Setting: _RoutePage(
+    Page.setting: _RoutePage(
         routePath: '/setting',
         handler: Handler(handlerFunc: (_, __) => SettingPage())),
-    Page.AddFriend: _RoutePage(
+    Page.addFriend: _RoutePage(
       routePath: '/addFriend',
       handler: Handler(handlerFunc: (_, __) => AddFriendPage()),
     ),
-    Page.Chat: _RoutePage(
+    Page.chat: _RoutePage(
       routePath: '/chat',
       parameters: <Symbol>{#id, #type, #title},
       handler: Handler(
@@ -47,8 +47,8 @@ class _RoutePage {
                     id: int.parse(parameters['id'][0]),
                     title: parameters['title'][0],
                     type: parameters['type'][0] == 'friend'
-                        ? ChatType.FRIEND
-                        : ChatType.GROUP,
+                        ? ChatType.friend
+                        : ChatType.group,
                   )),
     ),
   };
