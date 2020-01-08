@@ -14,6 +14,7 @@ import 'package:wechat/service/user_friend_apply.dart';
 import 'package:wechat/viewmodel/add_friend.dart';
 import 'package:wechat/viewmodel/chat.dart';
 import 'package:wechat/viewmodel/contact.dart';
+import 'package:wechat/viewmodel/home.dart';
 import 'package:wechat/viewmodel/login.dart';
 import 'package:wechat/viewmodel/profile.dart';
 import 'package:wechat/viewmodel/server_setting.dart';
@@ -32,6 +33,7 @@ final Module viewModelModule = Module([
   factory<AddFriendViewModel>(({params}) => AddFriendViewModel()),
   factory<ChatViewModel>(({params}) =>
       ChatViewModel(id: params.get(0) as int, type: params.get(1) as ChatType)),
+  factory<HomeViewModel>(({params}) => HomeViewModel()),
 ]);
 
 final Module repositoryModule = Module([

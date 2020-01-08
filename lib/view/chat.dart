@@ -13,6 +13,7 @@ import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/chat.dart';
 import 'package:wechat/widget/app_bar.dart';
 import 'package:wechat/widget/image.dart';
+import 'package:wechat/widget/stream_builder.dart';
 import 'package:wechat/widget/unfocus_scope.dart';
 
 export 'package:wechat/viewmodel/chat.dart' show ChatType;
@@ -256,7 +257,7 @@ class _MessagesListViewState extends State<_MessagesListView> {
           SliverList(
             delegate: SliverChildListDelegate(
               <Widget>[
-                StreamBuilder<List<Message>>(
+                IStreamBuilder<List<Message>>(
                   stream: widget.viewModel.historicalMessages,
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Message>> snapshot) {
@@ -269,11 +270,11 @@ class _MessagesListViewState extends State<_MessagesListView> {
                       reverse: true,
                       itemBuilder: (BuildContext context, int index) =>
                           _Message(snapshot.data[index]),
-                      itemCount: snapshot.data?.length ?? 0,
+                      itemCount: snapshot.data.length,
                     );
                   },
                 ),
-                StreamBuilder<List<Message>>(
+                IStreamBuilder<List<Message>>(
                   stream: widget.viewModel.newMessages,
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Message>> snapshot) {
@@ -284,7 +285,7 @@ class _MessagesListViewState extends State<_MessagesListView> {
                       addAutomaticKeepAlives: false,
                       itemBuilder: (BuildContext context, int index) =>
                           _Message(snapshot.data[index]),
-                      itemCount: snapshot.data?.length ?? 0,
+                      itemCount: snapshot.data.length,
                     );
                   },
                 ),

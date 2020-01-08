@@ -12,6 +12,7 @@ import 'package:wechat/viewmodel/login.dart';
 import 'package:wechat/widget/app_bar.dart';
 import 'package:wechat/widget/image.dart';
 import 'package:wechat/widget/login_input.dart';
+import 'package:wechat/widget/stream_builder.dart';
 import 'package:wechat/widget/unfocus_scope.dart';
 
 enum _PopupMenuItems { serverSetting }
@@ -92,7 +93,7 @@ class LoginPage extends BaseView<LoginViewModel> {
                         right: 0,
                         bottom:
                             12.height + 4, // padding.height + contentPadding
-                        child: StreamBuilder<VerifyCode>(
+                        child: IStreamBuilder<VerifyCode>(
                           stream: viewModel.verifyCode,
                           builder: (BuildContext context,
                               AsyncSnapshot<VerifyCode> snapshot) {

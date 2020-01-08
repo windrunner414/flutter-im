@@ -1,40 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:wechat/common/constant.dart';
 import 'package:wechat/common/route.dart';
-import 'package:wechat/service/base.dart';
 import 'package:wechat/util/screen.dart';
+import 'package:wechat/view/base.dart';
 import 'package:wechat/view/home/contact.dart';
 import 'package:wechat/view/home/conversation.dart';
 import 'package:wechat/view/home/profile.dart';
+import 'package:wechat/viewmodel/home.dart';
 import 'package:wechat/widget/app_bar.dart';
+import 'package:wechat/widget/stream_builder.dart';
 
 enum _PopupMenuItems { createGroup, addFriend, scanQrCode }
 
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int _currentIndex = 0;
-  final PageController _pageController = PageController(initialPage: 0);
+class HomePage extends BaseView<HomeViewModel> {
   final List<Widget> _pages = <Widget>[
     ConversationPage(),
     ContactPage(),
     ProfilePage(),
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    webSocketClient.connect();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    webSocketClient.close();
-  }
 
   Widget _buildPopupMenuItem(int iconName, String title) => Row(
         children: <Widget>[
@@ -55,7 +38,7 @@ class _HomePageState extends State<HomePage> {
       );
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context, HomeViewModel viewModel) => Scaffold(
         appBar: IAppBar(
           title: Config.AppName,
           actions: <Widget>[
@@ -94,38 +77,45 @@ class _HomePageState extends State<HomePage> {
         ),
         body: PageView.builder(
           itemBuilder: (BuildContext context, int index) => _pages[index],
-          controller: _pageController,
+          controller: viewModel.pageController,
           physics: const BouncingScrollPhysics(),
           itemCount: _pages.length,
-          onPageChanged: (int index) => setState(() => _currentIndex = index),
+          onPageChanged: (int index) => viewModel.currentIndex.value = index,
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              title: Text(Config.AppName),
-              icon: Icon(IconData(0xe608, fontFamily: Constant.IconFontFamily)),
-              activeIcon:
-                  Icon(IconData(0xe603, fontFamily: Constant.IconFontFamily)),
-            ),
-            BottomNavigationBarItem(
-              title: Text('通讯录'),
-              icon: Icon(IconData(0xe601, fontFamily: Constant.IconFontFamily)),
-              activeIcon:
-                  Icon(IconData(0xe602, fontFamily: Constant.IconFontFamily)),
-            ),
-            BottomNavigationBarItem(
-              title: Text('我'),
-              icon: Icon(IconData(0xe607, fontFamily: Constant.IconFontFamily)),
-              activeIcon:
-                  Icon(IconData(0xe630, fontFamily: Constant.IconFontFamily)),
-            ),
-          ],
-          currentIndex: _currentIndex,
-          type: BottomNavigationBarType.fixed,
-          fixedColor: const Color(AppColor.TabIconActive),
-          selectedFontSize: 14.sp,
-          unselectedFontSize: 14.sp,
-          onTap: (int index) => _pageController.jumpToPage(index),
+        bottomNavigationBar: IStreamBuilder<int>(
+          stream: viewModel.currentIndex,
+          builder: (BuildContext context, AsyncSnapshot<int> snapshot) =>
+              BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                title: Text(Config.AppName),
+                icon:
+                    Icon(IconData(0xe608, fontFamily: Constant.IconFontFamily)),
+                activeIcon:
+                    Icon(IconData(0xe603, fontFamily: Constant.IconFontFamily)),
+              ),
+              BottomNavigationBarItem(
+                title: Text('通讯录'),
+                icon:
+                    Icon(IconData(0xe601, fontFamily: Constant.IconFontFamily)),
+                activeIcon:
+                    Icon(IconData(0xe602, fontFamily: Constant.IconFontFamily)),
+              ),
+              BottomNavigationBarItem(
+                title: Text('我'),
+                icon:
+                    Icon(IconData(0xe607, fontFamily: Constant.IconFontFamily)),
+                activeIcon:
+                    Icon(IconData(0xe630, fontFamily: Constant.IconFontFamily)),
+              ),
+            ],
+            currentIndex: snapshot.data ?? 0,
+            type: BottomNavigationBarType.fixed,
+            fixedColor: const Color(AppColor.TabIconActive),
+            selectedFontSize: 14.sp,
+            unselectedFontSize: 14.sp,
+            onTap: (int index) => viewModel.pageController.jumpToPage(index),
+          ),
         ),
       );
 }

@@ -8,6 +8,7 @@ import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/add_friend.dart';
 import 'package:wechat/widget/app_bar.dart';
 import 'package:wechat/widget/image.dart';
+import 'package:wechat/widget/stream_builder.dart';
 import 'package:wechat/widget/unfocus_scope.dart';
 
 class AddFriendPage extends BaseView<AddFriendViewModel> {
@@ -74,7 +75,7 @@ class AddFriendPage extends BaseView<AddFriendViewModel> {
                   ),
                 ),
                 Expanded(
-                  child: StreamBuilder<List<User>>(
+                  child: IStreamBuilder<List<User>>(
                     stream: viewModel.result,
                     builder: (BuildContext context,
                         AsyncSnapshot<List<User>> snapshot) {

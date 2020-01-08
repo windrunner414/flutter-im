@@ -23,6 +23,7 @@ import 'package:wechat/view/error.dart';
 import 'package:wechat/view/home/home.dart';
 import 'package:wechat/view/login.dart';
 import 'package:wechat/view/splash.dart';
+import 'package:wechat/widget/stream_builder.dart';
 
 // TODO(AManWhoDoNotWantToTellHisNameAndUsingEnglishWithUpperCamelCaseAndWithoutBlankSpaceForAvoidingDartAnalysisReportWarningBecauseOfTodoStyleDoesNotMatchFlutterTodoStyle): 优化常量，fontIcon啊什么的用常量。这是一个简单&艰巨的任务，有缘人得之
 void main() {
@@ -67,7 +68,7 @@ class _AppInitState extends State<_AppInit> {
   @override
   Widget build(BuildContext context) {
     _initOnEveryBuild();
-    return StreamBuilder<bool>(
+    return IStreamBuilder<bool>(
       stream: _loginStateSubject,
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (!snapshot.hasData) {

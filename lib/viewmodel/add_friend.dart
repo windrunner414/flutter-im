@@ -12,7 +12,7 @@ class AddFriendViewModel extends BaseViewModel {
   final UserFriendApplyRepository _userFriendApplyRepository = inject();
 
   TextEditingController textEditingController = TextEditingController();
-  BehaviorSubject<List<User>> result = BehaviorSubject<List<User>>();
+  BehaviorSubject<List<User>> result = BehaviorSubject<List<User>>.seeded(null);
   String _searchKeyword = '';
   int _nextPage = 1;
 
