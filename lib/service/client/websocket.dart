@@ -15,7 +15,7 @@ class WebSocketEvent<T> {
 class WebSocketClient {
   WebSocketClient({this.url, this.protocols});
 
-  static const Duration _RetryInterval = Duration(seconds: 3);
+  static const Duration _RetryInterval = Duration(seconds: 1);
 
   final String url;
   final List<String> protocols;

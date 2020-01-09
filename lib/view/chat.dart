@@ -232,7 +232,6 @@ class _MessagesListViewState extends State<_MessagesListView> {
         scrollController: wrapScrollController,
         onRefresh: widget.viewModel.loadHistoricalMessages,
         controller: refreshController,
-        bottomBouncing: false,
         header: CustomHeader(
           extent: 40.0,
           triggerDistance: 50.0,

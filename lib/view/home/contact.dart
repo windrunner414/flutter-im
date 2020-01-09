@@ -294,7 +294,7 @@ class _ContactPageState extends State<ContactPage> {
               padding: const EdgeInsets.symmetric(vertical: 16),
               child: Center(
                 child: Text(
-                  '-------- 共有${_contacts.length}名联系人 --------',
+                  '共有${_contacts.length}名联系人',
                   style: TextStyle(
                     fontSize: 16.sp,
                     color: Colors.black45,

@@ -44,25 +44,20 @@ void main() {
           ErrorReportUtilNavigatorObserver(),
         ],
         onGenerateRoute: router.generator,
-        initialRoute: '/',
         title: Config.AppName,
-        theme: ThemeData.light().copyWith(
-          primaryColor: const Color(AppColor.AppBarColor),
-          cardColor: const Color(AppColor.AppBarColor),
-        ),
-        home: _AppInit(),
+        home: _App(),
       ),
     ),
     errorBuilder: (String errorDetail) => ErrorPage(errorDetail: errorDetail),
   );
 }
 
-class _AppInit extends StatefulWidget {
+class _App extends StatefulWidget {
   @override
-  _AppInitState createState() => _AppInitState();
+  _AppState createState() => _AppState();
 }
 
-class _AppInitState extends State<_AppInit> {
+class _AppState extends State<_App> {
   final BehaviorSubject<bool> _loginStateSubject = BehaviorSubject<bool>();
 
   @override
