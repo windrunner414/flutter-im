@@ -19,7 +19,7 @@ class WorkerImpl extends Worker {
   Future<void> warmUp() => _executor.warmUp();
 
   @override
-  Future<O> execute<I extends Object, O extends Object>(WorkerTask<I, O> task,
+  Future<O> execute<I, O>(WorkerTask<I, O> task,
       {WorkerTaskPriority priority = WorkerTaskPriority.regular}) {
     WorkPriority _priority;
     switch (priority) {

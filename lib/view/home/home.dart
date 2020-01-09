@@ -86,30 +86,79 @@ class HomePage extends BaseView<HomeViewModel> {
           stream: viewModel.currentIndex,
           builder: (BuildContext context, AsyncSnapshot<int> snapshot) =>
               BottomNavigationBar(
-            items: const <BottomNavigationBarItem>[
+            items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                title: Text(Config.AppName),
-                icon:
-                    Icon(IconData(0xe608, fontFamily: Constant.IconFontFamily)),
-                activeIcon:
-                    Icon(IconData(0xe603, fontFamily: Constant.IconFontFamily)),
+                title: const Text(Config.AppName),
+                icon: Icon(
+                  const IconData(0xe608, fontFamily: Constant.IconFontFamily),
+                  size: 28.sp,
+                ),
+                activeIcon: Icon(
+                  const IconData(0xe603, fontFamily: Constant.IconFontFamily),
+                  size: 28.sp,
+                ),
               ),
               BottomNavigationBarItem(
-                title: Text('通讯录'),
-                icon:
-                    Icon(IconData(0xe601, fontFamily: Constant.IconFontFamily)),
-                activeIcon:
-                    Icon(IconData(0xe602, fontFamily: Constant.IconFontFamily)),
+                title: Stack(
+                  overflow: Overflow.visible,
+                  children: <Widget>[
+                    const Text('通讯录'),
+                    IStreamBuilder<int>(
+                      stream: viewModel.friendApplyNum,
+                      builder: (BuildContext context,
+                              AsyncSnapshot<int> snapshot) =>
+                          snapshot.data > 0
+                              ? Positioned(
+                                  right: -8,
+                                  top: -32.sp,
+                                  child: Container(
+                                    width: 20.sp,
+                                    height: 20.sp,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(10.sp),
+                                      color: const Color(
+                                          AppColor.NotifyDotBgColor),
+                                    ),
+                                    child: Text(
+                                      snapshot.data > 99
+                                          ? '99+'
+                                          : snapshot.data.toString(),
+                                      style: TextStyle(
+                                        fontSize: 12.sp,
+                                        color:
+                                            const Color(AppColor.NotifyDotText),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox(),
+                    ),
+                  ],
+                ),
+                icon: Icon(
+                  const IconData(0xe601, fontFamily: Constant.IconFontFamily),
+                  size: 28.sp,
+                ),
+                activeIcon: Icon(
+                  const IconData(0xe602, fontFamily: Constant.IconFontFamily),
+                  size: 28.sp,
+                ),
               ),
               BottomNavigationBarItem(
-                title: Text('我'),
-                icon:
-                    Icon(IconData(0xe607, fontFamily: Constant.IconFontFamily)),
-                activeIcon:
-                    Icon(IconData(0xe630, fontFamily: Constant.IconFontFamily)),
+                title: const Text('我'),
+                icon: Icon(
+                  const IconData(0xe607, fontFamily: Constant.IconFontFamily),
+                  size: 28.sp,
+                ),
+                activeIcon: Icon(
+                  const IconData(0xe630, fontFamily: Constant.IconFontFamily),
+                  size: 28.sp,
+                ),
               ),
             ],
-            currentIndex: snapshot.data ?? 0,
+            currentIndex: snapshot.data,
             type: BottomNavigationBarType.fixed,
             fixedColor: const Color(AppColor.TabIconActive),
             selectedFontSize: 14.sp,

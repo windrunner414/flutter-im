@@ -8,7 +8,7 @@ class WorkerImpl extends Worker {
   Future<void> warmUp() async {}
 
   @override
-  Future<O> execute<I extends Object, O extends Object>(WorkerTask<I, O> task,
+  Future<O> execute<I, O>(WorkerTask<I, O> task,
       {WorkerTaskPriority priority = WorkerTaskPriority.regular}) {
     // TODO(windrunner): 用webworker执行？ 现在在ui线程执行，timeout遇到同步代码也不准
     final Future<O> result =

@@ -19,6 +19,10 @@ abstract class _$ModelGenericJsonConverterMixin<T extends Object> {
         return ServerConfig.fromJson(json as Map<String, dynamic>) as T;
       case Message:
         return Message.fromJson(json as Map<String, dynamic>) as T;
+      case FriendApplyList:
+        return FriendApplyList.fromJson(json as Map<String, dynamic>) as T;
+      case FriendApply:
+        return FriendApply.fromJson(json as Map<String, dynamic>) as T;
       default:
         return json as T;
     }
@@ -36,6 +40,10 @@ abstract class _$ModelGenericJsonConverterMixin<T extends Object> {
         return (value as ServerConfig).toJson();
       case Message:
         return (value as Message).toJson();
+      case FriendApplyList:
+        return (value as FriendApplyList).toJson();
+      case FriendApply:
+        return (value as FriendApply).toJson();
       default:
         return value;
     }
