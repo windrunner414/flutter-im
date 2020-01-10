@@ -81,10 +81,10 @@ class _ProfileHeaderView extends StatelessWidget {
 }
 
 class ProfilePage extends BaseView<ProfileViewModel> {
-  @override
-  bool get keepAlive => true;
-
   static const double SEPARATE_SIZE = 20.0;
+
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
 
   @override
   Widget build(BuildContext context, ProfileViewModel viewModel) => Container(
@@ -105,4 +105,16 @@ class ProfilePage extends BaseView<ProfileViewModel> {
           ),
         ),
       );
+}
+
+class _ProfilePageState extends BaseViewState<ProfileViewModel, ProfilePage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.build(context, viewModel);
+  }
 }

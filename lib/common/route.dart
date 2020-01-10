@@ -3,10 +3,11 @@ import 'package:fluro/fluro.dart' hide Router;
 import 'package:flutter/material.dart';
 import 'package:wechat/view/add_friend.dart';
 import 'package:wechat/view/chat.dart';
+import 'package:wechat/view/register.dart';
 import 'package:wechat/view/server_setting.dart';
 import 'package:wechat/view/setting.dart';
 
-enum Page { serverSetting, setting, addFriend, chat }
+enum Page { serverSetting, register, setting, addFriend, chat }
 
 final Router router = Router._();
 
@@ -30,6 +31,10 @@ class _RoutePage {
         routePath: '/serverSetting',
         transitionType: TransitionType.cupertinoFullScreenDialog,
         handler: Handler(handlerFunc: (_, __) => ServerSettingPage())),
+    Page.register: _RoutePage(
+        routePath: '/register',
+        transitionType: TransitionType.cupertinoFullScreenDialog,
+        handler: Handler(handlerFunc: (_, __) => RegisterPage())),
     Page.setting: _RoutePage(
         routePath: '/setting',
         handler: Handler(handlerFunc: (_, __) => SettingPage())),

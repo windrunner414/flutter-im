@@ -1,6 +1,5 @@
 import 'package:dartin/dartin.dart';
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 import 'package:wechat/common/exception.dart';
 import 'package:wechat/util/layer.dart';
 import 'package:wechat/viewmodel/base.dart';
@@ -8,49 +7,42 @@ import 'package:wechat/viewmodel/base.dart';
 /// 如果T不是BaseViewModel就会创建一个viewModel绑定上去，否则build的viewModel永远为null
 /// 若需要共享viewModel，需要额外提供一个ViewModelProvider
 abstract class BaseView<T extends BaseViewModel> extends StatefulWidget {
-  bool get keepAlive => false;
-  List<dynamic> get viewModelParameters => null;
-
   Widget build(BuildContext context, T viewModel);
 
   @override
-  @nonVirtual
-  _BaseViewState<T> createState() =>
-      keepAlive ? _BaseViewStateWithKeepAlive<T>() : _BaseViewState<T>();
+  BaseViewState<T, BaseView<T>> createState() =>
+      BaseViewState<T, BaseView<T>>();
 }
 
-class _BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
-  T _viewModel;
+class BaseViewState<T extends BaseViewModel, E extends BaseView<T>>
+    extends State<E> {
+  T viewModel;
 
   @override
-  Widget build(BuildContext context) => widget.build(context, _viewModel);
+  Widget build(BuildContext context) => widget.build(context, viewModel);
 
   @override
   void initState() {
     super.initState();
-    if (T != BaseViewModel) {
-      _viewModel = inject(params: widget.viewModelParameters);
-      _viewModel.init();
-    }
+    _initViewModel();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _viewModel?.dispose();
-    _viewModel = null;
+    _disposeViewModel();
   }
-}
 
-class _BaseViewStateWithKeepAlive<T extends BaseViewModel>
-    extends _BaseViewState<T> with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
+  T createViewModel() => inject();
 
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return widget.build(context, _viewModel);
+  void _initViewModel() {
+    viewModel = createViewModel();
+    viewModel?.init();
+  }
+
+  void _disposeViewModel() {
+    viewModel?.dispose();
+    viewModel = null;
   }
 }
 

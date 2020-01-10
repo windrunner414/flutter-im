@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dartin/dartin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -19,13 +20,14 @@ import 'package:wechat/widget/unfocus_scope.dart';
 export 'package:wechat/viewmodel/chat.dart' show ChatType;
 
 class ChatPage extends BaseView<ChatViewModel> {
-  ChatPage({@required int id, @required ChatType type, @required this.title})
-      : _viewModelParameters = <dynamic>[id, type];
+  ChatPage({@required this.id, @required this.type, @required this.title});
 
-  final List<dynamic> _viewModelParameters;
-  @override
-  List<dynamic> get viewModelParameters => _viewModelParameters;
+  final int id;
+  final ChatType type;
   final String title;
+
+  @override
+  _ChatPageState createState() => _ChatPageState();
 
   @override
   Widget build(BuildContext context, ChatViewModel viewModel) => UnFocusScope(
@@ -88,6 +90,12 @@ class ChatPage extends BaseView<ChatViewModel> {
           ),
         ),
       );
+}
+
+class _ChatPageState extends BaseViewState<ChatViewModel, ChatPage> {
+  @override
+  ChatViewModel createViewModel() =>
+      inject(params: <dynamic>[widget.id, widget.type]);
 }
 
 class _Message extends StatelessWidget {

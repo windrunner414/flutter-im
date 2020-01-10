@@ -18,6 +18,16 @@ abstract class AuthService extends BaseService {
       @Field() @required int verifyCodeTime,
       @Field() @required String verifyCode});
 
+  @Post(path: '/register')
+  Future<Response<ApiResponse<dynamic>>> register(
+      {@Field() @required String userAccount,
+      @Field() @required String userName,
+      @Field() @required String userPassword,
+      @Field() @required String rePassword,
+      @Field() @required String verifyCodeHash,
+      @Field() @required int verifyCodeTime,
+      @Field() @required String verifyCode});
+
   @Get(path: '/getInfo')
   Future<Response<ApiResponse<User>>> getSelfInfo();
 }

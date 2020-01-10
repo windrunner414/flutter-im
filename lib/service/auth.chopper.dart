@@ -35,6 +35,29 @@ class _$AuthService extends AuthService {
   }
 
   @override
+  Future<Response<ApiResponse<dynamic>>> register(
+      {String userAccount,
+      String userName,
+      String userPassword,
+      String rePassword,
+      String verifyCodeHash,
+      int verifyCodeTime,
+      String verifyCode}) {
+    final $url = '/User/Auth/register';
+    final $body = <String, dynamic>{
+      'userAccount': userAccount,
+      'userName': userName,
+      'userPassword': userPassword,
+      'rePassword': rePassword,
+      'verifyCodeHash': verifyCodeHash,
+      'verifyCodeTime': verifyCodeTime,
+      'verifyCode': verifyCode
+    };
+    final $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<ApiResponse<dynamic>, ApiResponse<dynamic>>($request);
+  }
+
+  @override
   Future<Response<ApiResponse<User>>> getSelfInfo() {
     final $url = '/User/Auth/getInfo';
     final $request = Request('GET', $url, client.baseUrl);

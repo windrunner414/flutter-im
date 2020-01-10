@@ -8,54 +8,19 @@ import 'package:wechat/model/verify_code.dart';
 import 'package:wechat/util/layer.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
-import 'package:wechat/viewmodel/login.dart';
+import 'package:wechat/viewmodel/register.dart';
 import 'package:wechat/widget/app_bar.dart';
 import 'package:wechat/widget/image.dart';
 import 'package:wechat/widget/login_input.dart';
 import 'package:wechat/widget/stream_builder.dart';
 import 'package:wechat/widget/unfocus_scope.dart';
 
-enum _PopupMenuItems { serverSetting }
-
-class LoginPage extends BaseView<LoginViewModel> {
+class RegisterPage extends BaseView<RegisterViewModel> {
   @override
-  Widget build(BuildContext context, LoginViewModel viewModel) => UnFocusScope(
+  Widget build(BuildContext context, RegisterViewModel viewModel) =>
+      UnFocusScope(
         child: Scaffold(
-          appBar: IAppBar(
-            title: '登录',
-            actions: <Widget>[
-              PopupMenuButton<_PopupMenuItems>(
-                itemBuilder: (BuildContext context) =>
-                    <PopupMenuItem<_PopupMenuItems>>[
-                  PopupMenuItem<_PopupMenuItems>(
-                    child: Text(
-                      '服务器设置',
-                      style: TextStyle(
-                        color: const Color(AppColor.AppBarPopupMenuColor),
-                        fontSize: 16.sp,
-                      ),
-                    ),
-                    value: _PopupMenuItems.serverSetting,
-                  ),
-                ],
-                icon: Icon(
-                  const IconData(0xe66b, fontFamily: Constant.IconFontFamily),
-                  size: 19.height,
-                ),
-                onSelected: (_PopupMenuItems selected) async {
-                  switch (selected) {
-                    case _PopupMenuItems.serverSetting:
-                      if (await router.push(Page.serverSetting) == true) {
-                        viewModel.refreshVerifyCode();
-                      }
-                      break;
-                  }
-                },
-                tooltip: '菜单',
-              ),
-              const SizedBox(width: 16)
-            ],
-          ),
+          appBar: IAppBar(title: '注册'),
           body: SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 32.width),
@@ -71,6 +36,10 @@ class LoginPage extends BaseView<LoginViewModel> {
                   ),
                   SizedBox(height: 40.height),
                   LoginInput(
+                    label: '用户名',
+                    controller: viewModel.usernameEditingController,
+                  ),
+                  LoginInput(
                     label: '账号',
                     controller: viewModel.accountEditingController,
                   ),
@@ -78,6 +47,11 @@ class LoginPage extends BaseView<LoginViewModel> {
                     label: '密码',
                     obscureText: true,
                     controller: viewModel.passwordEditingController,
+                  ),
+                  LoginInput(
+                    label: '确认密码',
+                    obscureText: true,
+                    controller: viewModel.rePasswordEditingController,
                   ),
                   Stack(
                     children: <Widget>[
@@ -144,7 +118,11 @@ class LoginPage extends BaseView<LoginViewModel> {
                   SizedBox(height: 30.height),
                   FlatButton(
                     onPressed: () => viewModel
-                        .login()
+                        .register()
+                        .then((_) {
+                          showToast('注册成功');
+                          router.pop();
+                        })
                         .catchAll((Object error) => showToast(error.toString()),
                             test: exceptCancelException)
                         .showLoadingUntilComplete(),
@@ -152,19 +130,8 @@ class LoginPage extends BaseView<LoginViewModel> {
                     padding: EdgeInsets.symmetric(vertical: 10.height),
                     child: Center(
                       child: Text(
-                        '登录',
+                        '注册',
                         style: TextStyle(fontSize: 20.sp, color: Colors.white),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 15.height),
-                  GestureDetector(
-                    onTap: () => router.push(Page.register),
-                    child: Text(
-                      '没有账号？点此注册',
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        color: const Color(AppColor.LoginInputNormal),
                       ),
                     ),
                   ),

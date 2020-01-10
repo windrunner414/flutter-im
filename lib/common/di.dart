@@ -17,6 +17,7 @@ import 'package:wechat/viewmodel/contact.dart';
 import 'package:wechat/viewmodel/home.dart';
 import 'package:wechat/viewmodel/login.dart';
 import 'package:wechat/viewmodel/profile.dart';
+import 'package:wechat/viewmodel/register.dart';
 import 'package:wechat/viewmodel/server_setting.dart';
 import 'package:wechat/viewmodel/setting.dart';
 import 'package:wechat/viewmodel/splash.dart';
@@ -25,6 +26,7 @@ const DartInScope HttpInterceptorScope = DartInScope('http_interceptors');
 
 final Module viewModelModule = Module([
   factory<LoginViewModel>(({params}) => LoginViewModel()),
+  factory<RegisterViewModel>(({params}) => RegisterViewModel()),
   factory<ServerSettingViewModel>(({params}) => ServerSettingViewModel()),
   factory<ProfileViewModel>(({params}) => ProfileViewModel()),
   factory<SplashViewModel>(({params}) => SplashViewModel()),

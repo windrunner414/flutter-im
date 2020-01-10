@@ -1,16 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wechat/util/screen.dart';
-import 'package:wechat/view/base.dart';
-import 'package:wechat/viewmodel/base.dart';
 
-class ErrorPage extends BaseView<BaseViewModel> {
+class ErrorPage extends StatelessWidget {
+  // ignore: prefer_const_constructors_in_immutables, 屏幕大小改变时需要rebuild，若为const不会rebuild
   ErrorPage({this.errorDetail});
 
   final String errorDetail;
 
   @override
-  Widget build(BuildContext context, BaseViewModel viewModel) => Container(
+  Widget build(BuildContext context) => Container(
         padding: EdgeInsets.symmetric(horizontal: 32.width),
         color: Colors.white,
         child: Column(

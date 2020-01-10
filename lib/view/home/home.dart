@@ -13,12 +13,6 @@ import 'package:wechat/widget/stream_builder.dart';
 enum _PopupMenuItems { createGroup, addFriend, scanQrCode }
 
 class HomePage extends BaseView<HomeViewModel> {
-  final List<Widget> _pages = <Widget>[
-    ConversationPage(),
-    ContactPage(),
-    ProfilePage(),
-  ];
-
   Widget _buildPopupMenuItem(int iconName, String title) => Row(
         children: <Widget>[
           Icon(
@@ -76,10 +70,14 @@ class HomePage extends BaseView<HomeViewModel> {
           ],
         ),
         body: PageView.builder(
-          itemBuilder: (BuildContext context, int index) => _pages[index],
+          itemBuilder: (BuildContext context, int index) => <Widget>[
+            ConversationPage(),
+            ContactPage(friendApplyNum: viewModel.friendApplyNum),
+            ProfilePage(),
+          ][index],
           controller: viewModel.pageController,
           physics: const BouncingScrollPhysics(),
-          itemCount: _pages.length,
+          itemCount: 3,
           onPageChanged: (int index) => viewModel.currentIndex.value = index,
         ),
         bottomNavigationBar: IStreamBuilder<int>(
@@ -105,35 +103,33 @@ class HomePage extends BaseView<HomeViewModel> {
                     const Text('通讯录'),
                     IStreamBuilder<int>(
                       stream: viewModel.friendApplyNum,
-                      builder: (BuildContext context,
-                              AsyncSnapshot<int> snapshot) =>
-                          snapshot.data > 0
-                              ? Positioned(
-                                  right: -8,
-                                  top: -32.sp,
-                                  child: Container(
-                                    width: 20.sp,
-                                    height: 20.sp,
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(10.sp),
-                                      color: const Color(
-                                          AppColor.NotifyDotBgColor),
-                                    ),
-                                    child: Text(
-                                      snapshot.data > 99
-                                          ? '99+'
-                                          : snapshot.data.toString(),
-                                      style: TextStyle(
-                                        fontSize: 12.sp,
-                                        color:
-                                            const Color(AppColor.NotifyDotText),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : const SizedBox(),
+                      builder:
+                          (BuildContext context, AsyncSnapshot<int> snapshot) =>
+                              Positioned(
+                        right: -8,
+                        top: -32.sp,
+                        child: Offstage(
+                          offstage: snapshot.data == 0,
+                          child: Container(
+                            width: 20.sp,
+                            height: 20.sp,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.sp),
+                              color: const Color(AppColor.NotifyDotBgColor),
+                            ),
+                            child: Text(
+                              snapshot.data > 99
+                                  ? '99+'
+                                  : snapshot.data.toString(),
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                color: const Color(AppColor.NotifyDotText),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
