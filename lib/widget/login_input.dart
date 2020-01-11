@@ -25,7 +25,7 @@ class LoginInput extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 12.height),
         child: Theme(
           data: ThemeData(
-            primaryColor: const Color(AppColor.LoginInputActive),
+            primaryColor: const Color(AppColor.LoginInputActiveColor),
             hintColor: Colors.black87,
           ),
           child: TextField(
@@ -39,7 +39,7 @@ class LoginInput extends StatelessWidget {
                 labelText: label == null ? null : label + '：',
                 enabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color(AppColor.LoginInputNormal),
+                    color: Color(AppColor.LoginInputNormalColor),
                   ),
                 )),
             inputFormatters: inputFormatters,

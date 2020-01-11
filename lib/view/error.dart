@@ -26,6 +26,7 @@ class ErrorPage extends StatelessWidget {
             SizedBox(height: 50.height),
             Expanded(
               child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
                 child: Text(
                   errorDetail,
                   style: TextStyle(

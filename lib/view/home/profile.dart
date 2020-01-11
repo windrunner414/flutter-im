@@ -63,7 +63,7 @@ class _ProfileHeaderView extends StatelessWidget {
                   fontFamily: Constant.IconFontFamily,
                 ),
                 size: 22.minWidthHeight,
-                color: Color(AppColor.TabIconNormal),
+                color: Color(AppColor.TabIconNormalColor),
               ),
               SizedBox(width: 5.width),
               Icon(
@@ -72,7 +72,7 @@ class _ProfileHeaderView extends StatelessWidget {
                   fontFamily: Constant.IconFontFamily,
                 ),
                 size: 22.minWidthHeight,
-                color: Color(AppColor.TabIconNormal),
+                color: Color(AppColor.TabIconNormalColor),
               ),
             ],
           ),
@@ -87,23 +87,19 @@ class ProfilePage extends BaseView<ProfileViewModel> {
   _ProfilePageState createState() => _ProfilePageState();
 
   @override
-  Widget build(BuildContext context, ProfileViewModel viewModel) => Container(
-        color: const Color(AppColor.BackgroundColor),
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              SizedBox(height: SEPARATE_SIZE.height),
-              _ProfileHeaderView(),
-              SizedBox(height: SEPARATE_SIZE.height),
-              FullWidthButton(
-                iconPath: 'asset://assets/images/ic_settings.png',
-                title: '设置',
-                showDivider: true,
-                onPressed: () => router.push(Page.setting),
-              ),
-            ],
+  Widget build(BuildContext context, ProfileViewModel viewModel) => ListView(
+        physics: const BouncingScrollPhysics(),
+        children: <Widget>[
+          SizedBox(height: SEPARATE_SIZE.height),
+          _ProfileHeaderView(),
+          SizedBox(height: SEPARATE_SIZE.height),
+          FullWidthButton(
+            iconPath: 'asset://assets/images/ic_settings.png',
+            title: '设置',
+            showDivider: true,
+            onPressed: () => router.push(Page.setting),
           ),
-        ),
+        ],
       );
 }
 

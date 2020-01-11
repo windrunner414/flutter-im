@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/constant.dart';
@@ -168,7 +169,6 @@ class _ContactPageState extends BaseViewState<ContactViewModel, ContactPage>
     };
 
     double totalPos = _functionButtons.length * _ContactItem.height(false);
-    ;
     for (int i = 0; i < contacts.length; ++i) {
       bool hasGroupTitle = true;
       if (i > 0 &&
@@ -223,157 +223,149 @@ class _ContactPageState extends BaseViewState<ContactViewModel, ContactPage>
     }
   }
 
-  Widget _build(BuildContext context) => Container(
-        color: const Color(AppColor.BackgroundColor),
-        child: Stack(
+  List<Widget> _buildFunctionButtons() => <Widget>[
+        Stack(
+          alignment: Alignment.center,
           children: <Widget>[
-            IStreamBuilder<List<Contact>>(
-              stream: viewModel.contacts,
-              builder: (BuildContext context,
-                      AsyncSnapshot<List<Contact>> snapshot) =>
-                  ListView.builder(
-                addAutomaticKeepAlives: false,
-                physics: const BouncingScrollPhysics(),
-                controller: viewModel.scrollController,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index < _functionButtons.length) {
-                    return _functionButtons[index];
-                  }
-                  if (index == snapshot.data.length + _functionButtons.length) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: Center(
-                        child: Text(
-                          '共有${snapshot.data.length}名联系人',
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            color: Colors.black45,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                  final int contactIndex = index - _functionButtons.length;
-                  bool hasGroupTitle = true;
-                  final Contact contact = snapshot.data[contactIndex];
-
-                  if (contactIndex > 0 &&
-                      contact.nameIndex ==
-                          snapshot.data[contactIndex - 1].nameIndex) {
-                    hasGroupTitle = false;
-                  }
-                  return _ContactItem(
-                    avatar: contact.avatar,
-                    title: contact.name,
-                    groupTitle: hasGroupTitle ? contact.nameIndex : null,
-                  );
-                },
-                itemCount: snapshot.data.length + _functionButtons.length + 1,
-              ),
+            _ContactItem(
+              avatar: 'asset://assets/images/ic_new_friend.png',
+              title: '新的朋友',
+              onPressed: () {
+                print('添加新朋友');
+              },
             ),
             Positioned(
-              width: 24,
-              right: 0,
-              top: 0,
-              bottom: 0,
-              child: IStreamBuilder<String>(
-                stream: viewModel.currentGroup,
-                builder:
-                    (BuildContext context, AsyncSnapshot<String> snapshot) =>
-                        Container(
-                  color: snapshot.data.isNotEmpty
-                      ? Colors.black26
-                      : Colors.transparent,
-                  child: LayoutBuilder(
-                    builder: _buildIndexBar,
-                  ),
-                ),
-              ),
-            ),
-            IStreamBuilder<String>(
-              stream: viewModel.currentGroup,
-              builder: (BuildContext context, AsyncSnapshot<String> snapshot) =>
-                  Offstage(
-                offstage: snapshot.data.isEmpty,
-                child: Center(
-                  child: Container(
-                    width: 114.minWidthHeight,
-                    height: 114.minWidthHeight,
-                    decoration: const BoxDecoration(
-                      color: Color(AppColor.ContactGroupIndexBarBgColor),
-                      borderRadius: BorderRadius.all(Radius.circular(4)),
-                    ),
-                    child: Center(
-                      child: Text(
-                        snapshot.data,
-                        style: TextStyle(
-                          fontSize: 64.sp,
-                          color: Colors.white,
-                        ),
-                      ),
+              right: 32,
+              child: IStreamBuilder<int>(
+                stream: widget.friendApplyNum,
+                builder: (BuildContext context, AsyncSnapshot<int> snapshot) =>
+                    Badge(
+                  badgeColor: const Color(AppColor.NotifyDotBgColor),
+                  badgeContent: Text(
+                    snapshot.data > 99 ? '99+' : snapshot.data.toString(),
+                    style: TextStyle(
+                      color: const Color(AppColor.NotifyDotTextColor),
+                      fontSize: 14.sp,
                     ),
                   ),
+                  toAnimate: false,
+                  padding: const EdgeInsets.all(7),
+                  showBadge: snapshot.data > 0,
                 ),
               ),
             ),
           ],
         ),
-      );
+        _ContactItem(
+          avatar: 'asset://assets/images/ic_group_chat.png',
+          title: '群聊',
+          onPressed: () {
+            print('点击了群聊');
+          },
+        ),
+      ];
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return _build(context);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _functionButtons = <Widget>[
-      Stack(
-        children: <Widget>[
-          _ContactItem(
-              avatar: 'asset://assets/images/ic_new_friend.png',
-              title: '新的朋友',
-              onPressed: () {
-                print('添加新朋友');
-              }),
-          IStreamBuilder<int>(
-            stream: widget.friendApplyNum,
-            builder: (BuildContext context, AsyncSnapshot<int> snapshot) =>
-                Positioned(
-              right: 32,
-              top: (_ContactItem.height(false) - 22) / 2,
-              child: Offstage(
-                offstage: snapshot.data == 0,
-                child: Container(
-                  width: 22,
-                  height: 22,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(11),
-                    color: const Color(AppColor.NotifyDotBgColor),
+    return Stack(
+      children: <Widget>[
+        IStreamBuilder<List<Contact>>(
+          stream: viewModel.contacts,
+          builder:
+              (BuildContext context, AsyncSnapshot<List<Contact>> snapshot) =>
+                  ListView.builder(
+            addAutomaticKeepAlives: false,
+            physics: const BouncingScrollPhysics(),
+            controller: viewModel.scrollController,
+            itemBuilder: (BuildContext context, int index) {
+              if (index < _functionButtons.length) {
+                return _functionButtons[index];
+              }
+              if (index == snapshot.data.length + _functionButtons.length) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Center(
+                    child: Text(
+                      '共有${snapshot.data.length}名联系人',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        color: Colors.black45,
+                      ),
+                    ),
                   ),
+                );
+              }
+              final int contactIndex = index - _functionButtons.length;
+              bool hasGroupTitle = true;
+              final Contact contact = snapshot.data[contactIndex];
+
+              if (contactIndex > 0 &&
+                  contact.nameIndex ==
+                      snapshot.data[contactIndex - 1].nameIndex) {
+                hasGroupTitle = false;
+              }
+              return _ContactItem(
+                avatar: contact.avatar,
+                title: contact.name,
+                groupTitle: hasGroupTitle ? contact.nameIndex : null,
+              );
+            },
+            itemCount: snapshot.data.length + _functionButtons.length + 1,
+          ),
+        ),
+        Positioned(
+          width: 24,
+          right: 0,
+          top: 0,
+          bottom: 0,
+          child: IStreamBuilder<String>(
+            stream: viewModel.currentGroup,
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) =>
+                Container(
+              color: snapshot.data.isNotEmpty
+                  ? Colors.black26
+                  : Colors.transparent,
+              child: LayoutBuilder(
+                builder: _buildIndexBar,
+              ),
+            ),
+          ),
+        ),
+        IStreamBuilder<String>(
+          stream: viewModel.currentGroup,
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) =>
+              Offstage(
+            offstage: snapshot.data.isEmpty,
+            child: Center(
+              child: Container(
+                width: 114.minWidthHeight,
+                height: 114.minWidthHeight,
+                decoration: const BoxDecoration(
+                  color: Color(AppColor.ContactGroupIndexBarBgColor),
+                  borderRadius: BorderRadius.all(Radius.circular(4)),
+                ),
+                child: Center(
                   child: Text(
-                    snapshot.data > 99 ? '99+' : snapshot.data.toString(),
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: Color(AppColor.NotifyDotText),
+                    snapshot.data,
+                    style: TextStyle(
+                      fontSize: 64.sp,
+                      color: Colors.white,
                     ),
                   ),
                 ),
               ),
             ),
           ),
-        ],
-      ),
-      _ContactItem(
-          avatar: 'asset://assets/images/ic_group_chat.png',
-          title: '群聊',
-          onPressed: () {
-            print('点击了群聊');
-          }),
-    ];
+        ),
+      ],
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _functionButtons = _buildFunctionButtons();
     viewModel.currentGroup.listen((String group) => _jumpToGroup(group));
     viewModel.contacts
         .listen((List<Contact> data) => _computeGroupTitlePos(data));

@@ -47,7 +47,7 @@ class _ConversationItemState extends State<_ConversationItem> {
           widget._conversation.unreadMsgCount.toString(),
           style: TextStyle(
             fontSize: 12.sp,
-            color: const Color(AppColor.NotifyDotText),
+            color: const Color(AppColor.NotifyDotTextColor),
           ),
         ),
       );
@@ -150,19 +150,14 @@ class _ConversationPageState extends State<ConversationPage> {
   final ConversationPageData data = ConversationPageData.mock();
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: const Color(AppColor.BackgroundColor),
-      child: RefreshIndicator(
+  Widget build(BuildContext context) => RefreshIndicator(
         onRefresh: () async {
           await Future<void>.delayed(const Duration(milliseconds: 1000));
         },
-        color: const Color(AppColor.TabIconActive),
+        color: const Color(AppColor.TabIconActiveColor),
         child: ListView.builder(
             itemBuilder: (BuildContext context, int index) =>
                 _ConversationItem(data.conversations[index]),
             itemCount: data.conversations.length),
-      ),
-    );
-  }
+      );
 }

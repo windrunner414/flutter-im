@@ -77,7 +77,7 @@ class ChatPage extends BaseView<ChatViewModel> {
                           style:
                               TextStyle(fontSize: 16.sp, color: Colors.white),
                         ),
-                        color: const Color(AppColor.LoginInputNormal),
+                        color: const Color(AppColor.LoginInputNormalColor),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 4, vertical: 6),
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -137,7 +137,7 @@ class _Message extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.all(Radius.circular(4)),
               color: isSentByMe
-                  ? const Color(AppColor.LoginInputNormal)
+                  ? const Color(AppColor.LoginInputNormalColor)
                   : Colors.white,
             ),
             child: SelectableText(

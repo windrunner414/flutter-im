@@ -28,16 +28,17 @@ class _RoutePage {
 
   static final Map<Page, _RoutePage> _pages = <Page, _RoutePage>{
     Page.serverSetting: _RoutePage(
-        routePath: '/serverSetting',
-        transitionType: TransitionType.cupertinoFullScreenDialog,
-        handler: Handler(handlerFunc: (_, __) => ServerSettingPage())),
+      routePath: '/serverSetting',
+      handler: Handler(handlerFunc: (_, __) => ServerSettingPage()),
+    ),
     Page.register: _RoutePage(
-        routePath: '/register',
-        transitionType: TransitionType.cupertinoFullScreenDialog,
-        handler: Handler(handlerFunc: (_, __) => RegisterPage())),
+      routePath: '/register',
+      handler: Handler(handlerFunc: (_, __) => RegisterPage()),
+    ),
     Page.setting: _RoutePage(
-        routePath: '/setting',
-        handler: Handler(handlerFunc: (_, __) => SettingPage())),
+      routePath: '/setting',
+      handler: Handler(handlerFunc: (_, __) => SettingPage()),
+    ),
     Page.addFriend: _RoutePage(
       routePath: '/addFriend',
       handler: Handler(handlerFunc: (_, __) => AddFriendPage()),

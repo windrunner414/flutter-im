@@ -66,7 +66,7 @@ class AddFriendPage extends BaseView<AddFriendViewModel> {
                           style:
                               TextStyle(fontSize: 16.sp, color: Colors.white),
                         ),
-                        color: const Color(AppColor.LoginInputActive),
+                        color: const Color(AppColor.LoginInputActiveColor),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 6),
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -157,7 +157,7 @@ class AddFriendPage extends BaseView<AddFriendViewModel> {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 8, vertical: 6),
                                         color: const Color(
-                                            AppColor.LoginInputNormal),
+                                            AppColor.LoginInputNormalColor),
                                         materialTapTargetSize:
                                             MaterialTapTargetSize.shrinkWrap,
                                         child: Text(

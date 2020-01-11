@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:wechat/common/constant.dart';
 import 'package:wechat/common/route.dart';
@@ -32,58 +33,86 @@ class HomePage extends BaseView<HomeViewModel> {
       );
 
   @override
-  Widget build(BuildContext context, HomeViewModel viewModel) => Scaffold(
-        appBar: IAppBar(
-          title: Config.AppName,
-          actions: <Widget>[
-            PopupMenuButton<_PopupMenuItems>(
-              itemBuilder: (BuildContext context) =>
-                  <PopupMenuItem<_PopupMenuItems>>[
-                PopupMenuItem<_PopupMenuItems>(
-                  child: _buildPopupMenuItem(0xe606, '发起群聊'),
-                  value: _PopupMenuItems.createGroup,
-                ),
-                PopupMenuItem<_PopupMenuItems>(
-                  child: _buildPopupMenuItem(0xe638, '添加朋友'),
-                  value: _PopupMenuItems.addFriend,
-                ),
-                PopupMenuItem<_PopupMenuItems>(
-                  child: _buildPopupMenuItem(0xe79b, '扫一扫'),
-                  value: _PopupMenuItems.scanQrCode,
-                ),
-              ],
-              icon: Icon(
-                const IconData(0xe66b, fontFamily: Constant.IconFontFamily),
-                size: 19.height,
+  Widget build(BuildContext context, HomeViewModel viewModel) {
+    final List<Widget> pages = <Widget>[
+      ConversationPage(),
+      ContactPage(friendApplyNum: viewModel.friendApplyNum),
+      ProfilePage(),
+    ];
+    return Scaffold(
+      appBar: IAppBar(
+        title: Config.AppName,
+        actions: <Widget>[
+          PopupMenuButton<_PopupMenuItems>(
+            itemBuilder: (BuildContext context) =>
+                <PopupMenuItem<_PopupMenuItems>>[
+              PopupMenuItem<_PopupMenuItems>(
+                child: _buildPopupMenuItem(0xe606, '发起群聊'),
+                value: _PopupMenuItems.createGroup,
               ),
-              onSelected: (_PopupMenuItems selected) {
-                switch (selected) {
-                  case _PopupMenuItems.addFriend:
-                    router.push(Page.addFriend);
-                    break;
-                  default:
-                }
-              },
-              tooltip: '菜单',
+              PopupMenuItem<_PopupMenuItems>(
+                child: _buildPopupMenuItem(0xe638, '添加朋友'),
+                value: _PopupMenuItems.addFriend,
+              ),
+              PopupMenuItem<_PopupMenuItems>(
+                child: _buildPopupMenuItem(0xe79b, '扫一扫'),
+                value: _PopupMenuItems.scanQrCode,
+              ),
+            ],
+            icon: Icon(
+              const IconData(0xe66b, fontFamily: Constant.IconFontFamily),
+              size: 19.height,
             ),
-            const SizedBox(width: 16),
-          ],
-        ),
-        body: PageView.builder(
-          itemBuilder: (BuildContext context, int index) => <Widget>[
-            ConversationPage(),
-            ContactPage(friendApplyNum: viewModel.friendApplyNum),
-            ProfilePage(),
-          ][index],
+            onSelected: (_PopupMenuItems selected) {
+              switch (selected) {
+                case _PopupMenuItems.addFriend:
+                  router.push(Page.addFriend);
+                  break;
+                default:
+              }
+            },
+            tooltip: '菜单',
+          ),
+          const SizedBox(width: 16),
+        ],
+      ),
+      body: Container(
+        color: const Color(AppColor.BackgroundColor),
+        child: PageView.builder(
+          itemBuilder: (BuildContext context, int index) => pages[index],
           controller: viewModel.pageController,
           physics: const BouncingScrollPhysics(),
           itemCount: 3,
           onPageChanged: (int index) => viewModel.currentIndex.value = index,
         ),
-        bottomNavigationBar: IStreamBuilder<int>(
-          stream: viewModel.currentIndex,
-          builder: (BuildContext context, AsyncSnapshot<int> snapshot) =>
-              BottomNavigationBar(
+      ),
+      bottomNavigationBar: IStreamBuilder<int>(
+        stream: viewModel.currentIndex,
+        builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+          Widget buildContactIcon(bool active) => IStreamBuilder<int>(
+                stream: viewModel.friendApplyNum,
+                builder: (BuildContext context, AsyncSnapshot<int> snapshot) =>
+                    Badge(
+                  child: Icon(
+                    IconData(active ? 0xe602 : 0xe601,
+                        fontFamily: Constant.IconFontFamily),
+                    size: 28.sp,
+                  ),
+                  badgeColor: const Color(AppColor.NotifyDotBgColor),
+                  badgeContent: Text(
+                    snapshot.data > 99 ? '99+' : snapshot.data.toString(),
+                    style: TextStyle(
+                      color: const Color(AppColor.NotifyDotTextColor),
+                      fontSize: 14.sp,
+                    ),
+                  ),
+                  toAnimate: false,
+                  padding: const EdgeInsets.all(7),
+                  showBadge: snapshot.data > 0,
+                ),
+              );
+
+          return BottomNavigationBar(
             items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 title: const Text(Config.AppName),
@@ -97,50 +126,9 @@ class HomePage extends BaseView<HomeViewModel> {
                 ),
               ),
               BottomNavigationBarItem(
-                title: Stack(
-                  overflow: Overflow.visible,
-                  children: <Widget>[
-                    const Text('通讯录'),
-                    IStreamBuilder<int>(
-                      stream: viewModel.friendApplyNum,
-                      builder:
-                          (BuildContext context, AsyncSnapshot<int> snapshot) =>
-                              Positioned(
-                        right: -8,
-                        top: -32.sp,
-                        child: Offstage(
-                          offstage: snapshot.data == 0,
-                          child: Container(
-                            width: 20.sp,
-                            height: 20.sp,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10.sp),
-                              color: const Color(AppColor.NotifyDotBgColor),
-                            ),
-                            child: Text(
-                              snapshot.data > 99
-                                  ? '99+'
-                                  : snapshot.data.toString(),
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                color: const Color(AppColor.NotifyDotText),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                icon: Icon(
-                  const IconData(0xe601, fontFamily: Constant.IconFontFamily),
-                  size: 28.sp,
-                ),
-                activeIcon: Icon(
-                  const IconData(0xe602, fontFamily: Constant.IconFontFamily),
-                  size: 28.sp,
-                ),
+                title: const Text('通讯录'),
+                icon: buildContactIcon(false),
+                activeIcon: buildContactIcon(true),
               ),
               BottomNavigationBarItem(
                 title: const Text('我'),
@@ -156,11 +144,13 @@ class HomePage extends BaseView<HomeViewModel> {
             ],
             currentIndex: snapshot.data,
             type: BottomNavigationBarType.fixed,
-            fixedColor: const Color(AppColor.TabIconActive),
+            fixedColor: const Color(AppColor.TabIconActiveColor),
             selectedFontSize: 14.sp,
             unselectedFontSize: 14.sp,
             onTap: (int index) => viewModel.pageController.jumpToPage(index),
-          ),
-        ),
-      );
+          );
+        },
+      ),
+    );
+  }
 }

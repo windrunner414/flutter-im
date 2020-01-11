@@ -44,7 +44,7 @@ class FullWidthButton extends StatelessWidget {
             fontFamily: Constant.IconFontFamily,
           ),
           size: 22.minWidthHeight,
-          color: const Color(AppColor.TabIconNormal),
+          color: const Color(AppColor.TabIconNormalColor),
         ),
       ],
     );
