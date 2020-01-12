@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:dartin/dartin.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -51,6 +53,7 @@ class ChatPage extends BaseView<ChatViewModel> {
                           color: Colors.white,
                           child: TextField(
                             controller: viewModel.messageEditingController,
+                            scrollPhysics: const BouncingScrollPhysics(),
                             maxLines: 5,
                             minLines: 1,
                             decoration: const InputDecoration(
@@ -98,12 +101,21 @@ class _ChatPageState extends BaseViewState<ChatViewModel, ChatPage> {
       inject(params: <dynamic>[widget.id, widget.type]);
 }
 
-class _Message extends StatelessWidget {
+class _MessageBox extends StatefulWidget {
   // ignore: prefer_const_constructors_in_immutables, 屏幕大小改变时需要rebuild，若为const不会rebuild
-  _Message(this.message);
+  _MessageBox(this.message);
 
   final Message message;
-  bool get isSentByMe => message.fromUserId == ownUserInfo.value.userId;
+
+  @override
+  _MessageBoxState createState() => _TextMessageBoxState();
+}
+
+abstract class _MessageBoxState extends State<_MessageBox> {
+  bool get isSentByMe => widget.message.fromUserId == ownUserInfo.value.userId;
+
+  @protected
+  Widget buildBox(BuildContext context);
 
   @override
   Widget build(BuildContext context) {
@@ -130,49 +142,210 @@ class _Message extends StatelessWidget {
               fontSize: 14.sp,
               color: Colors.black45,
             ),
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 5),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(4)),
-              color: isSentByMe
-                  ? const Color(AppColor.LoginInputNormalColor)
-                  : Colors.white,
-            ),
-            child: SelectableText(
-              message.msg,
-              style: TextStyle(
-                fontSize: 16.sp,
-                color: Colors.black87,
-              ),
-            ),
-          ),
+          buildBox(context),
         ],
       ),
     );
-    List<Widget> children;
-    if (isSentByMe) {
-      children = <Widget>[
-        messageBox,
-        const SizedBox(width: 10),
-        avatar,
-      ];
-    } else {
-      children = <Widget>[
-        avatar,
-        const SizedBox(width: 10),
-        messageBox,
-      ];
-    }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         mainAxisAlignment:
             isSentByMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
+        children: isSentByMe
+            ? <Widget>[
+                messageBox,
+                const SizedBox(width: 10),
+                avatar,
+              ]
+            : <Widget>[
+                avatar,
+                const SizedBox(width: 10),
+                messageBox,
+              ],
       ),
+    );
+  }
+}
+
+class _TextMessageBoxState extends _MessageBoxState {
+  TextSpan _messageTextSpan;
+  bool _containsUrl = false;
+
+  Paragraph _paragraph;
+  ParagraphStyle _paragraphStyle;
+  ParagraphConstraints _paragraphConstraints;
+
+  int _currentTapUrlSpanIndex;
+  Offset _startPosition;
+  Offset _nowPosition;
+  Timer _cancelTapTimer;
+
+  static final RegExp _urlRegExp = RegExp(
+      r'https?://[\w_-]+(?:(?:\.[\w_-]+)+)[\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-]?');
+
+  @override
+  void initState() {
+    super.initState();
+    final List<TextSpan> messageSpanList = <TextSpan>[];
+    widget.message.msg.splitMapJoin(_urlRegExp, onMatch: (Match match) {
+      _containsUrl = true;
+      final String url = match.group(0);
+      messageSpanList.add(TextSpan(
+        text: url,
+        style: TextStyle(color: Colors.indigoAccent),
+        recognizer: TapGestureRecognizer()..onTap = () => print(url),
+      ));
+      return '';
+    }, onNonMatch: (String nonMatch) {
+      messageSpanList.add(TextSpan(text: nonMatch));
+      return '';
+    });
+    _buildMessageTextSpan(messageSpanList);
+  }
+
+  void _buildMessageTextSpan(List<TextSpan> messageSpanList) =>
+      _messageTextSpan = TextSpan(children: messageSpanList);
+
+  bool _needRebuildParagraph(
+      ParagraphStyle style, ParagraphConstraints constraints) {
+    if (_paragraph == null ||
+        _paragraphConstraints != constraints ||
+        _paragraphStyle != style) {
+      _paragraphStyle = style;
+      _paragraphConstraints = constraints;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  TextSpan _getSpanByOffset(
+    Offset offset,
+    TextStyle textStyle,
+    BoxConstraints constraints,
+  ) {
+    if (_needRebuildParagraph(
+      ParagraphStyle(
+        fontSize: textStyle.fontSize,
+        fontFamily: textStyle.fontFamily,
+        fontWeight: textStyle.fontWeight,
+        fontStyle: textStyle.fontStyle,
+      ),
+      ParagraphConstraints(width: constraints.maxWidth),
+    )) {
+      final ParagraphBuilder builder = ParagraphBuilder(_paragraphStyle);
+      _messageTextSpan.build(builder);
+      _paragraph = builder.build();
+      _paragraph.layout(_paragraphConstraints);
+    }
+    final TextPosition position = _paragraph.getPositionForOffset(offset);
+    if (position == null) {
+      return null;
+    }
+    return _messageTextSpan.getSpanForPosition(position) as TextSpan;
+  }
+
+  void _checkTap() {
+    if (_currentTapUrlSpanIndex != null) {
+      setState(() {
+        final List<TextSpan> messageSpanList =
+            List<TextSpan>.from(_messageTextSpan.children);
+        final TextSpan span = messageSpanList[_currentTapUrlSpanIndex];
+        messageSpanList[_currentTapUrlSpanIndex] = TextSpan(
+          text: span.text,
+          children: span.children,
+          style: span.style.copyWith(
+            backgroundColor: Colors.transparent,
+          ),
+          recognizer: span.recognizer,
+          semanticsLabel: span.semanticsLabel,
+        );
+        _buildMessageTextSpan(messageSpanList);
+        if ((_nowPosition - _startPosition).distanceSquared <= 900 &&
+            _cancelTapTimer.isActive) {
+          _cancelTapTimer.cancel();
+          final TapGestureRecognizer recognizer =
+              span.recognizer as TapGestureRecognizer;
+          if (recognizer.onTap != null) {
+            recognizer.onTap();
+          }
+        }
+        _currentTapUrlSpanIndex = null;
+      });
+    }
+  }
+
+  // TODO(windrunner): https://github.com/flutter/flutter/issues/43494, https://github.com/flutter/flutter/pull/34019, 跟踪issue进度，若支持recognizer后移除该workaround
+  @override
+  Widget buildBox(BuildContext context) {
+    final TextStyle textStyle = TextStyle(
+      fontSize: 16.sp,
+      color: Colors.black87,
+    );
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(4)),
+        color: isSentByMe
+            ? const Color(AppColor.LoginInputNormalColor)
+            : Colors.white,
+      ),
+      child: _containsUrl
+          ? LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) =>
+                  GestureDetector(
+                onPanDown: (DragDownDetails details) {
+                  _startPosition = details.localPosition;
+                  _nowPosition = details.localPosition;
+                  _cancelTapTimer =
+                      Timer(const Duration(milliseconds: 300), _checkTap);
+                  final TextSpan span = _getSpanByOffset(
+                    _startPosition,
+                    textStyle,
+                    constraints,
+                  );
+                  if (span.recognizer is TapGestureRecognizer) {
+                    final List<TextSpan> messageSpanList =
+                        List<TextSpan>.from(_messageTextSpan.children);
+                    _currentTapUrlSpanIndex = messageSpanList.indexOf(span);
+                    if (_currentTapUrlSpanIndex == -1) {
+                      _currentTapUrlSpanIndex = null;
+                      return;
+                    }
+                    setState(() {
+                      messageSpanList[_currentTapUrlSpanIndex] = TextSpan(
+                        text: span.text,
+                        children: span.children,
+                        style: span.style.copyWith(
+                          backgroundColor: Colors.blueAccent.withOpacity(0.6),
+                        ),
+                        recognizer: span.recognizer,
+                        semanticsLabel: span.semanticsLabel,
+                      );
+                      _buildMessageTextSpan(messageSpanList);
+                    });
+                  }
+                },
+                onPanStart: (DragStartDetails details) =>
+                    _nowPosition = details.localPosition,
+                onPanUpdate: (DragUpdateDetails details) =>
+                    _nowPosition = details.localPosition,
+                onPanEnd: (_) => _checkTap(),
+                onPanCancel: () => _checkTap(),
+                child: SelectableText.rich(
+                  _messageTextSpan,
+                  style: textStyle,
+                ),
+              ),
+            )
+          : SelectableText.rich(
+              _messageTextSpan,
+              style: textStyle,
+            ),
     );
   }
 }
@@ -273,10 +446,9 @@ class _MessagesListViewState extends State<_MessagesListView> {
                       key: historicalMessagesListKey,
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      addAutomaticKeepAlives: false,
                       reverse: true,
                       itemBuilder: (BuildContext context, int index) =>
-                          _Message(snapshot.data[index]),
+                          _MessageBox(snapshot.data[index]),
                       itemCount: snapshot.data.length,
                     );
                   },
@@ -289,15 +461,13 @@ class _MessagesListViewState extends State<_MessagesListView> {
                     return ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      addAutomaticKeepAlives: false,
                       itemBuilder: (BuildContext context, int index) =>
-                          _Message(snapshot.data[index]),
+                          _MessageBox(snapshot.data[index]),
                       itemCount: snapshot.data.length,
                     );
                   },
                 ),
               ],
-              addAutomaticKeepAlives: false,
             ),
           ),
         ],

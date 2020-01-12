@@ -59,16 +59,21 @@ class ChatViewModel extends BaseViewModel {
       Message(fromUserId: 1, msgId: 0, msg: '${_debug++}'),
       Message(
           fromUserId: ownUserInfo.value.userId, msgId: 0, msg: '${_debug++}'),
+      Message(
+          fromUserId: ownUserInfo.value.userId,
+          msgId: 0,
+          msg:
+              '测试https://www.google.com, 233\nhttps://www.baidu.com\nlaksjdlaksjdasdasdasd https://wwwwwwwwwwwwwwww.aaaaaaaaaaaaaaaaaaaaaa.tessssssssssssst.com'),
     ];
     _addMessages(_messages, isHistorical: true);
     //_addNewMessages(_messages);
     //_addNewMessages(_messages);
-    Timer.periodic(const Duration(milliseconds: 500), (_) {
+    /*Timer.periodic(const Duration(milliseconds: 500), (_) {
       final List<Message> _messages = <Message>[
         Message(fromUserId: 1, msgId: 0, msg: '${_debug++}'),
       ];
       _addMessages(_messages);
-    });
+    });*/
   }
 
   @override
