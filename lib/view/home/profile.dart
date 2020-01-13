@@ -1,14 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:wechat/common/constant.dart';
-import 'package:wechat/common/route.dart';
-import 'package:wechat/common/state.dart';
-import 'package:wechat/model/user.dart';
-import 'package:wechat/util/screen.dart';
-import 'package:wechat/view/base.dart';
-import 'package:wechat/viewmodel/profile.dart';
-import 'package:wechat/widget/full_width_button.dart';
-import 'package:wechat/widget/image.dart';
-import 'package:wechat/widget/stream_builder.dart';
+part of 'home.dart';
 
 class _ProfileHeaderView extends StatelessWidget {
   @override
@@ -80,7 +70,7 @@ class _ProfileHeaderView extends StatelessWidget {
       );
 }
 
-class ProfilePage extends BaseView<ProfileViewModel> {
+class _ProfilePage extends BaseView<ProfileViewModel> {
   static const double SEPARATE_SIZE = 20.0;
 
   @override
@@ -103,7 +93,7 @@ class ProfilePage extends BaseView<ProfileViewModel> {
       );
 }
 
-class _ProfilePageState extends BaseViewState<ProfileViewModel, ProfilePage>
+class _ProfilePageState extends BaseViewState<ProfileViewModel, _ProfilePage>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;

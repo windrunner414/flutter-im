@@ -96,6 +96,7 @@ class AddFriendPage extends BaseView<AddFriendViewModel> {
                         );
                       }
                       return EasyRefresh.custom(
+                        footer: ClassicalFooter(enableHapticFeedback: false),
                         onLoad: () => viewModel.loadMore().catchAll(
                             (Object error) => showToast(error.toString()),
                             test: exceptCancelException),

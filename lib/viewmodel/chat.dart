@@ -62,8 +62,7 @@ class ChatViewModel extends BaseViewModel {
       Message(
           fromUserId: ownUserInfo.value.userId,
           msgId: 0,
-          msg:
-              '测试https://www.google.com, 233\nhttps://www.baidu.com\nlaksjdlaksjdasdasdasd https://wwwwwwwwwwwwwwww.aaaaaaaaaaaaaaaaaaaaaa.tessssssssssssst.com'),
+          msg: 'https://www.baidu.com'),
     ];
     _addMessages(_messages, isHistorical: true);
     //_addNewMessages(_messages);

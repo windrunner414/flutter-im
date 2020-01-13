@@ -1,15 +1,26 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/constant.dart';
 import 'package:wechat/common/route.dart';
+import 'package:wechat/common/state.dart';
+import 'package:wechat/model/contacts.dart';
+import 'package:wechat/model/conversation.dart';
+import 'package:wechat/model/user.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
-import 'package:wechat/view/home/contact.dart';
-import 'package:wechat/view/home/conversation.dart';
-import 'package:wechat/view/home/profile.dart';
+import 'package:wechat/view/chat.dart';
+import 'package:wechat/viewmodel/contact.dart';
 import 'package:wechat/viewmodel/home.dart';
+import 'package:wechat/viewmodel/profile.dart';
 import 'package:wechat/widget/app_bar.dart';
+import 'package:wechat/widget/full_width_button.dart';
+import 'package:wechat/widget/image.dart';
 import 'package:wechat/widget/stream_builder.dart';
+
+part 'contact.dart';
+part 'conversation.dart';
+part 'profile.dart';
 
 enum _PopupMenuItems { createGroup, addFriend, scanQrCode }
 
@@ -35,9 +46,9 @@ class HomePage extends BaseView<HomeViewModel> {
   @override
   Widget build(BuildContext context, HomeViewModel viewModel) {
     final List<Widget> pages = <Widget>[
-      ConversationPage(),
-      ContactPage(friendApplyNum: viewModel.friendApplyNum),
-      ProfilePage(),
+      _ConversationPage(),
+      _ContactPage(friendApplyNum: viewModel.friendApplyNum),
+      _ProfilePage(),
     ];
     return Scaffold(
       appBar: IAppBar(

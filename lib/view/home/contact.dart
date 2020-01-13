@@ -1,13 +1,4 @@
-import 'package:badges/badges.dart';
-import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:wechat/common/constant.dart';
-import 'package:wechat/model/contacts.dart';
-import 'package:wechat/util/screen.dart';
-import 'package:wechat/view/base.dart';
-import 'package:wechat/viewmodel/contact.dart';
-import 'package:wechat/widget/image.dart';
-import 'package:wechat/widget/stream_builder.dart';
+part of 'home.dart';
 
 const double CONTACT_ITEM_DESIGN_HEIGHT = 56;
 const double GROUP_TITLE_DESIGN_HEIGHT = 24;
@@ -113,8 +104,8 @@ class _ContactItemState extends State<_ContactItem> {
   }
 }
 
-class ContactPage extends BaseView<ContactViewModel> {
-  ContactPage({this.friendApplyNum});
+class _ContactPage extends BaseView<ContactViewModel> {
+  _ContactPage({this.friendApplyNum});
 
   final BehaviorSubject<int> friendApplyNum;
 
@@ -125,7 +116,7 @@ class ContactPage extends BaseView<ContactViewModel> {
   Widget build(BuildContext context, ContactViewModel viewModel) => null;
 }
 
-class _ContactPageState extends BaseViewState<ContactViewModel, ContactPage>
+class _ContactPageState extends BaseViewState<ContactViewModel, _ContactPage>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;

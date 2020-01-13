@@ -1,9 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:wechat/common/constant.dart';
-import 'package:wechat/common/route.dart';
-import 'package:wechat/model/conversation.dart';
-import 'package:wechat/util/screen.dart';
-import 'package:wechat/widget/image.dart';
+part of 'home.dart';
 
 class _ConversationItem extends StatefulWidget {
   const _ConversationItem(this._conversation) : assert(_conversation != null);
@@ -78,9 +73,10 @@ class _ConversationItemState extends State<_ConversationItem> {
         setState(() => _active = false);
       },
       onTap: () {
-        router.push(Page.chat, parameters: <Symbol, String>{
-          #id: '0',
-          #type: 'friend',
+        router.push(Page.chat, parameters: <Symbol, dynamic>{
+          #id: 0,
+          #type: ChatType
+              .friend, // TODO(windrunner): 后需更改不要这样传而是直接传一个Conversation的Model，里面包含id，type等等,chat的view和viewmodel也不需要chattype类型等等，也都用一个model
           #title: widget._conversation.title,
         });
       },
@@ -141,12 +137,12 @@ class _ConversationItemState extends State<_ConversationItem> {
   }
 }
 
-class ConversationPage extends StatefulWidget {
+class _ConversationPage extends StatefulWidget {
   @override
   _ConversationPageState createState() => _ConversationPageState();
 }
 
-class _ConversationPageState extends State<ConversationPage> {
+class _ConversationPageState extends State<_ConversationPage> {
   final ConversationPageData data = ConversationPageData.mock();
 
   @override

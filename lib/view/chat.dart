@@ -9,6 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wechat/common/constant.dart';
+import 'package:wechat/common/route.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/util/screen.dart';
@@ -197,7 +198,9 @@ class _TextMessageBoxState extends _MessageBoxState {
       messageSpanList.add(TextSpan(
         text: url,
         style: TextStyle(color: Colors.indigoAccent),
-        recognizer: TapGestureRecognizer()..onTap = () => print(url),
+        recognizer: TapGestureRecognizer()
+          ..onTap = () => router
+              .push(Page.webView, parameters: <Symbol, String>{#url: url}),
       ));
       return '';
     }, onNonMatch: (String nonMatch) {
@@ -251,31 +254,29 @@ class _TextMessageBoxState extends _MessageBoxState {
 
   void _checkTap() {
     if (_currentTapUrlSpanIndex != null) {
-      setState(() {
-        final List<TextSpan> messageSpanList =
-            List<TextSpan>.from(_messageTextSpan.children);
-        final TextSpan span = messageSpanList[_currentTapUrlSpanIndex];
-        messageSpanList[_currentTapUrlSpanIndex] = TextSpan(
-          text: span.text,
-          children: span.children,
-          style: span.style.copyWith(
-            backgroundColor: Colors.transparent,
-          ),
-          recognizer: span.recognizer,
-          semanticsLabel: span.semanticsLabel,
-        );
-        _buildMessageTextSpan(messageSpanList);
-        if ((_nowPosition - _startPosition).distanceSquared <= 900 &&
-            _cancelTapTimer.isActive) {
-          _cancelTapTimer.cancel();
-          final TapGestureRecognizer recognizer =
-              span.recognizer as TapGestureRecognizer;
-          if (recognizer.onTap != null) {
-            recognizer.onTap();
-          }
+      final List<TextSpan> messageSpanList =
+          List<TextSpan>.from(_messageTextSpan.children);
+      final TextSpan span = messageSpanList[_currentTapUrlSpanIndex];
+      messageSpanList[_currentTapUrlSpanIndex] = TextSpan(
+        text: span.text,
+        children: span.children,
+        style: span.style.copyWith(
+          backgroundColor: Colors.transparent,
+        ),
+        recognizer: span.recognizer,
+        semanticsLabel: span.semanticsLabel,
+      );
+      _currentTapUrlSpanIndex = null;
+      setState(() => _buildMessageTextSpan(messageSpanList));
+      if ((_nowPosition - _startPosition).distanceSquared <= 900 &&
+          _cancelTapTimer.isActive) {
+        _cancelTapTimer.cancel();
+        final TapGestureRecognizer recognizer =
+            span.recognizer as TapGestureRecognizer;
+        if (recognizer.onTap != null) {
+          recognizer.onTap();
         }
-        _currentTapUrlSpanIndex = null;
-      });
+      }
     }
   }
 
