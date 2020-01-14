@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wechat/common/constant.dart';
 import 'package:wechat/util/screen.dart';
@@ -9,7 +10,7 @@ class IAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(46.height);
 
-  final String title;
+  final Widget title;
   final List<Widget> actions;
 
   @override
@@ -19,7 +20,12 @@ class IAppBar extends StatelessWidget implements PreferredSizeWidget {
         cardColor: const Color(AppColor.AppBarColor),
       ),
       child: AppBar(
-        title: Text(title, style: TextStyle(fontSize: 19.sp)),
+        title: DefaultTextStyle(
+          style: TextStyle(fontSize: 19.sp),
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
+          child: title,
+        ),
         elevation: 0,
         actions: actions,
       ));

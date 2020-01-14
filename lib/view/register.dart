@@ -20,7 +20,7 @@ class RegisterPage extends BaseView<RegisterViewModel> {
   Widget build(BuildContext context, RegisterViewModel viewModel) =>
       UnFocusScope(
         child: Scaffold(
-          appBar: IAppBar(title: '注册'),
+          appBar: IAppBar(title: const Text('注册')),
           body: ListView(
             physics: const BouncingScrollPhysics(),
             padding: EdgeInsets.symmetric(horizontal: 32.width),

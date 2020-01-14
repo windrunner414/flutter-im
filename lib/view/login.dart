@@ -22,7 +22,7 @@ class LoginPage extends BaseView<LoginViewModel> {
   Widget build(BuildContext context, LoginViewModel viewModel) => UnFocusScope(
         child: Scaffold(
           appBar: IAppBar(
-            title: '登录',
+            title: const Text('登录'),
             actions: <Widget>[
               PopupMenuButton<_PopupMenuItems>(
                 itemBuilder: (BuildContext context) =>
@@ -45,7 +45,7 @@ class LoginPage extends BaseView<LoginViewModel> {
                 onSelected: (_PopupMenuItems selected) async {
                   switch (selected) {
                     case _PopupMenuItems.serverSetting:
-                      if (await router.push(Page.serverSetting) == true) {
+                      if (await router.push<bool>(Page.serverSetting) == true) {
                         viewModel.refreshVerifyCode();
                       }
                       break;

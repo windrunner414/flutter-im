@@ -35,7 +35,7 @@ class ChatPage extends BaseView<ChatViewModel> {
   @override
   Widget build(BuildContext context, ChatViewModel viewModel) => UnFocusScope(
         child: Scaffold(
-          appBar: IAppBar(title: title),
+          appBar: IAppBar(title: Text(title)),
           body: Container(
             color: const Color(AppColor.BackgroundColor),
             child: Column(
@@ -362,58 +362,58 @@ class _MessagesListView extends StatefulWidget {
 }
 
 class _MessagesListViewState extends State<_MessagesListView> {
-  final GlobalKey historicalMessagesListKey = GlobalKey();
-  final ScrollController wrapScrollController = ScrollController();
-  final EasyRefreshController refreshController = EasyRefreshController();
-  double lastHistoricalMessagesListHeight = 0;
-  bool atBottom = true;
+  final GlobalKey _historicalMessagesListKey = GlobalKey();
+  final ScrollController _wrapScrollController = ScrollController();
+  final EasyRefreshController _refreshController = EasyRefreshController();
+  double _lastHistoricalMessagesListHeight = 0;
+  bool _atBottom = true;
 
   @override
   void initState() {
     super.initState();
-    wrapScrollController.addListener(() {
-      atBottom = wrapScrollController.offset ==
-          wrapScrollController.position.maxScrollExtent;
+    _wrapScrollController.addListener(() {
+      _atBottom = _wrapScrollController.offset ==
+          _wrapScrollController.position.maxScrollExtent;
     });
-    Timer.run(refreshController.callRefresh);
+    Timer.run(_refreshController.callRefresh);
   }
 
   @override
   void dispose() {
     super.dispose();
-    wrapScrollController.dispose();
-    refreshController.dispose();
+    _wrapScrollController.dispose();
+    _refreshController.dispose();
   }
 
   // TODO(windrunner): 暂时用此下策，这个函数会在渲染后调用，导致会闪一下
   // TODO(windrunner): 三个listView，里层两个其中一个铺满屏幕，另一个shrinkWrap，方向和外层一样，或者两个listview，里层一个，方向和外层相反，高度铺满。listview全部NeverScrollablePhysic最外面套一个gesturedetector，创建一个simulation，drag时间自己计算偏移来移动里面两个listview，里层铺满的到顶了就移动外层，外层到顶了就移动里层
   void _onHistoricalMessagesUpdate() {
-    final double height = (historicalMessagesListKey.currentContext
+    final double height = (_historicalMessagesListKey.currentContext
             ?.findRenderObject() as RenderBox)
         ?.size
         ?.height;
-    if (height != null && height != lastHistoricalMessagesListHeight) {
-      wrapScrollController.jumpTo((wrapScrollController.offset +
+    if (height != null && height != _lastHistoricalMessagesListHeight) {
+      _wrapScrollController.jumpTo((_wrapScrollController.offset +
               height -
-              lastHistoricalMessagesListHeight)
-          .clamp(0, wrapScrollController.position.maxScrollExtent)
+              _lastHistoricalMessagesListHeight)
+          .clamp(0, _wrapScrollController.position.maxScrollExtent)
           .toDouble());
-      lastHistoricalMessagesListHeight = height;
+      _lastHistoricalMessagesListHeight = height;
     }
   }
 
   void _onNewMessagesUpdate() {
-    if (atBottom) {
-      wrapScrollController
-          .jumpTo(wrapScrollController.position.maxScrollExtent);
+    if (_atBottom) {
+      _wrapScrollController
+          .jumpTo(_wrapScrollController.position.maxScrollExtent);
     }
   }
 
   @override
   Widget build(BuildContext context) => EasyRefresh.custom(
-        scrollController: wrapScrollController,
+        scrollController: _wrapScrollController,
         onRefresh: widget.viewModel.loadHistoricalMessages,
-        controller: refreshController,
+        controller: _refreshController,
         header: CustomHeader(
           extent: 40.0,
           triggerDistance: 50.0,
@@ -429,9 +429,9 @@ class _MessagesListViewState extends State<_MessagesListView> {
                   bool success,
                   bool noMore) =>
               SpinKitRing(
-            color: Colors.black45,
             size: 24.sp,
             lineWidth: 1,
+            color: Colors.black45,
           ),
         ),
         slivers: <Widget>[
@@ -444,7 +444,7 @@ class _MessagesListViewState extends State<_MessagesListView> {
                       AsyncSnapshot<List<Message>> snapshot) {
                     Timer.run(_onHistoricalMessagesUpdate);
                     return ListView.builder(
-                      key: historicalMessagesListKey,
+                      key: _historicalMessagesListKey,
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       reverse: true,

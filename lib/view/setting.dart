@@ -8,7 +8,7 @@ import 'package:wechat/widget/image.dart';
 class SettingPage extends BaseView<SettingViewModel> {
   @override
   Widget build(BuildContext context, SettingViewModel viewModel) => Scaffold(
-        appBar: IAppBar(title: '设置'),
+        appBar: IAppBar(title: const Text('设置')),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 32.width),
           child: Column(

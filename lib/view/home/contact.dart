@@ -232,6 +232,7 @@ class _ContactPageState extends BaseViewState<ContactViewModel, _ContactPage>
                 builder: (BuildContext context, AsyncSnapshot<int> snapshot) =>
                     Badge(
                   badgeColor: const Color(AppColor.NotifyDotBgColor),
+                  elevation: 0,
                   badgeContent: Text(
                     snapshot.data > 99 ? '99+' : snapshot.data.toString(),
                     style: TextStyle(

@@ -27,7 +27,7 @@ import 'package:wechat/widget/stream_builder.dart';
 
 // TODO(AManWhoDoNotWantToTellHisNameAndUsingEnglishWithUpperCamelCaseAndWithoutBlankSpaceForAvoidingDartAnalysisReportWarningBecauseOfTodoStyleDoesNotMatchFlutterTodoStyle): 优化常量，fontIcon啊什么的用常量。这是一个简单&艰巨的任务，有缘人得之
 void main() {
-  ErrorReporterUtil.runApp(
+  ErrorReporter.runApp(
     builder: () => BotToastInit(
       child: MaterialApp(
         localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
@@ -41,9 +41,8 @@ void main() {
         navigatorObservers: <NavigatorObserver>[
           BotToastNavigatorObserver(),
           RouterNavigatorObserver(),
-          ErrorReportUtilNavigatorObserver(),
+          ErrorReporterNavigatorObserver(),
         ],
-        onGenerateRoute: router.generator,
         title: Config.AppName,
         home: _App(),
       ),

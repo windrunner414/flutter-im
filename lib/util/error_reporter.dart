@@ -4,15 +4,15 @@ import 'package:flutter/material.dart' as flutter show runApp;
 import 'package:flutter/material.dart' hide runApp;
 import 'package:wechat/util/layer.dart';
 
-typedef ErrorBuilder = Widget Function(String errorDetail);
+typedef ErrorPageBuilder = Widget Function(String errorDetail);
 
 // TODO(windrunner): 支持原生代码异常上报，比如flutter engine，捕获rootZone的错误，Isolate.current.addErrorListener
 // TODO(windrunner): 好像flutter错误不能全部捕获到，比如在viewModel init里面throw
 // TODO(windrunner): 可能是flutter的bug
-abstract class ErrorReporterUtil {
+abstract class ErrorReporter {
   static void runApp({
     @required Widget builder(),
-    @required ErrorBuilder errorBuilder,
+    @required ErrorPageBuilder errorBuilder,
   }) {
     assert(builder != null);
     assert(errorBuilder != null);
@@ -32,9 +32,10 @@ abstract class ErrorReporterUtil {
     });
   }
 
-  static void _showErrorPage(ErrorBuilder errorBuilder, String errorDetail) =>
-      Timer.run(() =>
-          ErrorReportUtilNavigatorObserver().navigator?.pushAndRemoveUntil(
+  static void _showErrorPage(
+          ErrorPageBuilder errorBuilder, String errorDetail) =>
+      Timer.run(
+          () => ErrorReporterNavigatorObserver().navigator?.pushAndRemoveUntil(
                 PageRouteBuilder<dynamic>(
                   pageBuilder: (_, __, ___) => errorBuilder(errorDetail),
                   transitionDuration: Duration.zero,
@@ -54,13 +55,11 @@ abstract class ErrorReporterUtil {
       '$error\n====== Stack ======\n$stack';
 }
 
-class ErrorReportUtilNavigatorObserver extends NavigatorObserver {
-  factory ErrorReportUtilNavigatorObserver() {
-    _instance ??= ErrorReportUtilNavigatorObserver._();
-    return _instance;
-  }
+class ErrorReporterNavigatorObserver extends NavigatorObserver {
+  factory ErrorReporterNavigatorObserver() =>
+      _instance ??= ErrorReporterNavigatorObserver._();
 
-  ErrorReportUtilNavigatorObserver._();
+  ErrorReporterNavigatorObserver._();
 
-  static ErrorReportUtilNavigatorObserver _instance;
+  static ErrorReporterNavigatorObserver _instance;
 }

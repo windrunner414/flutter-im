@@ -52,7 +52,7 @@ class HomePage extends BaseView<HomeViewModel> {
     ];
     return Scaffold(
       appBar: IAppBar(
-        title: Config.AppName,
+        title: const Text(Config.AppName),
         actions: <Widget>[
           PopupMenuButton<_PopupMenuItems>(
             itemBuilder: (BuildContext context) =>
@@ -109,6 +109,7 @@ class HomePage extends BaseView<HomeViewModel> {
                         fontFamily: Constant.IconFontFamily),
                     size: 28.sp,
                   ),
+                  elevation: 0,
                   badgeColor: const Color(AppColor.NotifyDotBgColor),
                   badgeContent: Text(
                     snapshot.data > 99 ? '99+' : snapshot.data.toString(),

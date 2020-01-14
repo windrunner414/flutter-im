@@ -14,7 +14,6 @@ dependencies:
   extended_image: ^0.6.8
   shared_preferences: ^0.5.6
   bot_toast: ^2.2.0
-  fluro: ^1.5.1
   json_annotation: ^3.0.1
   dartin: ^0.1.5
   rxdart: ^0.23.1

@@ -17,7 +17,7 @@ class AddFriendPage extends BaseView<AddFriendViewModel> {
       UnFocusScope(
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          appBar: IAppBar(title: '添加好友'),
+          appBar: IAppBar(title: const Text('添加好友')),
           body: Container(
             color: const Color(AppColor.BackgroundColor),
             child: Column(
@@ -96,7 +96,10 @@ class AddFriendPage extends BaseView<AddFriendViewModel> {
                         );
                       }
                       return EasyRefresh.custom(
-                        footer: ClassicalFooter(enableHapticFeedback: false),
+                        footer: ClassicalFooter(
+                          enableHapticFeedback: false,
+                          enableInfiniteLoad: false,
+                        ),
                         onLoad: () => viewModel.loadMore().catchAll(
                             (Object error) => showToast(error.toString()),
                             test: exceptCancelException),

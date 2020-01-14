@@ -17,7 +17,7 @@ class ServerSettingPage extends BaseView<ServerSettingViewModel> {
   Widget build(BuildContext context, ServerSettingViewModel viewModel) =>
       UnFocusScope(
         child: Scaffold(
-          appBar: IAppBar(title: '服务器设置'),
+          appBar: IAppBar(title: const Text('服务器设置')),
           body: ListView(
             physics: const BouncingScrollPhysics(),
             padding: EdgeInsets.symmetric(horizontal: 32.width),
