@@ -266,7 +266,7 @@ class _TextMessageBoxState extends _MessageBoxState {
       );
       _currentTapUrlSpanIndex = null;
       setState(() => _buildMessageTextSpan(messageSpanList));
-      if ((_nowPosition - _startPosition).distanceSquared < 64 &&
+      if ((_nowPosition - _startPosition).distanceSquared <= 900 &&
           _cancelTapTimer.isActive) {
         _cancelTapTimer.cancel();
         final TapGestureRecognizer recognizer =
