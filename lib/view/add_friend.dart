@@ -129,7 +129,8 @@ class AddFriendPage extends BaseView<AddFriendViewModel> {
                                         children: <Widget>[
                                           UImage(
                                             snapshot.data[index].userAvatar,
-                                            placeholder: Icon(
+                                            placeholderBuilder:
+                                                (BuildContext context) => Icon(
                                               const IconData(
                                                 0xe642,
                                                 fontFamily:

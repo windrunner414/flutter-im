@@ -4,8 +4,6 @@ import 'dart:ui';
 import 'package:dartin/dartin.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wechat/common/constant.dart';
@@ -122,7 +120,7 @@ abstract class _MessageBoxState extends State<_MessageBox> {
   Widget build(BuildContext context) {
     final Widget avatar = UImage(
       /*ownUserInfo.value.userAvatar*/ 'https://randomuser.me/api/portraits/men/50.jpg',
-      placeholder: Icon(
+      placeholderBuilder: (BuildContext context) => Icon(
         const IconData(
           0xe642,
           fontFamily: Constant.IconFontFamily,
@@ -268,7 +266,7 @@ class _TextMessageBoxState extends _MessageBoxState {
       );
       _currentTapUrlSpanIndex = null;
       setState(() => _buildMessageTextSpan(messageSpanList));
-      if ((_nowPosition - _startPosition).distanceSquared <= 900 &&
+      if ((_nowPosition - _startPosition).distanceSquared < 64 &&
           _cancelTapTimer.isActive) {
         _cancelTapTimer.cancel();
         final TapGestureRecognizer recognizer =
@@ -287,6 +285,10 @@ class _TextMessageBoxState extends _MessageBoxState {
       fontSize: 16.sp,
       color: Colors.black87,
     );
+    final Widget text = SelectableText.rich(
+      _messageTextSpan,
+      style: textStyle,
+    );
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -298,10 +300,10 @@ class _TextMessageBoxState extends _MessageBoxState {
       child: _containsUrl
           ? LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) =>
-                  GestureDetector(
-                onPanDown: (DragDownDetails details) {
-                  _startPosition = details.localPosition;
-                  _nowPosition = details.localPosition;
+                  Listener(
+                onPointerDown: (PointerDownEvent event) {
+                  _startPosition = event.localPosition;
+                  _nowPosition = event.localPosition;
                   _cancelTapTimer =
                       Timer(const Duration(milliseconds: 300), _checkTap);
                   final TextSpan span = _getSpanByOffset(
@@ -331,22 +333,13 @@ class _TextMessageBoxState extends _MessageBoxState {
                     });
                   }
                 },
-                onPanStart: (DragStartDetails details) =>
-                    _nowPosition = details.localPosition,
-                onPanUpdate: (DragUpdateDetails details) =>
-                    _nowPosition = details.localPosition,
-                onPanEnd: (_) => _checkTap(),
-                onPanCancel: () => _checkTap(),
-                child: SelectableText.rich(
-                  _messageTextSpan,
-                  style: textStyle,
-                ),
+                onPointerMove: (PointerMoveEvent event) =>
+                    _nowPosition = event.localPosition,
+                onPointerUp: (PointerUpEvent event) => _checkTap(),
+                child: text,
               ),
             )
-          : SelectableText.rich(
-              _messageTextSpan,
-              style: textStyle,
-            ),
+          : text,
     );
   }
 }

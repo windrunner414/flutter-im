@@ -16,7 +16,7 @@ class _ConversationItemState extends State<_ConversationItem> {
   Widget build(BuildContext context) {
     final Widget avatar = UImage(
       widget._conversation.avatar,
-      placeholder: Icon(
+      placeholderBuilder: (BuildContext context) => Icon(
         const IconData(
           0xe642,
           fontFamily: Constant.IconFontFamily,

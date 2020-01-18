@@ -3,24 +3,27 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wechat/service/base.dart';
 
-class UImage extends StatelessWidget {
-  UImage(
-    this.url, {
+class UImage extends StatefulWidget {
+  const UImage(
+    String url, {
     Key key,
     this.width,
     this.height,
     this.filterQuality = FilterQuality.low,
     this.fit = BoxFit.fill,
-    Widget placeholder,
-    this.onComplete,
-    this.onFailed,
-  })  : assert(url != null),
-        placeholder = placeholder ?? SizedBox(width: width, height: height),
+    this.placeholderBuilder,
+    this.errorWidgetBuilder,
+    this.onLoad,
+    this.onError,
+    this.whenComplete,
+  })  : url = url ?? '',
         super(key: key);
 
-  final Widget placeholder;
-  final VoidCallback onComplete;
-  final Widget Function() onFailed;
+  final WidgetBuilder placeholderBuilder;
+  final WidgetBuilder errorWidgetBuilder;
+  final void Function(ImageInfo imageInfo) onLoad;
+  final VoidCallback onError;
+  final VoidCallback whenComplete;
   final double width;
   final double height;
   final String url;
@@ -28,15 +31,19 @@ class UImage extends StatelessWidget {
   final BoxFit fit;
 
   @override
+  _UImageState createState() => _UImageState();
+}
+
+class _UImageState extends State<UImage> {
+  @override
   Widget build(BuildContext context) {
-    const String assetUrlStart = 'asset://';
-    if (url.startsWith(assetUrlStart)) {
+    if (widget.url.startsWith('asset://')) {
       return ExtendedImage.asset(
-        url.substring(assetUrlStart.length),
-        filterQuality: filterQuality,
-        fit: fit,
-        width: width,
-        height: height,
+        widget.url.substring('asset://'.length),
+        filterQuality: widget.filterQuality,
+        fit: widget.fit,
+        width: widget.width,
+        height: widget.height,
         enableLoadState: true,
         enableMemoryCache: true,
         clearMemoryCacheIfFailed: true,
@@ -44,13 +51,14 @@ class UImage extends StatelessWidget {
       );
     }
     return ExtendedImage.network(
-      (!url.startsWith('http://') && !url.startsWith('https://'))
-          ? staticFileBaseUrl + (url.startsWith('/') ? url : '/' + url)
-          : url,
-      filterQuality: filterQuality,
-      fit: fit,
-      width: width,
-      height: height,
+      widget.url.startsWith('http://') || widget.url.startsWith('https://')
+          ? widget.url
+          : staticFileBaseUrl +
+              (widget.url.startsWith('/') ? widget.url : '/' + widget.url),
+      filterQuality: widget.filterQuality,
+      fit: widget.fit,
+      width: widget.width,
+      height: widget.height,
       enableLoadState: true,
       enableMemoryCache: true,
       clearMemoryCacheIfFailed: true,
@@ -59,22 +67,44 @@ class UImage extends StatelessWidget {
     );
   }
 
+  Widget _buildPlaceholder() => widget.placeholderBuilder == null
+      ? SizedBox(width: widget.width, height: widget.height)
+      : (widget.placeholderBuilder(context) ?? Container());
+
+  Widget _buildErrorWidget() => widget.errorWidgetBuilder == null
+      ? _buildPlaceholder()
+      : (widget.errorWidgetBuilder(context) ?? Container());
+
+  void _whenComplete() {
+    if (widget.whenComplete != null) {
+      widget.whenComplete();
+    }
+  }
+
+  void _onLoad(ImageInfo imageInfo) {
+    if (widget.onLoad != null) {
+      widget.onLoad(imageInfo);
+    }
+    _whenComplete();
+  }
+
+  void _onError() {
+    if (widget.onError != null) {
+      widget.onError();
+    }
+    _whenComplete();
+  }
+
   Widget _onLoadStateChanged(ExtendedImageState state) {
     switch (state.extendedImageLoadState) {
       case LoadState.completed:
-        if (onComplete != null) {
-          onComplete();
-        }
+        _onLoad(state.extendedImageInfo);
         return null;
-      case LoadState.loading:
-        return placeholder;
       case LoadState.failed:
-        if (onFailed != null) {
-          return onFailed() ?? placeholder;
-        }
-        return placeholder;
+        _onError();
+        return _buildErrorWidget();
       default:
-        return null;
+        return _buildPlaceholder();
     }
   }
 }

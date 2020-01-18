@@ -40,23 +40,21 @@ set serverConfig(ServerConfig _value) {
 }
 
 /// 不以/结尾
-String get httpBaseUrl =>
-    (serverConfig.ssl ? 'https' : 'http') +
-    '://' +
-    serverConfig.domain +
-    ':' +
-    serverConfig.httpPort.toString() +
-    '/Api';
-String get webSocketBaseUrl =>
-    (serverConfig.ssl ? 'wss' : 'ws') +
-    '://' +
-    serverConfig.domain +
-    ':' +
-    serverConfig.webSocketPort.toString();
-String get staticFileBaseUrl =>
-    (serverConfig.ssl ? 'https' : 'http') +
-    '://' +
-    serverConfig.staticFileDomain;
+String get httpBaseUrl => Uri(
+      scheme: serverConfig.ssl ? 'https' : 'http',
+      host: serverConfig.domain,
+      port: serverConfig.httpPort,
+      path: '/Api',
+    ).toString();
+String get webSocketBaseUrl => Uri(
+      scheme: serverConfig.ssl ? 'wss' : 'ws',
+      host: serverConfig.domain,
+      port: serverConfig.webSocketPort,
+    ).toString();
+String get staticFileBaseUrl => Uri(
+      scheme: serverConfig.ssl ? 'https' : 'http',
+      host: serverConfig.domain,
+    ).toString();
 
 Future<void> initService() async {
   if (serverConfig != null) {

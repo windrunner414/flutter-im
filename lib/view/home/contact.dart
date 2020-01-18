@@ -62,7 +62,7 @@ class _ContactItemState extends State<_ContactItem> {
             children: <Widget>[
               UImage(
                 widget.avatar,
-                placeholder: const Icon(
+                placeholderBuilder: (BuildContext context) => const Icon(
                   IconData(
                     0xe642,
                     fontFamily: Constant.IconFontFamily,
