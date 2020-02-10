@@ -73,11 +73,10 @@ class _ConversationItemState extends State<_ConversationItem> {
         setState(() => _active = false);
       },
       onTap: () {
-        router.push(Page.chat, parameters: <Symbol, dynamic>{
-          #id: 0,
-          #type: ChatType
-              .friend, // TODO(windrunner): 后需更改不要这样传而是直接传一个Conversation的Model，里面包含id，type等等,chat的view和viewmodel也不需要chattype类型等等，也都用一个model
-          #title: widget._conversation.title,
+        router.push('/chat', arguments: <String, String>{
+          'id': '0',
+          'type': 'friend',
+          'title': widget._conversation.title,
         });
       },
       onLongPress: () {},

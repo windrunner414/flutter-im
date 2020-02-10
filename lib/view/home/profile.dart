@@ -47,13 +47,16 @@ class _ProfileHeaderView extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(
-                const IconData(
-                  0xe620,
-                  fontFamily: Constant.IconFontFamily,
+              GestureDetector(
+                onTap: () => router.push('/businessCard'),
+                child: Icon(
+                  const IconData(
+                    0xe620,
+                    fontFamily: Constant.IconFontFamily,
+                  ),
+                  size: 22.minWidthHeight,
+                  color: Color(AppColor.TabIconNormalColor),
                 ),
-                size: 22.minWidthHeight,
-                color: Color(AppColor.TabIconNormalColor),
               ),
               SizedBox(width: 5.width),
               Icon(
@@ -87,7 +90,7 @@ class _ProfilePage extends BaseView<ProfileViewModel> {
             iconPath: 'asset://assets/images/ic_settings.png',
             title: '设置',
             showDivider: true,
-            onPressed: () => router.push(Page.setting),
+            onPressed: () => router.push('/setting'),
           ),
         ],
       );

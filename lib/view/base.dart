@@ -73,8 +73,7 @@ extension ViewFutureExtension<T> on Future<T> {
 
   /// 显示loading并在future结束时关闭
   Future<T> showLoadingUntilComplete() {
-    final UniqueKey loadingKey = showLoading();
-    whenComplete(() => closeLoading(loadingKey));
+    whenComplete(showLoading());
     return this;
   }
 }

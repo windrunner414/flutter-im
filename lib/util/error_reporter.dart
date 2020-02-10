@@ -24,7 +24,6 @@ abstract class ErrorReporter {
 
     runZoned(() => flutter.runApp(builder()),
         onError: (Object error, StackTrace stack) async {
-      closeAllLayer();
       final String errorDetail =
           _formatError(error.toString(), stack.toString());
       _showErrorPage(errorBuilder, errorDetail);
@@ -34,14 +33,20 @@ abstract class ErrorReporter {
 
   static void _showErrorPage(
           ErrorPageBuilder errorBuilder, String errorDetail) =>
-      Timer.run(
-          () => ErrorReporterNavigatorObserver().navigator?.pushAndRemoveUntil(
-                PageRouteBuilder<dynamic>(
-                  pageBuilder: (_, __, ___) => errorBuilder(errorDetail),
-                  transitionDuration: Duration.zero,
-                ),
-                (_) => false,
-              ));
+      Timer.run(() {
+        try {
+          closeAllLayer();
+        } catch (error) {
+          // 可能还没加载layer组件，忽略错误
+        }
+        ErrorReporterNavigatorObserver().navigator?.pushAndRemoveUntil(
+              PageRouteBuilder<void>(
+                pageBuilder: (_, __, ___) => errorBuilder(errorDetail),
+                transitionDuration: Duration.zero,
+              ),
+              (_) => false,
+            );
+      });
 
   static Future<void> _reportError(String errorDetail) async {
     assert(() {

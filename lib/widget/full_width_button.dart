@@ -4,8 +4,7 @@ import 'package:wechat/util/screen.dart';
 import 'package:wechat/widget/image.dart';
 
 class FullWidthButton extends StatelessWidget {
-  // ignore: prefer_const_constructors_in_immutables, 屏幕大小改变时需要rebuild，若为const不会rebuild
-  FullWidthButton({
+  const FullWidthButton({
     Key key,
     @required this.title,
     @required this.iconPath,
@@ -26,6 +25,7 @@ class FullWidthButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    dependOnScreenUtil(context);
     final Widget pureButton = Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[

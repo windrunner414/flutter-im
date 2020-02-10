@@ -2,14 +2,13 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/constant.dart';
-import 'package:wechat/common/route.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/contacts.dart';
 import 'package:wechat/model/conversation.dart';
 import 'package:wechat/model/user.dart';
+import 'package:wechat/util/router.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
-import 'package:wechat/view/chat.dart';
 import 'package:wechat/viewmodel/contact.dart';
 import 'package:wechat/viewmodel/home.dart';
 import 'package:wechat/viewmodel/profile.dart';
@@ -45,6 +44,7 @@ class HomePage extends BaseView<HomeViewModel> {
 
   @override
   Widget build(BuildContext context, HomeViewModel viewModel) {
+    dependOnScreenUtil(context);
     final List<Widget> pages = <Widget>[
       _ConversationPage(),
       _ContactPage(friendApplyNum: viewModel.friendApplyNum),
@@ -77,7 +77,7 @@ class HomePage extends BaseView<HomeViewModel> {
             onSelected: (_PopupMenuItems selected) {
               switch (selected) {
                 case _PopupMenuItems.addFriend:
-                  router.push(Page.addFriend);
+                  router.push('/addFriend');
                   break;
                 default:
               }

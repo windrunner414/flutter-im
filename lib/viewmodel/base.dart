@@ -77,7 +77,8 @@ extension ViewModelFutureExtension<T> on Future<T> {
       viewModel.bindFuture(this, name);
 
   /// 将抛出的错误（除了CancelException）用ViewModelException包裹
-  Future<T> wrapError<E>() =>
-      catchError((E error) => throw ViewModelException<E>(error),
-          test: (Object error) => error is! CancelException && error is E);
+  Future<T> wrapError<E extends Object>() => catchError(
+      (E error, StackTrace stackTrace) =>
+          throw ViewModelException<E>(error, originalStackTrace: stackTrace),
+      test: (Object error) => error is! CancelException && error is E);
 }

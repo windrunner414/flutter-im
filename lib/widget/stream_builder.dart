@@ -31,13 +31,11 @@ class IStreamBuilder<T> extends StatefulWidget {
     return current.inState(ConnectionState.waiting);
   }
 
-  AsyncSnapshot<T> afterData(AsyncSnapshot<T> current, T data) {
-    return AsyncSnapshot<T>.withData(ConnectionState.active, data);
-  }
+  AsyncSnapshot<T> afterData(AsyncSnapshot<T> current, T data) =>
+      AsyncSnapshot<T>.withData(ConnectionState.active, data);
 
-  AsyncSnapshot<T> afterError(AsyncSnapshot<T> current, Object error) {
-    return AsyncSnapshot<T>.withError(ConnectionState.active, error);
-  }
+  AsyncSnapshot<T> afterError(AsyncSnapshot<T> current, Object error) =>
+      AsyncSnapshot<T>.withError(ConnectionState.active, error);
 
   AsyncSnapshot<T> afterDone(AsyncSnapshot<T> current) =>
       current.inState(ConnectionState.done);
@@ -52,7 +50,6 @@ class IStreamBuilder<T> extends StatefulWidget {
 class _IStreamBuilderState<T> extends State<IStreamBuilder<T>> {
   StreamSubscription<T> _subscription;
   AsyncSnapshot<T> _summary;
-  bool _discardFirstData = false;
 
   @override
   Widget build(BuildContext context) => widget.build(context, _summary);
@@ -84,11 +81,15 @@ class _IStreamBuilderState<T> extends State<IStreamBuilder<T>> {
 
   void _subscribe() {
     if (widget.stream != null) {
-      _subscription = widget.stream.listen((T data) {
-        if (_discardFirstData) {
-          _discardFirstData = false;
-          return;
+      bool discardValue = false;
+      _subscription = widget.stream.skipWhile((_) {
+        if (discardValue) {
+          discardValue = false;
+          return true;
+        } else {
+          return false;
         }
+      }).listen((T data) {
         setState(() {
           _summary = widget.afterData(_summary, data);
         });
@@ -106,7 +107,7 @@ class _IStreamBuilderState<T> extends State<IStreamBuilder<T>> {
       }
       _summary = widget.afterConnected(_summary);
       if (_summary.connectionState == ConnectionState.active) {
-        _discardFirstData = true;
+        discardValue = true;
       }
     }
   }

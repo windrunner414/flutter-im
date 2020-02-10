@@ -1,33 +1,65 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:wechat/util/screen.dart';
 
-final Map<UniqueKey, CancelFunc> _loading = <UniqueKey, CancelFunc>{};
+typedef CloseLayerFunc = void Function();
 
-void showToast(String msg) => BotToast.showText(text: msg);
+CloseLayerFunc showToast(String msg) => BotToast.showText(text: msg);
 
-void showNotification() {
+CloseLayerFunc showNotification() {
   // BotToast.showNotification()
 }
 
-UniqueKey showLoading() {
-  final UniqueKey key = UniqueKey();
-  _loading[key] = BotToast.showLoading();
-  return key;
-}
+CloseLayerFunc showLoading() => BotToast.showCustomLoading(
+      toastBuilder: (_) => Builder(
+        builder: (BuildContext context) {
+          dependOnScreenUtil(context);
+          return Container(
+            width: 70.sp,
+            height: 70.sp,
+            decoration: const BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+            ),
+            child: SpinKitRing(
+              size: 36.sp,
+              color: Colors.white,
+              lineWidth: 4,
+            ),
+          );
+        },
+      ),
+      crossPage: true,
+      allowClick: false,
+      clickClose: false,
+      ignoreContentClick: false,
+      backgroundColor: Colors.transparent,
+    );
 
-void closeLoading(UniqueKey key) {
-  final CancelFunc cancel = _loading[key];
-  if (cancel != null) {
-    cancel();
-    _loading.remove(key);
-  }
-}
+CloseLayerFunc showWidget({
+  @required Widget builder(CloseLayerFunc closeFunc),
+  bool crossPage = true,
+  bool allowClick = false,
+  bool clickClose = false,
+  bool ignoreContentClick = false,
+  bool onlyOne = false,
+  Future<dynamic> onClose(),
+  Color backgroundColor = Colors.black26,
+  WrapWidget wrapWidget,
+  Duration duration,
+}) =>
+    BotToast.showEnhancedWidget(
+      toastBuilder: builder,
+      crossPage: crossPage,
+      allowClick: allowClick,
+      clickClose: clickClose,
+      ignoreContentClick: ignoreContentClick,
+      onlyOne: onlyOne,
+      closeFunc: onClose,
+      backgroundColor: backgroundColor,
+      warpWidget: wrapWidget,
+      duration: duration,
+    );
 
-void closeAllLoading() {
-  _loading.clear();
-  BotToast.closeAllLoading();
-}
-
-void closeAllLayer() {
-  BotToast.cleanAll();
-}
+void closeAllLayer() => BotToast.cleanAll();

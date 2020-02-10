@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wechat/common/constant.dart';
-import 'package:wechat/common/route.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/message.dart';
+import 'package:wechat/util/router.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/chat.dart';
@@ -31,67 +31,68 @@ class ChatPage extends BaseView<ChatViewModel> {
   _ChatPageState createState() => _ChatPageState();
 
   @override
-  Widget build(BuildContext context, ChatViewModel viewModel) => UnFocusScope(
-        child: Scaffold(
-          appBar: IAppBar(title: Text(title)),
-          body: Container(
-            color: const Color(AppColor.BackgroundColor),
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: _MessagesListView(viewModel: viewModel),
-                ),
-                Container(
-                  color: const Color(AppColor.ChatInputSectionBgColor),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Container(
-                          color: Colors.white,
-                          child: TextField(
-                            controller: viewModel.messageEditingController,
-                            scrollPhysics: const BouncingScrollPhysics(),
-                            maxLines: 5,
-                            minLines: 1,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(4)),
-                                borderSide: BorderSide.none,
-                              ),
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 8),
-                              isDense: true,
+  Widget build(BuildContext context, ChatViewModel viewModel) {
+    dependOnScreenUtil(context);
+    return UnFocusScope(
+      child: Scaffold(
+        appBar: IAppBar(title: Text(title)),
+        body: Container(
+          color: const Color(AppColor.BackgroundColor),
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: _MessagesListView(viewModel: viewModel),
+              ),
+              Container(
+                color: const Color(AppColor.ChatInputSectionBgColor),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(
+                        color: Colors.white,
+                        child: TextField(
+                          controller: viewModel.messageEditingController,
+                          scrollPhysics: const BouncingScrollPhysics(),
+                          maxLines: 5,
+                          minLines: 1,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(4)),
+                              borderSide: BorderSide.none,
                             ),
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 8),
+                            isDense: true,
+                          ),
+                          style: TextStyle(
+                            fontSize: 16.sp,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      FlatButton(
-                        onPressed: () {},
-                        child: Text(
-                          '发送',
-                          style:
-                              TextStyle(fontSize: 16.sp, color: Colors.white),
-                        ),
-                        color: const Color(AppColor.LoginInputNormalColor),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 4, vertical: 6),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    const SizedBox(width: 10),
+                    FlatButton(
+                      onPressed: () {},
+                      child: Text(
+                        '发送',
+                        style: TextStyle(fontSize: 16.sp, color: Colors.white),
                       ),
-                    ],
-                  ),
+                      color: const Color(AppColor.LoginInputNormalColor),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 6),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-      );
+      ),
+    );
+  }
 }
 
 class _ChatPageState extends BaseViewState<ChatViewModel, ChatPage> {
@@ -197,8 +198,8 @@ class _TextMessageBoxState extends _MessageBoxState {
         text: url,
         style: TextStyle(color: Colors.indigoAccent),
         recognizer: TapGestureRecognizer()
-          ..onTap = () => router
-              .push(Page.webView, parameters: <Symbol, String>{#url: url}),
+          ..onTap = () =>
+              router.push('/webView', arguments: <String, String>{'url': url}),
       ));
       return '';
     }, onNonMatch: (String nonMatch) {

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dartin/dartin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:wechat/common/state.dart';
 import 'package:wechat/model/friend_apply.dart';
 import 'package:wechat/repository/auth.dart';
 import 'package:wechat/repository/user_friend_apply.dart';
@@ -22,7 +23,8 @@ class HomeViewModel extends BaseViewModel {
   @override
   void init() {
     super.init();
-    webSocketClient.connect();
+    webSocketClient.connect(
+        webSocketBaseUrl + '/?userSession=' + ownUserInfo.value.userSession);
     _timerPerMinuteCallback(null);
     _timerPerMinute =
         Timer.periodic(const Duration(minutes: 1), _timerPerMinuteCallback);
@@ -49,5 +51,5 @@ class HomeViewModel extends BaseViewModel {
   void _refreshFriendApplyNum() => _userFriendApplyRepository
       .getFriendApplyList(page: 1, limit: 1, state: FriendApplyState.waiting)
       .then((FriendApplyList result) => friendApplyNum.value = result.total,
-          onError: (_) {});
+          onError: (Object error) {});
 }

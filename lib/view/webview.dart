@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:wechat/common/constant.dart';
-import 'package:wechat/common/route.dart';
 import 'package:wechat/util/layer.dart';
+import 'package:wechat/util/router.dart';
 import 'package:wechat/widget/app_bar.dart';
 import 'package:wechat/widget/stream_builder.dart';
 

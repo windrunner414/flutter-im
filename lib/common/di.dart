@@ -20,7 +20,6 @@ import 'package:wechat/viewmodel/profile.dart';
 import 'package:wechat/viewmodel/register.dart';
 import 'package:wechat/viewmodel/server_setting.dart';
 import 'package:wechat/viewmodel/setting.dart';
-import 'package:wechat/viewmodel/splash.dart';
 
 const DartInScope HttpInterceptorScope = DartInScope('http_interceptors');
 
@@ -29,7 +28,6 @@ final Module viewModelModule = Module([
   factory<RegisterViewModel>(({params}) => RegisterViewModel()),
   factory<ServerSettingViewModel>(({params}) => ServerSettingViewModel()),
   factory<ProfileViewModel>(({params}) => ProfileViewModel()),
-  factory<SplashViewModel>(({params}) => SplashViewModel()),
   factory<SettingViewModel>(({params}) => SettingViewModel()),
   factory<ContactViewModel>(({params}) => ContactViewModel()),
   factory<AddFriendViewModel>(({params}) => AddFriendViewModel()),
@@ -59,7 +57,7 @@ final Module serviceModule = Module([
         }),
   ]);
 
-final List<Module> modules = <Module>[
+final List<Module> appModules = <Module>[
   viewModelModule,
   repositoryModule,
   serviceModule

@@ -10,12 +10,12 @@
   <title>wechat</title>
   <!--其他浏览器横屏禁止使用-->
   <style>
-    #orientation-landscape-block {
+    #orientation-tip {
       display: none;
     }
 
     @media screen and (orientation: landscape) {
-      #orientation-landscape-block {
+      #orientation-tip {
         display: block;
         z-index: 2333333;
         position: fixed;
@@ -26,7 +26,7 @@
         background: #ffffff;
       }
 
-      #orientation-landscape-block div {
+      #orientation-tip div {
         position: absolute;
         top: 50%;
         left: 50%;
@@ -38,10 +38,7 @@
   </style>
 </head>
 <body>
-  <div id="orientation-landscape-block"><div>请竖屏使用</div></div>
-  <script type="application/javascript">
-    window.location.replace('#/'); // initial route
-  </script>
+  <div id="orientation-tip"><div>请竖屏使用</div></div>
   <script src="main.dart.js" type="application/javascript"></script>
 </body>
 </html>

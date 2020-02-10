@@ -1,11 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wechat/common/constant.dart';
 import 'package:wechat/util/screen.dart';
 
 class IAppBar extends StatelessWidget implements PreferredSizeWidget {
-  // ignore: prefer_const_constructors_in_immutables, 屏幕大小改变时需要rebuild，若为const不会rebuild
-  IAppBar({
+  const IAppBar({
     Key key,
     this.leading,
     this.title,
@@ -13,15 +11,16 @@ class IAppBar extends StatelessWidget implements PreferredSizeWidget {
   }) : super(key: key);
 
   @override
-  Size get preferredSize => Size.fromHeight(46.height);
-
+  Size get preferredSize => Size.fromHeight(38.height);
   final Widget leading;
   final Widget title;
   final List<Widget> actions;
 
   @override
-  Widget build(BuildContext context) => Theme(
-      data: ThemeData.light().copyWith(
+  Widget build(BuildContext context) {
+    dependOnScreenUtil(context);
+    return Theme(
+      data: ThemeData(
         primaryColor: const Color(AppColor.AppBarColor),
         cardColor: const Color(AppColor.AppBarColor),
       ),
@@ -30,12 +29,14 @@ class IAppBar extends StatelessWidget implements PreferredSizeWidget {
         title: title == null
             ? null
             : DefaultTextStyle(
-                style: TextStyle(fontSize: 19.sp),
+                style: TextStyle(fontSize: 19.height, color: Colors.white),
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
                 child: title,
               ),
         elevation: 0,
         actions: actions,
-      ));
+      ),
+    );
+  }
 }

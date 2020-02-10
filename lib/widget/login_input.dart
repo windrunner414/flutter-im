@@ -4,8 +4,7 @@ import 'package:wechat/common/constant.dart';
 import 'package:wechat/util/screen.dart';
 
 class LoginInput extends StatelessWidget {
-  // ignore: prefer_const_constructors_in_immutables, 屏幕大小改变时需要rebuild，若为const不会rebuild
-  LoginInput(
+  const LoginInput(
       {Key key,
       @required this.label,
       this.controller,
@@ -21,31 +20,34 @@ class LoginInput extends StatelessWidget {
   final bool obscureText;
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: EdgeInsets.symmetric(vertical: 12.height),
-        child: Theme(
-          data: ThemeData(
-            primaryColor: const Color(AppColor.LoginInputActiveColor),
-            hintColor: Colors.black87,
-          ),
-          child: TextField(
-            controller: controller,
-            style: TextStyle(
-              fontSize: 18.sp,
-            ),
-            decoration: InputDecoration(
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 4),
-                labelText: label == null ? null : label + '：',
-                enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(AppColor.LoginInputNormalColor),
-                  ),
-                )),
-            inputFormatters: inputFormatters,
-            keyboardType: keyboardType,
-            obscureText: obscureText,
-          ),
+  Widget build(BuildContext context) {
+    dependOnScreenUtil(context);
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 12.height),
+      child: Theme(
+        data: ThemeData(
+          primaryColor: const Color(AppColor.LoginInputActiveColor),
+          hintColor: Colors.black87,
         ),
-      );
+        child: TextField(
+          controller: controller,
+          style: TextStyle(
+            fontSize: 18.sp,
+          ),
+          decoration: InputDecoration(
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(vertical: 4),
+              labelText: label == null ? null : label + '：',
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color(AppColor.LoginInputNormalColor),
+                ),
+              )),
+          inputFormatters: inputFormatters,
+          keyboardType: keyboardType,
+          obscureText: obscureText,
+        ),
+      ),
+    );
+  }
 }

@@ -12,10 +12,11 @@ class CancelException implements Exception {
 }
 
 class ViewModelException<T> implements Exception {
-  const ViewModelException(this.data, [this.message]);
+  const ViewModelException(this.data, {this.originalStackTrace, this.message});
 
   final String message;
   final T data;
+  final StackTrace originalStackTrace;
 
   @override
   String toString() {

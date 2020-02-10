@@ -1,109 +1,100 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:wechat/common/state.dart';
+import 'package:wechat/util/router.dart';
 import 'package:wechat/view/add_friend.dart';
+import 'package:wechat/view/business_card.dart';
 import 'package:wechat/view/chat.dart';
+import 'package:wechat/view/home/home.dart';
+import 'package:wechat/view/login.dart';
+import 'package:wechat/view/need_login.dart';
 import 'package:wechat/view/register.dart';
 import 'package:wechat/view/server_setting.dart';
 import 'package:wechat/view/setting.dart';
 import 'package:wechat/view/webview.dart';
+import 'package:wechat/widget/stream_builder.dart';
 
-enum Page { serverSetting, register, setting, addFriend, chat, webView }
-
-final Router router = Router._();
-
-void initRoute() {
-  router._routes = <Page, _Route>{
-    Page.serverSetting: _Route((_) => ServerSettingPage()),
-    Page.register: _Route((_) => RegisterPage()),
-    Page.setting: _Route((_) => SettingPage()),
-    Page.addFriend: _Route((_) => AddFriendPage()),
-    Page.chat: _Route(
-      (_, {int id, String title, ChatType type}) =>
-          ChatPage(id: id, title: title, type: type),
-      parameters: <Symbol>{#id, #title, #type},
-    ),
-    Page.webView: _Route(
-      (_, {String url}) => WebViewPage(url),
-      parameters: <Symbol>{#url},
-      transitionType: TransitionType.cupertinoFullScreenDialog,
-    ),
-  };
-}
-
-enum TransitionType {
-  cupertino,
-  cupertinoFullScreenDialog,
-}
-
-class _Route {
-  _Route(
-    this.handler, {
-    Set<Symbol> parameters,
+class AppRouteSetting extends RouteSetting {
+  AppRouteSetting({
+    @required String path,
+    @required RouteHandler handler,
+    Set<String> parameters,
     TransitionType transitionType,
-  })  : assert(handler != null),
-        parameters = parameters ?? const <Symbol>{},
-        transitionType = transitionType ?? TransitionType.cupertino;
+    bool checkLogin = true,
+  }) : super(
+          path: path,
+          handler: _appRouteHandler(handler, checkLogin),
+          parameters: parameters,
+          transitionType: transitionType,
+        );
 
-  final Function handler;
-  final Set<Symbol> parameters;
-  final TransitionType transitionType;
+  static RouteHandler _appRouteHandler(RouteHandler handler, bool checkLogin) =>
+      (BuildContext context, Map<String, String> arguments) =>
+          IStreamBuilder<bool>(
+            stream: appInitialized,
+            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) =>
+                snapshot.data == true
+                    ? ((checkLogin &&
+                            (ownUserInfo.value?.userSession ?? '').isEmpty)
+                        ? NeedLoginPage()
+                        : handler(context, arguments))
+                    : Container(),
+          );
 }
 
-class RouterNavigatorObserver extends NavigatorObserver {
-  factory RouterNavigatorObserver() =>
-      _instance ??= RouterNavigatorObserver._();
-
-  RouterNavigatorObserver._();
-
-  static RouterNavigatorObserver _instance;
-}
-
-class Router {
-  Router._();
-
-  Map<Page, _Route> _routes = <Page, _Route>{};
-
-  Future<T> push<T>(
-    Page page, {
-    Map<Symbol, Object> parameters,
-    bool replace = false,
-    RoutePredicate removeUntil,
-  }) {
-    assert(replace != null);
-    assert(replace == false || removeUntil == null);
-
-    final _Route route = _routes[page];
-    if (route == null) {
-      throw ArgumentError.value(page, 'page', 'Route[$page] not found');
-    }
-
-    parameters = parameters ?? const <Symbol, Object>{};
-    if (route.parameters.length != parameters.length) {
-      throw ArgumentError(
-          'Route[$page] expected ${route.parameters.length} arguments, but got ${parameters.length}');
-    }
-    for (Symbol parameter in route.parameters) {
-      if (!parameters.containsKey(parameter)) {
-        throw ArgumentError('Route[$page] required parameter[$parameter]');
-      }
-    }
-
-    final PageRoute<T> pageRoute = CupertinoPageRoute<T>(
-      fullscreenDialog:
-          route.transitionType == TransitionType.cupertinoFullScreenDialog,
-      builder: (BuildContext context) =>
-          Function.apply(route.handler, <dynamic>[context], parameters)
-              as Widget,
-    );
-
-    final NavigatorState navigator = RouterNavigatorObserver().navigator;
-    if (removeUntil != null) {
-      return navigator.pushAndRemoveUntil(pageRoute, removeUntil);
-    } else if (replace) {
-      return navigator.pushReplacement(pageRoute);
-    } else {
-      return navigator.push(pageRoute);
-    }
-  }
-
-  bool pop<T>([T result]) => RouterNavigatorObserver().navigator.pop(result);
-}
+final Set<AppRouteSetting> appRoutes = <AppRouteSetting>{
+  AppRouteSetting(
+    path: '/home',
+    handler: (_, __) => WillPopScope(
+      onWillPop: () async {
+        if (!kIsWeb && Platform.isAndroid) {
+          const MethodChannel('android.move_task_to_back')
+              .invokeMethod<void>('moveTaskToBack');
+          return false;
+        }
+        return true;
+      },
+      child: HomePage(),
+    ),
+    transitionType: TransitionType.none,
+  ),
+  AppRouteSetting(
+    path: '/login',
+    handler: (_, __) => LoginPage(),
+    checkLogin: false,
+    transitionType: TransitionType.none,
+  ),
+  AppRouteSetting(
+    path: '/serverSetting',
+    handler: (_, __) => ServerSettingPage(),
+    checkLogin: false,
+  ),
+  AppRouteSetting(
+    path: '/register',
+    handler: (_, __) => RegisterPage(),
+    checkLogin: false,
+  ),
+  AppRouteSetting(path: '/setting', handler: (_, __) => SettingPage()),
+  AppRouteSetting(path: '/addFriend', handler: (_, __) => AddFriendPage()),
+  AppRouteSetting(
+    path: '/chat',
+    handler: (_, Map<String, String> arguments) => ChatPage(
+      id: int.parse(arguments['id']),
+      title: arguments['title'],
+      type: arguments['type'] == 'friend' ? ChatType.friend : ChatType.group,
+    ),
+    parameters: <String>{'id', 'title', 'type'},
+  ),
+  AppRouteSetting(
+    path: '/webView',
+    handler: (_, Map<String, String> arguments) =>
+        WebViewPage(arguments['url']),
+    parameters: <String>{'url'},
+    transitionType: TransitionType.cupertinoFullScreenDialog,
+  ),
+  AppRouteSetting(
+      path: '/businessCard', handler: (_, __) => BusinessCardPage()),
+};

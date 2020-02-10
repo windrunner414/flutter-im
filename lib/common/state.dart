@@ -3,6 +3,7 @@ import 'package:wechat/model/user.dart';
 import 'package:wechat/util/storage.dart';
 import 'package:wechat/util/worker/worker.dart';
 
+BehaviorSubject<bool> appInitialized = BehaviorSubject<bool>.seeded(false);
 BehaviorSubject<User> ownUserInfo = BehaviorSubject<User>();
 
 const String _OwnUserInfoStorageKey = 'auth.own_user_info';

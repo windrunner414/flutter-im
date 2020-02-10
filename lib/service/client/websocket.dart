@@ -13,11 +13,12 @@ class WebSocketEvent<T> {
 }
 
 class WebSocketClient {
-  WebSocketClient({this.url, this.protocols});
+  WebSocketClient({this.protocols});
 
   static const Duration _RetryInterval = Duration(seconds: 1);
 
-  final String url;
+  String _url;
+  String get url => _url;
   final List<String> protocols;
 
   PublishSubject<WebSocketEvent<dynamic>> _virtualConnection;
@@ -26,11 +27,14 @@ class WebSocketClient {
 
   Completer<void> _closeCompleter;
 
-  Future<bool> connect() async {
+  Future<bool> connect([String connectUrl]) async {
     if (_closeCompleter != null) {
       await _closeCompleter.future;
     }
     if (_virtualConnection == null) {
+      if (connectUrl != null) {
+        _url = connectUrl;
+      }
       _virtualConnect();
       return true;
     }

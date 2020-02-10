@@ -19,7 +19,6 @@ dependencies:
   rxdart: ^0.23.1
   worker_manager: ^2.1.6
   generic_json_converter_annotation: ^0.0.2
-  flutter_screenutil: ^0.7.0
   chopper: ^3.0.1+1
   copy_with_extension: ^1.0.7
   websocket: ^0.0.5
