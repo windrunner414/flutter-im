@@ -102,8 +102,7 @@ class _ChatPageState extends BaseViewState<ChatViewModel, ChatPage> {
 }
 
 class _MessageBox extends StatefulWidget {
-  // ignore: prefer_const_constructors_in_immutables, 屏幕大小改变时需要rebuild，若为const不会rebuild
-  _MessageBox(this.message);
+  const _MessageBox(this.message);
 
   final Message message;
 
@@ -119,6 +118,7 @@ abstract class _MessageBoxState extends State<_MessageBox> {
 
   @override
   Widget build(BuildContext context) {
+    dependOnScreenUtil(context);
     final Widget avatar = UImage(
       /*ownUserInfo.value.userAvatar*/ 'https://randomuser.me/api/portraits/men/50.jpg',
       placeholderBuilder: (BuildContext context) => Icon(
@@ -346,8 +346,7 @@ class _TextMessageBoxState extends _MessageBoxState {
 }
 
 class _MessagesListView extends StatefulWidget {
-  // ignore: prefer_const_constructors_in_immutables
-  _MessagesListView({this.viewModel});
+  const _MessagesListView({this.viewModel});
 
   final ChatViewModel viewModel;
 
@@ -404,67 +403,70 @@ class _MessagesListViewState extends State<_MessagesListView> {
   }
 
   @override
-  Widget build(BuildContext context) => EasyRefresh.custom(
-        scrollController: _wrapScrollController,
-        onRefresh: widget.viewModel.loadHistoricalMessages,
-        controller: _refreshController,
-        header: CustomHeader(
-          extent: 40.0,
-          triggerDistance: 50.0,
-          headerBuilder: (BuildContext context,
-                  RefreshMode refreshState,
-                  double pulledExtent,
-                  double refreshTriggerPullDistance,
-                  double refreshIndicatorExtent,
-                  AxisDirection axisDirection,
-                  bool float,
-                  Duration completeDuration,
-                  bool enableInfiniteRefresh,
-                  bool success,
-                  bool noMore) =>
-              SpinKitRing(
-            size: 24.sp,
-            lineWidth: 1,
-            color: Colors.black45,
+  Widget build(BuildContext context) {
+    dependOnScreenUtil(context);
+    return EasyRefresh.custom(
+      scrollController: _wrapScrollController,
+      onRefresh: widget.viewModel.loadHistoricalMessages,
+      controller: _refreshController,
+      header: CustomHeader(
+        extent: 40.0,
+        triggerDistance: 50.0,
+        headerBuilder: (BuildContext context,
+                RefreshMode refreshState,
+                double pulledExtent,
+                double refreshTriggerPullDistance,
+                double refreshIndicatorExtent,
+                AxisDirection axisDirection,
+                bool float,
+                Duration completeDuration,
+                bool enableInfiniteRefresh,
+                bool success,
+                bool noMore) =>
+            SpinKitRing(
+          size: 24.sp,
+          lineWidth: 1,
+          color: Colors.black45,
+        ),
+      ),
+      slivers: <Widget>[
+        SliverList(
+          delegate: SliverChildListDelegate(
+            <Widget>[
+              IStreamBuilder<List<Message>>(
+                stream: widget.viewModel.historicalMessages,
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<Message>> snapshot) {
+                  Timer.run(_onHistoricalMessagesUpdate);
+                  return ListView.builder(
+                    key: _historicalMessagesListKey,
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    reverse: true,
+                    itemBuilder: (BuildContext context, int index) =>
+                        _MessageBox(snapshot.data[index]),
+                    itemCount: snapshot.data.length,
+                  );
+                },
+              ),
+              IStreamBuilder<List<Message>>(
+                stream: widget.viewModel.newMessages,
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<Message>> snapshot) {
+                  Timer.run(_onNewMessagesUpdate);
+                  return ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) =>
+                        _MessageBox(snapshot.data[index]),
+                    itemCount: snapshot.data.length,
+                  );
+                },
+              ),
+            ],
           ),
         ),
-        slivers: <Widget>[
-          SliverList(
-            delegate: SliverChildListDelegate(
-              <Widget>[
-                IStreamBuilder<List<Message>>(
-                  stream: widget.viewModel.historicalMessages,
-                  builder: (BuildContext context,
-                      AsyncSnapshot<List<Message>> snapshot) {
-                    Timer.run(_onHistoricalMessagesUpdate);
-                    return ListView.builder(
-                      key: _historicalMessagesListKey,
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      reverse: true,
-                      itemBuilder: (BuildContext context, int index) =>
-                          _MessageBox(snapshot.data[index]),
-                      itemCount: snapshot.data.length,
-                    );
-                  },
-                ),
-                IStreamBuilder<List<Message>>(
-                  stream: widget.viewModel.newMessages,
-                  builder: (BuildContext context,
-                      AsyncSnapshot<List<Message>> snapshot) {
-                    Timer.run(_onNewMessagesUpdate);
-                    return ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (BuildContext context, int index) =>
-                          _MessageBox(snapshot.data[index]),
-                      itemCount: snapshot.data.length,
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
-      );
+      ],
+    );
+  }
 }
