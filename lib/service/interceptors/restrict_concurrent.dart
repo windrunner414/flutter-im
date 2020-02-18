@@ -19,7 +19,7 @@ class _RestrictConcurrentDelegate {
 
   void requestFinished() {
     --_num;
-    _waitQueue.removeFirst().complete();
+    _waitQueue.removeFirst()?.complete();
   }
 }
 
