@@ -24,7 +24,7 @@ class _$UserFriendApplyService extends UserFriendApplyService {
   }
 
   @override
-  Future<Response<ApiResponse<FriendApplyList>>> getFriendApplyList(
+  Future<Response<ApiResponse<FriendApplicationList>>> getFriendApplicationList(
       {int page, int limit, int state}) {
     final $url = '/User/UserFriendApply/getFriendApplyList';
     final $params = <String, dynamic>{
@@ -33,6 +33,7 @@ class _$UserFriendApplyService extends UserFriendApplyService {
       'state': state
     };
     final $request = Request('GET', $url, client.baseUrl, parameters: $params);
-    return client.send<ApiResponse<FriendApplyList>, FriendApplyList>($request);
+    return client.send<ApiResponse<FriendApplicationList>,
+        FriendApplicationList>($request);
   }
 }

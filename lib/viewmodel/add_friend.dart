@@ -34,7 +34,7 @@ class AddFriendViewModel extends BaseViewModel {
   Future<void> _loadMore() async {
     final UserList userList = await _userRepository
         .search(keyword: _searchKeyword, limit: 15, page: _nextPage)
-        .bindTo(this, #loadMore)
+        .bindTo(this, 'loadMore')
         .wrapError();
     if (userList.list == null || userList.list.isEmpty) {
       if (_nextPage == 1) {

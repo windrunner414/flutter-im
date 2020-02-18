@@ -30,12 +30,17 @@ class LoginPage extends BaseView<LoginViewModel> {
               itemBuilder: (BuildContext context) =>
                   <PopupMenuItem<_PopupMenuItems>>[
                 PopupMenuItem<_PopupMenuItems>(
-                  child: Text(
-                    '服务器设置',
-                    style: TextStyle(
-                      color: const Color(AppColor.AppBarPopupMenuColor),
-                      fontSize: 16.sp,
-                    ),
+                  child: Builder(
+                    builder: (BuildContext context) {
+                      dependOnScreenUtil(context);
+                      return Text(
+                        '服务器设置',
+                        style: TextStyle(
+                          color: const Color(AppColor.AppBarPopupMenuColor),
+                          fontSize: 16.sp,
+                        ),
+                      );
+                    },
                   ),
                   value: _PopupMenuItems.serverSetting,
                 ),

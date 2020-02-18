@@ -45,7 +45,7 @@ class Router {
   final Map<String, RouteSetting> _routes;
 
   void addRoute(RouteSetting route, {bool replaceIfExists = false}) {
-    if (!RegExp(r'^[a-zA-Z0-9/]+$').hasMatch(route.path)) {
+    if (!RegExp(r'^/[a-zA-Z0-9/]*$').hasMatch(route.path)) {
       throw ArgumentError.value(route.path, 'path', 'Invalid path');
     }
     if (!replaceIfExists && _routes.containsKey(route.path)) {
@@ -62,24 +62,22 @@ class Router {
 
   Future<T> push<T extends Object>(String path,
           {Map<String, String> arguments}) =>
-      RouterNavigatorObserver()
-          .navigator
-          .push(generator(RouteSettings(name: path, arguments: arguments)));
+      RouterNavigatorObserver().navigator.pushNamed(path, arguments: arguments);
 
   Future<T> pushReplacement<T extends Object>(String path,
           {Map<String, String> arguments}) =>
-      RouterNavigatorObserver().navigator.pushReplacement(
-          generator(RouteSettings(name: path, arguments: arguments)));
+      RouterNavigatorObserver()
+          .navigator
+          .pushReplacementNamed(path, arguments: arguments);
 
   Future<T> pushAndRemoveUntil<T extends Object>(
     String path,
     RoutePredicate predicate, {
     Map<String, String> arguments,
   }) =>
-      RouterNavigatorObserver().navigator.pushAndRemoveUntil(
-            generator(RouteSettings(name: path, arguments: arguments)),
-            predicate,
-          );
+      RouterNavigatorObserver()
+          .navigator
+          .pushNamedAndRemoveUntil(path, predicate, arguments: arguments);
 
   void pop<T extends Object>([T result]) =>
       RouterNavigatorObserver().navigator.pop(result);
@@ -97,8 +95,7 @@ class Router {
     final int separatorPosition = path.indexOf(',');
     if (separatorPosition != -1) {
       if (settings.arguments != null) {
-        throw ArgumentError.value(
-            settings.arguments, 'arguments', 'Arguments must be null');
+        return null;
       }
       final String pathArguments = path.substring(separatorPosition + 1);
       path = path.substring(0, separatorPosition);
@@ -107,30 +104,27 @@ class Router {
                 as Map<String, dynamic>)
             .cast();
       } catch (error) {
-        throw ArgumentError.value(
-            pathArguments, 'path', 'Failed to parse the path arguments');
+        return null;
       }
     } else {
       try {
         arguments = settings.arguments as Map<String, String>;
       } catch (error) {
-        throw ArgumentError.value(settings.arguments, 'arguments',
-            'Arguments type must be Map<String, String>');
+        return null;
       }
     }
     arguments ??= const <String, String>{};
 
     final RouteSetting route = _routes[path];
     if (route == null) {
-      throw ArgumentError.value(path, 'path', 'Route not found');
+      return null;
     }
     if (arguments.length != route.parameters.length) {
-      throw ArgumentError(
-          'Expected ${route.parameters.length} arguments, but got ${arguments.length}');
+      return null;
     }
     for (String key in route.parameters) {
       if (!arguments.containsKey(key)) {
-        throw ArgumentError('Argument[$key] is required');
+        return null;
       }
     }
 
@@ -169,8 +163,7 @@ class Router {
           builder: builder,
         );
       default:
-        throw UnimplementedError(
-            'Unimplemented transition type[${transitionType.runtimeType}]');
+        return null;
     }
   }
 }

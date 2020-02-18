@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/model/contacts.dart';
 import 'package:wechat/util/worker/worker.dart';
@@ -7,7 +6,6 @@ import 'package:wechat/viewmodel/base.dart';
 class ContactViewModel extends BaseViewModel {
   ContactViewModel();
 
-  final ScrollController scrollController = ScrollController();
   final BehaviorSubject<String> currentGroup =
       BehaviorSubject<String>.seeded('');
   final BehaviorSubject<List<Contact>> contacts =
@@ -22,7 +20,6 @@ class ContactViewModel extends BaseViewModel {
   @override
   void dispose() {
     super.dispose();
-    scrollController.dispose();
     currentGroup.close();
     contacts.close();
   }

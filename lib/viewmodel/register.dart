@@ -28,8 +28,10 @@ class RegisterViewModel extends BaseViewModel {
     try {
       verifyCode.value = await _commonRepository
           .getVerifyCode()
-          .bindTo(this, #getVerifyCode)
+          .bindTo(this, 'getVerifyCode')
           .wrapError();
+    } on CancelException {
+      // do nothing
     } catch (error) {
       verifyCode.addError(error);
     }

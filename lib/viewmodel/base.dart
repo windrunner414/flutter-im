@@ -12,8 +12,8 @@ abstract class BaseViewModel {
   @nonVirtual
   final Set<Completer<dynamic>> _managedCompleter = <Completer<dynamic>>{};
   @nonVirtual
-  final Map<Symbol, Completer<dynamic>> _managedNamedCompleter =
-      <Symbol, Completer<dynamic>>{};
+  final Map<String, Completer<dynamic>> _managedNamedCompleter =
+      <String, Completer<dynamic>>{};
 
   @mustCallSuper
   void init() {}
@@ -26,7 +26,7 @@ abstract class BaseViewModel {
       return true;
     });
     _managedNamedCompleter
-        .removeWhere((Symbol symbol, Completer<dynamic> completer) {
+        .removeWhere((String name, Completer<dynamic> completer) {
       completer.completeError(const CancelException());
       return true;
     });
@@ -34,7 +34,7 @@ abstract class BaseViewModel {
 
   /// 在dispose的时候取消掉，如果存在name一样且未完成的任务，取消之前的
   @nonVirtual
-  Future<T> bindFuture<T>(Future<T> future, [Symbol name]) {
+  Future<T> bindFuture<T>(Future<T> future, [String name]) {
     final Completer<T> completer = Completer<T>();
     if (!active) {
       completer.completeError(const CancelException());
@@ -73,7 +73,7 @@ abstract class BaseViewModel {
 
 extension ViewModelFutureExtension<T> on Future<T> {
   /// 绑定到一个viewModel上，若viewModel dispose了则抛出CancelException
-  Future<T> bindTo(BaseViewModel viewModel, [Symbol name]) =>
+  Future<T> bindTo(BaseViewModel viewModel, [String name]) =>
       viewModel.bindFuture(this, name);
 
   /// 将抛出的错误（除了CancelException）用ViewModelException包裹

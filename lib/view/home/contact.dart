@@ -8,7 +8,7 @@ class _ContactItem extends StatefulWidget {
     @required this.avatar,
     @required this.title,
     this.groupTitle,
-    this.onPressed,
+    @required this.onPressed,
   });
 
   final String avatar;
@@ -39,9 +39,7 @@ class _ContactItemState extends State<_ContactItem> {
       onTapCancel: () {
         setState(() => _active = false);
       },
-      onTap: () {
-        print('233');
-      },
+      onTap: widget.onPressed,
       onLongPress: () {},
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -105,9 +103,9 @@ class _ContactItemState extends State<_ContactItem> {
 }
 
 class _ContactPage extends BaseView<ContactViewModel> {
-  _ContactPage({this.friendApplyNum});
+  const _ContactPage({this.friendApplicationNum});
 
-  final BehaviorSubject<int> friendApplyNum;
+  final BehaviorSubject<int> friendApplicationNum;
 
   @override
   _ContactPageState createState() => _ContactPageState();
@@ -121,6 +119,7 @@ class _ContactPageState extends BaseViewState<ContactViewModel, _ContactPage>
   @override
   bool get wantKeepAlive => true;
 
+  final ScrollController _scrollController = ScrollController();
   List<Widget> _functionButtons;
   final List<String> _groups = <String>[
     '↑',
@@ -208,9 +207,8 @@ class _ContactPageState extends BaseViewState<ContactViewModel, _ContactPage>
     final double pos = _groupTitlePos[group];
     if (pos != null) {
       // TODO(windrunner): 由于listview不定高导致每次jumpto都要一个一个item去layout计算得到最后的index，存在性能问题。但是flutter暂未提供jumpTo(index), https://github.com/flutter/flutter/issues/48108
-      viewModel.scrollController.jumpTo(pos
-          .clamp(0, viewModel.scrollController.position.maxScrollExtent)
-          .toDouble());
+      _scrollController.jumpTo(
+          pos.clamp(0, _scrollController.position.maxScrollExtent).toDouble());
     }
   }
 
@@ -221,14 +219,12 @@ class _ContactPageState extends BaseViewState<ContactViewModel, _ContactPage>
             _ContactItem(
               avatar: 'asset://assets/images/ic_new_friend.png',
               title: '新的朋友',
-              onPressed: () {
-                print('添加新朋友');
-              },
+              onPressed: () => router.push('/friendApplications'),
             ),
             Positioned(
               right: 32,
               child: IStreamBuilder<int>(
-                stream: widget.friendApplyNum,
+                stream: widget.friendApplicationNum,
                 builder: (BuildContext context, AsyncSnapshot<int> snapshot) =>
                     Badge(
                   badgeColor: const Color(AppColor.NotifyDotBgColor),
@@ -269,7 +265,7 @@ class _ContactPageState extends BaseViewState<ContactViewModel, _ContactPage>
                   ListView.builder(
             addAutomaticKeepAlives: false,
             physics: const BouncingScrollPhysics(),
-            controller: viewModel.scrollController,
+            controller: _scrollController,
             itemBuilder: (BuildContext context, int index) {
               if (index < _functionButtons.length) {
                 return _functionButtons[index];
@@ -301,6 +297,7 @@ class _ContactPageState extends BaseViewState<ContactViewModel, _ContactPage>
                 avatar: contact.avatar,
                 title: contact.name,
                 groupTitle: hasGroupTitle ? contact.nameIndex : null,
+                onPressed: () {},
               );
             },
             itemCount: snapshot.data.length + _functionButtons.length + 1,
@@ -361,5 +358,11 @@ class _ContactPageState extends BaseViewState<ContactViewModel, _ContactPage>
     viewModel.currentGroup.listen((String group) => _jumpToGroup(group));
     viewModel.contacts
         .listen((List<Contact> data) => _computeGroupTitlePos(data));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
   }
 }

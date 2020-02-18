@@ -24,22 +24,27 @@ part 'profile.dart';
 enum _PopupMenuItems { createGroup, addFriend, scanQrCode }
 
 class HomePage extends BaseView<HomeViewModel> {
-  Widget _buildPopupMenuItem(int iconName, String title) => Row(
-        children: <Widget>[
-          Icon(
-            IconData(iconName, fontFamily: Constant.IconFontFamily),
-            size: 22.minWidthHeight,
-            color: const Color(AppColor.AppBarPopupMenuColor),
-          ),
-          const SizedBox(width: 12),
-          Text(
-            title,
-            style: TextStyle(
-              color: const Color(AppColor.AppBarPopupMenuColor),
-              fontSize: 16.sp,
-            ),
-          ),
-        ],
+  Widget _buildPopupMenuItem(int iconName, String title) => Builder(
+        builder: (BuildContext context) {
+          dependOnScreenUtil(context);
+          return Row(
+            children: <Widget>[
+              Icon(
+                IconData(iconName, fontFamily: Constant.IconFontFamily),
+                size: 22.sp,
+                color: const Color(AppColor.AppBarPopupMenuColor),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                title,
+                style: TextStyle(
+                  color: const Color(AppColor.AppBarPopupMenuColor),
+                  fontSize: 16.sp,
+                ),
+              ),
+            ],
+          );
+        },
       );
 
   @override
@@ -47,7 +52,7 @@ class HomePage extends BaseView<HomeViewModel> {
     dependOnScreenUtil(context);
     final List<Widget> pages = <Widget>[
       _ConversationPage(),
-      _ContactPage(friendApplyNum: viewModel.friendApplyNum),
+      _ContactPage(friendApplicationNum: viewModel.friendApplicationNum),
       _ProfilePage(),
     ];
     return Scaffold(
@@ -101,7 +106,7 @@ class HomePage extends BaseView<HomeViewModel> {
         stream: viewModel.currentIndex,
         builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
           Widget buildContactIcon(bool active) => IStreamBuilder<int>(
-                stream: viewModel.friendApplyNum,
+                stream: viewModel.friendApplicationNum,
                 builder: (BuildContext context, AsyncSnapshot<int> snapshot) =>
                     Badge(
                   child: Icon(

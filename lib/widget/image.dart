@@ -45,7 +45,7 @@ class _UImageState extends State<UImage> {
         width: widget.width,
         height: widget.height,
         enableLoadState: true,
-        enableMemoryCache: true,
+        enableMemoryCache: !kIsWeb,
         clearMemoryCacheIfFailed: true,
         loadStateChanged: _onLoadStateChanged,
       );

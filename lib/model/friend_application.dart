@@ -2,9 +2,9 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:wechat/model/base.dart';
 
-part 'friend_apply.g.dart';
+part 'friend_application.g.dart';
 
-enum FriendApplyState {
+enum FriendApplicationState {
   @JsonValue(0)
   waiting,
   @JsonValue(1)
@@ -15,8 +15,8 @@ enum FriendApplyState {
 
 @CopyWith()
 @JsonSerializable()
-class FriendApply extends BaseModel {
-  const FriendApply({
+class FriendApplication extends BaseModel {
+  const FriendApplication({
     this.friendApplyId,
     this.fromUserId,
     this.addTime,
@@ -32,14 +32,14 @@ class FriendApply extends BaseModel {
     this.targetUserAvatar,
   });
 
-  factory FriendApply.fromJson(Map<String, dynamic> json) =>
-      _$FriendApplyFromJson(json);
-  Map<String, dynamic> toJson() => _$FriendApplyToJson(this);
+  factory FriendApplication.fromJson(Map<String, dynamic> json) =>
+      _$FriendApplicationFromJson(json);
+  Map<String, dynamic> toJson() => _$FriendApplicationToJson(this);
 
   final int friendApplyId;
   final int fromUserId;
   final int addTime;
-  final FriendApplyState state;
+  final FriendApplicationState state;
   final String verifyNote;
   final int verifyTime;
   final String note;
@@ -53,13 +53,13 @@ class FriendApply extends BaseModel {
 
 @CopyWith()
 @JsonSerializable()
-class FriendApplyList extends BaseModel {
-  const FriendApplyList({this.total, this.list});
+class FriendApplicationList extends BaseModel {
+  const FriendApplicationList({this.total, this.list});
 
-  factory FriendApplyList.fromJson(Map<String, dynamic> json) =>
-      _$FriendApplyListFromJson(json);
-  Map<String, dynamic> toJson() => _$FriendApplyListToJson(this);
+  factory FriendApplicationList.fromJson(Map<String, dynamic> json) =>
+      _$FriendApplicationListFromJson(json);
+  Map<String, dynamic> toJson() => _$FriendApplicationListToJson(this);
 
   final int total;
-  final List<FriendApply> list;
+  final List<FriendApplication> list;
 }

@@ -7,6 +7,8 @@ import 'package:wechat/viewmodel/base.dart';
 /// 如果T不是BaseViewModel就会创建一个viewModel绑定上去，否则build的viewModel永远为null
 /// 若需要共享viewModel，需要额外提供一个ViewModelProvider
 abstract class BaseView<T extends BaseViewModel> extends StatefulWidget {
+  const BaseView();
+
   Widget build(BuildContext context, T viewModel);
 
   @override

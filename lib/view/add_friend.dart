@@ -101,8 +101,9 @@ class AddFriendPage extends BaseView<AddFriendViewModel> {
                         enableInfiniteLoad: false,
                       ),
                       onLoad: () => viewModel.loadMore().catchAll(
-                          (Object error) => showToast(error.toString()),
-                          test: exceptCancelException),
+                            (Object error) => showToast(error.toString()),
+                            test: exceptCancelException,
+                          ),
                       slivers: <Widget>[
                         SliverFixedExtentList(
                           itemExtent: 56,
@@ -155,9 +156,10 @@ class AddFriendPage extends BaseView<AddFriendViewModel> {
                                                   snapshot.data[index].userId)
                                           .then((_) => showToast('好友申请已发送'))
                                           .catchAll(
-                                              (Object error) =>
-                                                  showToast(error.toString()),
-                                              test: exceptCancelException)
+                                            (Object error) =>
+                                                showToast(error.toString()),
+                                            test: exceptCancelException,
+                                          )
                                           .showLoadingUntilComplete(),
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 6),

@@ -4,7 +4,7 @@ import 'package:dartin/dartin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/state.dart';
-import 'package:wechat/model/friend_apply.dart';
+import 'package:wechat/model/friend_application.dart';
 import 'package:wechat/repository/auth.dart';
 import 'package:wechat/repository/user_friend_apply.dart';
 import 'package:wechat/service/base.dart';
@@ -16,7 +16,8 @@ class HomeViewModel extends BaseViewModel {
 
   final BehaviorSubject<int> currentIndex = BehaviorSubject<int>.seeded(0);
   final PageController pageController = PageController(initialPage: 0);
-  final BehaviorSubject<int> friendApplyNum = BehaviorSubject<int>.seeded(0);
+  final BehaviorSubject<int> friendApplicationNum =
+      BehaviorSubject<int>.seeded(0);
 
   Timer _timerPerMinute;
 
@@ -49,7 +50,10 @@ class HomeViewModel extends BaseViewModel {
 
   // TODO(windrunner): 【不重要】若onError内出错，比如onError: (Error e) {}，e不是Object会报错，会同时导致报一个WorkerTask<Object, String>不是Task<String, Map<String, dynamic>>的错误，原因可能在ThrowErrorInterceptor，需要看chopper的处理了
   void _refreshFriendApplyNum() => _userFriendApplyRepository
-      .getFriendApplyList(page: 1, limit: 1, state: FriendApplyState.waiting)
-      .then((FriendApplyList result) => friendApplyNum.value = result.total,
+      .getFriendApplicationList(
+          page: 1, limit: 1, state: FriendApplicationState.waiting)
+      .then(
+          (FriendApplicationList result) =>
+              friendApplicationNum.value = result.total,
           onError: (Object error) {});
 }
