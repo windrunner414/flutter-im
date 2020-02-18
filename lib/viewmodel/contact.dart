@@ -25,7 +25,7 @@ class ContactViewModel extends BaseViewModel {
   }
 
   Future<void> refreshContacts() async {
-    contacts.value = await execute(
+    contacts.value = await worker.execute(
       WorkerTask<List<Contact>, List<Contact>>(
         function: _refreshContacts,
         arg: ContactsPageData.mock().contacts,

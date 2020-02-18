@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:chopper/chopper.dart';
 import 'package:dartin/dartin.dart';
-import 'package:wechat/common/di.dart';
 import 'package:wechat/model/server_config.dart';
+import 'package:wechat/service/interceptors/base.dart';
 import 'package:wechat/util/storage.dart';
 import 'package:wechat/util/worker/worker.dart';
 
@@ -32,7 +32,8 @@ set serverConfig(ServerConfig _value) {
   final ServerConfig value = _value ?? _DefaultApiServerConfig;
   if (_serverConfig != null) {
     // 初始化不用保存
-    executeJsonEncode(value)
+    worker
+        .jsonEncode(value)
         .then((String json) => StorageUtil.setString(_StorageKey, json));
   }
   _serverConfig = value;
@@ -63,13 +64,16 @@ Future<void> initService() async {
   final String json = StorageUtil.get(_StorageKey);
   serverConfig = json == null
       ? null
-      : ServerConfig.fromJson(await executeJsonDecode(json));
+      : ServerConfig.fromJson(await worker.jsonDecode(json));
 }
 
 void _updateClient() {
+  final WebClientInterceptors interceptors = inject();
+  assert(interceptors.checkValid());
+
   _httpClient ??= HttpClient(
     timeout: const Duration(seconds: 15),
-    interceptors: inject(scope: HttpInterceptorScope),
+    interceptors: interceptors.interceptors,
   );
   _httpClient.baseUrl = httpBaseUrl;
 

@@ -96,5 +96,5 @@ class _DefaultConverter implements Converter, ErrorConverter {
           Response<Object> response) async =>
       response.replace<BodyType>(
           body: ApiResponse<InnerType>.fromJson(
-              await executeJsonDecode(response.body as String)) as BodyType);
+              await worker.jsonDecode(response.body as String)) as BodyType);
 }

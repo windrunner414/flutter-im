@@ -10,8 +10,8 @@ const String _OwnUserInfoStorageKey = 'auth.own_user_info';
 Future<void> initAppState() async {
   final String json = StorageUtil.get(_OwnUserInfoStorageKey);
   ownUserInfo.value =
-      json == null ? null : User.fromJson(await executeJsonDecode(json));
+      json == null ? null : User.fromJson(await worker.jsonDecode(json));
   ownUserInfo.listen((User value) async => await StorageUtil.setString(
       _OwnUserInfoStorageKey,
-      value == null ? null : await executeJsonEncode(value)));
+      value == null ? null : await worker.jsonEncode(value)));
 }

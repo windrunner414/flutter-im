@@ -2,8 +2,11 @@ abstract class Config {
   static const String AppName = '微信';
 
   /// worker数量，解析json等在worker内执行
-  /// 会优先设置为cpu核心数 - 2，如果小于该值，或获取不到，会设置成该值
-  static const int MinimalWorkerNum = 2;
+  /// 为cpu核心数 - 2，并受此处配置影响
+  static const int MinWorkerNum = 2;
+  static const int MaxWorkerNum = 6;
+
+  static const int MaxHttpConcurrent = 6;
 }
 
 // TODO(windrunner): 类型换成Color，不要int

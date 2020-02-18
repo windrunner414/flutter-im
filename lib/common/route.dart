@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/util/router.dart';
 import 'package:wechat/view/add_friend.dart';
@@ -42,17 +39,7 @@ final Set<AppRouteSetting> appRoutes = <AppRouteSetting>{
   AppRouteSetting(
     path: '/',
     handler: (_, __) => (ownUserInfo.value?.userSession ?? '').isNotEmpty
-        ? WillPopScope(
-            onWillPop: () async {
-              if (!kIsWeb && Platform.isAndroid) {
-                const MethodChannel('android.move_task_to_back')
-                    .invokeMethod<void>('moveTaskToBack');
-                return false;
-              }
-              return true;
-            },
-            child: HomePage(),
-          )
+        ? HomePage()
         : LoginPage(),
     transitionType: TransitionType.none,
     checkLogin: false,

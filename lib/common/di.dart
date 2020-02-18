@@ -8,6 +8,7 @@ import 'package:wechat/service/base.dart';
 import 'package:wechat/service/common.dart';
 import 'package:wechat/service/interceptors/auth.dart';
 import 'package:wechat/service/interceptors/base.dart';
+import 'package:wechat/service/interceptors/restrict_concurrent.dart';
 import 'package:wechat/service/interceptors/throw_error.dart';
 import 'package:wechat/service/user.dart';
 import 'package:wechat/service/user_friend_apply.dart';
@@ -23,9 +24,7 @@ import 'package:wechat/viewmodel/server_setting.dart';
 import 'package:wechat/viewmodel/setting.dart';
 import 'package:wechat/viewmodel/user.dart';
 
-const DartInScope HttpInterceptorScope = DartInScope('http_interceptors');
-
-final Module viewModelModule = Module([
+final Module viewModelModule = Module(<DartIn<dynamic>>[
   factory<LoginViewModel>(({params}) => LoginViewModel()),
   factory<RegisterViewModel>(({params}) => RegisterViewModel()),
   factory<ServerSettingViewModel>(({params}) => ServerSettingViewModel()),
@@ -41,26 +40,27 @@ final Module viewModelModule = Module([
       ({params}) => FriendApplicationsViewModel()),
 ]);
 
-final Module repositoryModule = Module([
+final Module repositoryModule = Module(<DartIn<dynamic>>[
   single<UserRepository>(({params}) => UserRepository()),
   single<AuthRepository>(({params}) => AuthRepository()),
   single<CommonRepository>(({params}) => CommonRepository()),
   single<UserFriendApplyRepository>(({params}) => UserFriendApplyRepository()),
 ]);
 
-final Module serviceModule = Module([
+final Module serviceModule = Module(<DartIn<dynamic>>[
+  single<WebClientInterceptors>(
+    ({params}) => WebClientInterceptors(<BaseInterceptor>{
+      AuthInterceptor(),
+      RestrictConcurrentInterceptor(),
+      ThrowErrorInterceptor(),
+    }),
+  ),
   single<AuthService>(({params}) => AuthService.create(httpClient)),
   single<CommonService>(({params}) => CommonService.create(httpClient)),
   single<UserService>(({params}) => UserService.create(httpClient)),
   single<UserFriendApplyService>(
       ({params}) => UserFriendApplyService.create(httpClient)),
-])
-  ..withScope(HttpInterceptorScope, [
-    factory<Set<BaseInterceptor>>(({params}) => <BaseInterceptor>{
-          AuthInterceptor(), // Auth需要在ThrowError前执行
-          ThrowErrorInterceptor(),
-        }),
-  ]);
+]);
 
 final List<Module> appModules = <Module>[
   viewModelModule,
