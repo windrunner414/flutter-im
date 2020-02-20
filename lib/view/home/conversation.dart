@@ -145,17 +145,14 @@ class _ConversationPageState extends State<_ConversationPage> {
   final ConversationPageData data = ConversationPageData.mock();
 
   @override
-  Widget build(BuildContext context) => RefreshIndicator(
-        onRefresh: () async {
-          await Future<void>.delayed(const Duration(milliseconds: 1000));
-        },
-        color: const Color(AppColor.TabIconActiveColor),
-        child: ListView.builder(
-          physics: const BouncingScrollPhysics(),
-          itemBuilder: (BuildContext context, int index) =>
-              _ConversationItem(data.conversations[index]),
-          itemCount: data.conversations.length,
-          addAutomaticKeepAlives: false,
-        ),
-      );
+  Widget build(BuildContext context) {
+    dependOnScreenUtil(context);
+    return ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      itemBuilder: (BuildContext context, int index) =>
+          _ConversationItem(data.conversations[index]),
+      itemCount: data.conversations.length,
+      addAutomaticKeepAlives: false,
+    );
+  }
 }
