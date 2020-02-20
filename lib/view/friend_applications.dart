@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/constant.dart';
 import 'package:wechat/model/friend_application.dart';
 import 'package:wechat/util/layer.dart';
@@ -41,10 +42,11 @@ class _FriendApplicationsState
     dependOnScreenUtil(context);
     return Scaffold(
       appBar: const IAppBar(title: Text('好友申请')),
-      body: IStreamBuilder<List<FriendApplication>>(
+      body: IStreamBuilder<List<BehaviorSubject<FriendApplication>>>(
         stream: viewModel.list,
         builder: (BuildContext context,
-                AsyncSnapshot<List<FriendApplication>> snapshot) =>
+                AsyncSnapshot<List<BehaviorSubject<FriendApplication>>>
+                    snapshot) =>
             snapshot.data.isEmpty
                 ? Center(
                     child: Text(
@@ -68,110 +70,13 @@ class _FriendApplicationsState
                       SliverFixedExtentList(
                         itemExtent: 56,
                         delegate: SliverChildBuilderDelegate(
-                          (BuildContext context, int index) => Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            height: 56.height,
-                            color: Colors.white,
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    width: 0.5,
-                                    color: Color(AppColor.DividerColor),
-                                  ),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Expanded(
-                                    child: Row(
-                                      children: <Widget>[
-                                        UImage(
-                                          snapshot.data[index].fromUserAvatar,
-                                          placeholderBuilder:
-                                              (BuildContext context) => Icon(
-                                            const IconData(
-                                              0xe642,
-                                              fontFamily:
-                                                  Constant.IconFontFamily,
-                                            ),
-                                            size: 36.sp,
-                                          ),
-                                          width: 36.sp,
-                                          height: 36.sp,
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text(
-                                            snapshot.data[index].fromUserName,
-                                            style: TextStyle(fontSize: 16.sp),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Row(
-                                    children: <Widget>[
-                                      FlatButton(
-                                        onPressed: () => viewModel
-                                            .accept(
-                                                id: snapshot
-                                                    .data[index].friendApplyId)
-                                            .then((_) => showToast('添加成功'))
-                                            .catchAll(
-                                              (Object error) =>
-                                                  showToast(error.toString()),
-                                              test: exceptCancelException,
-                                            )
-                                            .showLoadingUntilComplete(),
-                                        color: const Color(
-                                            AppColor.LoginInputNormalColor),
-                                        materialTapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                        child: Text(
-                                          '接受',
-                                          style: TextStyle(
-                                            fontSize: 16.sp,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      OutlineButton(
-                                        onPressed: () => viewModel
-                                            .reject(
-                                                id: snapshot
-                                                    .data[index].friendApplyId)
-                                            .then((_) => showToast('拒绝成功'))
-                                            .catchAll(
-                                              (Object error) =>
-                                                  showToast(error.toString()),
-                                              test: exceptCancelException,
-                                            )
-                                            .showLoadingUntilComplete(),
-                                        color: Colors.white70,
-                                        borderSide: const BorderSide(
-                                          color: Color(
-                                              AppColor.LoginInputNormalColor),
-                                          width: 0.5,
-                                        ),
-                                        child: Text(
-                                          '拒绝',
-                                          style: TextStyle(
-                                            fontSize: 16.sp,
-                                            color: const Color(
-                                                AppColor.LoginInputNormalColor),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
+                          (BuildContext context, int index) =>
+                              StreamBuilder<FriendApplication>(
+                            stream: snapshot.data[index],
+                            builder: (BuildContext context,
+                                    AsyncSnapshot<FriendApplication>
+                                        snapshot) =>
+                                _buildItem(snapshot.data, index),
                           ),
                           childCount: snapshot.data.length,
                           addAutomaticKeepAlives: false,
@@ -182,4 +87,110 @@ class _FriendApplicationsState
       ),
     );
   }
+
+  Widget _buildItem(FriendApplication data, int index) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        height: 56.height,
+        color: Colors.white,
+        child: Container(
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                width: 0.5,
+                color: Color(AppColor.DividerColor),
+              ),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Expanded(
+                child: Row(
+                  children: <Widget>[
+                    UImage(
+                      data.fromUserAvatar,
+                      placeholderBuilder: (BuildContext context) => Icon(
+                        const IconData(
+                          0xe642,
+                          fontFamily: Constant.IconFontFamily,
+                        ),
+                        size: 36.sp,
+                      ),
+                      width: 36.sp,
+                      height: 36.sp,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        data.fromUserName,
+                        style: TextStyle(fontSize: 16.sp),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (data.state == FriendApplicationState.waiting)
+                Row(
+                  children: <Widget>[
+                    FlatButton(
+                      onPressed: () => viewModel
+                          .verify(
+                            index: index,
+                            state: FriendApplicationState.accepted,
+                          )
+                          .catchAll(
+                            (Object error) => showToast(error.toString()),
+                            test: exceptCancelException,
+                          )
+                          .showLoadingUntilComplete(),
+                      color: const Color(AppColor.LoginInputNormalColor),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      child: Text(
+                        '接受',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    OutlineButton(
+                      onPressed: () => viewModel
+                          .verify(
+                            index: index,
+                            state: FriendApplicationState.rejected,
+                          )
+                          .catchAll(
+                            (Object error) => showToast(error.toString()),
+                            test: exceptCancelException,
+                          )
+                          .showLoadingUntilComplete(),
+                      color: Colors.white70,
+                      borderSide: const BorderSide(
+                        color: Color(AppColor.LoginInputNormalColor),
+                        width: 0.5,
+                      ),
+                      child: Text(
+                        '拒绝',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: const Color(AppColor.LoginInputNormalColor),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              else
+                Text(
+                  data.state == FriendApplicationState.accepted ? '已接受' : '已拒绝',
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 16.sp,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      );
 }

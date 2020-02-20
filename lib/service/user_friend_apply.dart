@@ -12,12 +12,23 @@ abstract class UserFriendApplyService extends BaseService {
       _$UserFriendApplyService(client);
 
   @Post(path: '/addFriend')
-  Future<Response<ApiResponse<dynamic>>> addFriend(
-      {@Field() @required int userId});
+  Future<Response<ApiResponse<dynamic>>> addFriend({
+    @Field() @required int userId,
+    @Field() String note,
+  });
 
   @Get(path: '/getFriendApplyList')
-  Future<Response<ApiResponse<FriendApplicationList>>> getFriendApplicationList(
-      {@Query() @required int page,
-      @Query() @required int limit,
-      @Query() @required int state});
+  Future<Response<ApiResponse<FriendApplicationList>>>
+      getFriendApplicationList({
+    @Query() @required int page,
+    @Query() @required int limit,
+    @Query() int state,
+  });
+
+  @Post(path: '/verify')
+  Future<Response<ApiResponse<dynamic>>> verify({
+    @Field() @required int friendApplyId,
+    @Field() @required int state,
+    @Field() String note,
+  });
 }

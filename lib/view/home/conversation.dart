@@ -151,8 +151,11 @@ class _ConversationPageState extends State<_ConversationPage> {
         },
         color: const Color(AppColor.TabIconActiveColor),
         child: ListView.builder(
-            itemBuilder: (BuildContext context, int index) =>
-                _ConversationItem(data.conversations[index]),
-            itemCount: data.conversations.length),
+          physics: const BouncingScrollPhysics(),
+          itemBuilder: (BuildContext context, int index) =>
+              _ConversationItem(data.conversations[index]),
+          itemCount: data.conversations.length,
+          addAutomaticKeepAlives: false,
+        ),
       );
 }

@@ -19,16 +19,14 @@ class HomeViewModel extends BaseViewModel {
   final BehaviorSubject<int> friendApplicationNum =
       BehaviorSubject<int>.seeded(0);
 
-  Timer _timerPerMinute;
+  final Set<Timer> _timers = <Timer>{};
 
   @override
   void init() {
     super.init();
     webSocketClient.connect(
         webSocketBaseUrl + '/?userSession=' + ownUserInfo.value.userSession);
-    _timerPerMinuteCallback(null);
-    _timerPerMinute =
-        Timer.periodic(const Duration(minutes: 1), _timerPerMinuteCallback);
+    _startTimers();
   }
 
   @override
@@ -37,12 +35,24 @@ class HomeViewModel extends BaseViewModel {
     webSocketClient.close();
     currentIndex.close();
     pageController.dispose();
-    _timerPerMinute.cancel();
+    _stopTimers();
   }
 
-  void _timerPerMinuteCallback(Timer timer) {
+  void _startTimers() {
     _refreshUserProfile();
     _refreshFriendApplyNum();
+    _timers.add(Timer.periodic(
+        const Duration(minutes: 5), (_) => _refreshUserProfile()));
+    // TODO(windrunner): 应该做一个Event Util，支持register/unregister/trigger事件并传参，在这里register刷新onFriendApplyNumUpdate事件处理，verify申请后trigger
+    _timers.add(Timer.periodic(
+        const Duration(seconds: 5), (_) => _refreshFriendApplyNum()));
+  }
+
+  void _stopTimers() {
+    _timers.removeWhere((Timer timer) {
+      timer.cancel();
+      return true;
+    });
   }
 
   void _refreshUserProfile() =>

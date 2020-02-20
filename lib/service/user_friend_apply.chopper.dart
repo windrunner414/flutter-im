@@ -16,9 +16,9 @@ class _$UserFriendApplyService extends UserFriendApplyService {
   final definitionType = UserFriendApplyService;
 
   @override
-  Future<Response<ApiResponse<dynamic>>> addFriend({int userId}) {
+  Future<Response<ApiResponse<dynamic>>> addFriend({int userId, String note}) {
     final $url = '/User/UserFriendApply/addFriend';
-    final $body = <String, dynamic>{'userId': userId};
+    final $body = <String, dynamic>{'userId': userId, 'note': note};
     final $request = Request('POST', $url, client.baseUrl, body: $body);
     return client.send<ApiResponse<dynamic>, ApiResponse<dynamic>>($request);
   }
@@ -35,5 +35,18 @@ class _$UserFriendApplyService extends UserFriendApplyService {
     final $request = Request('GET', $url, client.baseUrl, parameters: $params);
     return client.send<ApiResponse<FriendApplicationList>,
         FriendApplicationList>($request);
+  }
+
+  @override
+  Future<Response<ApiResponse<dynamic>>> verify(
+      {int friendApplyId, int state, String note}) {
+    final $url = '/User/UserFriendApply/verify';
+    final $body = <String, dynamic>{
+      'friendApplyId': friendApplyId,
+      'state': state,
+      'note': note
+    };
+    final $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<ApiResponse<dynamic>, ApiResponse<dynamic>>($request);
   }
 }
