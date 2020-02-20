@@ -9,11 +9,11 @@ class _RestrictConcurrentDelegate {
   int _num = 0;
   final ListQueue<Completer<void>> _waitQueue = ListQueue<Completer<void>>();
 
-  FutureOr<void> wantRequest() async {
+  FutureOr<void> wantRequest() {
     if (++_num > Config.MaxHttpConcurrent) {
       final Completer<void> wait = Completer<void>();
       _waitQueue.add(wait);
-      await wait.future;
+      return wait.future;
     }
   }
 
@@ -35,9 +35,13 @@ class RestrictConcurrentInterceptor extends BaseInterceptor {
   final _RestrictConcurrentDelegate delegate = _RestrictConcurrentDelegate();
 
   @override
-  Future<Request> onRequest(Request request) async {
-    await delegate.wantRequest();
-    return request;
+  FutureOr<Request> onRequest(Request request) {
+    final FutureOr<void> doRequest = delegate.wantRequest();
+    if (doRequest is Future<void>) {
+      return doRequest.then((void _) => request);
+    } else {
+      return request;
+    }
   }
 
   @override
