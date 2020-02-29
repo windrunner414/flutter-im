@@ -38,6 +38,42 @@ extension UserListCopyWithExtension on UserList {
   }
 }
 
+extension FriendCopyWithExtension on Friend {
+  Friend copyWith({
+    int addTime,
+    int friendId,
+    String remark,
+    int state,
+    String targetUserAccount,
+    int targetUserId,
+    String targetUserName,
+    String userAvatar,
+  }) {
+    return Friend(
+      addTime: addTime ?? this.addTime,
+      friendId: friendId ?? this.friendId,
+      remark: remark ?? this.remark,
+      state: state ?? this.state,
+      targetUserAccount: targetUserAccount ?? this.targetUserAccount,
+      targetUserId: targetUserId ?? this.targetUserId,
+      targetUserName: targetUserName ?? this.targetUserName,
+      userAvatar: userAvatar ?? this.userAvatar,
+    );
+  }
+}
+
+extension FriendListCopyWithExtension on FriendList {
+  FriendList copyWith({
+    List list,
+    int total,
+  }) {
+    return FriendList(
+      list: list ?? this.list,
+      total: total ?? this.total,
+    );
+  }
+}
+
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
@@ -110,6 +146,46 @@ UserList _$UserListFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$UserListToJson(UserList instance) => <String, dynamic>{
+      'total': instance.total,
+      'list': instance.list,
+    };
+
+Friend _$FriendFromJson(Map<String, dynamic> json) {
+  return Friend(
+    friendId: json['friendId'] as int,
+    targetUserName: json['targetUserName'] as String,
+    userAvatar: json['userAvatar'] as String,
+    addTime: json['addTime'] as int,
+    state: json['state'] as int,
+    targetUserAccount: json['targetUserAccount'] as String,
+    remark: json['remark'] as String,
+    targetUserId: json['targetUserId'] as int,
+  );
+}
+
+Map<String, dynamic> _$FriendToJson(Friend instance) => <String, dynamic>{
+      'friendId': instance.friendId,
+      'targetUserId': instance.targetUserId,
+      'remark': instance.remark,
+      'addTime': instance.addTime,
+      'state': instance.state,
+      'targetUserName': instance.targetUserName,
+      'targetUserAccount': instance.targetUserAccount,
+      'userAvatar': instance.userAvatar,
+    };
+
+FriendList _$FriendListFromJson(Map<String, dynamic> json) {
+  return FriendList(
+    total: json['total'] as int,
+    list: (json['list'] as List)
+        ?.map((e) =>
+            e == null ? null : Friend.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
+}
+
+Map<String, dynamic> _$FriendListToJson(FriendList instance) =>
+    <String, dynamic>{
       'total': instance.total,
       'list': instance.list,
     };

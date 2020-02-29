@@ -9,6 +9,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wechat/common/constant.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/message.dart';
+import 'package:wechat/model/user.dart';
 import 'package:wechat/util/router.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
@@ -17,6 +18,7 @@ import 'package:wechat/widget/app_bar.dart';
 import 'package:wechat/widget/image.dart';
 import 'package:wechat/widget/stream_builder.dart';
 import 'package:wechat/widget/unfocus_scope.dart';
+import 'package:wechat/widget/user_info.dart';
 
 export 'package:wechat/viewmodel/chat.dart' show ChatType;
 
@@ -33,61 +35,69 @@ class ChatPage extends BaseView<ChatViewModel> {
   @override
   Widget build(BuildContext context, ChatViewModel viewModel) {
     dependOnScreenUtil(context);
-    return UnFocusScope(
-      child: Scaffold(
-        appBar: IAppBar(title: Text(title)),
-        body: Container(
-          color: const Color(AppColor.BackgroundColor),
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                child: _MessagesListView(viewModel: viewModel),
-              ),
-              Container(
-                color: const Color(AppColor.ChatInputSectionBgColor),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Container(
-                        color: Colors.white,
-                        child: TextField(
-                          controller: viewModel.messageEditingController,
-                          scrollPhysics: const BouncingScrollPhysics(),
-                          maxLines: 5,
-                          minLines: 1,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(4)),
-                              borderSide: BorderSide.none,
+    return WillPopScope(
+      onWillPop: () async {
+        router.pop(viewModel.readNum);
+        return false;
+      },
+      child: UnFocusScope(
+        child: Scaffold(
+          appBar: IAppBar(title: Text(title)),
+          body: Container(
+            color: const Color(AppColor.BackgroundColor),
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: _MessagesListView(viewModel: viewModel, type: type),
+                ),
+                Container(
+                  color: const Color(AppColor.ChatInputSectionBgColor),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          color: Colors.white,
+                          child: TextField(
+                            controller: viewModel.messageEditingController,
+                            scrollPhysics: const BouncingScrollPhysics(),
+                            maxLines: 5,
+                            minLines: 1,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(4)),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              isDense: true,
                             ),
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 8),
-                            isDense: true,
-                          ),
-                          style: TextStyle(
-                            fontSize: 16.sp,
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    FlatButton(
-                      onPressed: () {},
-                      child: Text(
-                        '发送',
-                        style: TextStyle(fontSize: 16.sp, color: Colors.white),
+                      const SizedBox(width: 10),
+                      FlatButton(
+                        onPressed: () {},
+                        child: Text(
+                          '发送',
+                          style:
+                              TextStyle(fontSize: 16.sp, color: Colors.white),
+                        ),
+                        color: const Color(AppColor.LoginInputNormalColor),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 6),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
-                      color: const Color(AppColor.LoginInputNormalColor),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 4, vertical: 6),
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -102,12 +112,20 @@ class _ChatPageState extends BaseViewState<ChatViewModel, ChatPage> {
 }
 
 class _MessageBox extends StatefulWidget {
-  const _MessageBox(this.message);
+  const _MessageBox({this.message, this.showName});
 
   final Message message;
+  final bool showName;
 
   @override
-  _MessageBoxState createState() => _TextMessageBoxState();
+  _MessageBoxState createState() {
+    switch (message.type) {
+      case MessageType.text:
+        return _TextMessageBoxState();
+      default:
+        return _TextMessageBoxState();
+    }
+  }
 }
 
 abstract class _MessageBoxState extends State<_MessageBox> {
@@ -118,55 +136,61 @@ abstract class _MessageBoxState extends State<_MessageBox> {
 
   @override
   Widget build(BuildContext context) {
-    dependOnScreenUtil(context);
-    final Widget avatar = UImage(
-      /*ownUserInfo.value.userAvatar*/ 'https://randomuser.me/api/portraits/men/50.jpg',
-      placeholderBuilder: (BuildContext context) => Icon(
-        const IconData(
-          0xe642,
-          fontFamily: Constant.IconFontFamily,
-        ),
-        size: 48.sp,
-      ),
-      width: 48.sp,
-      height: 48.sp,
-    );
-    final Widget messageBox = Expanded(
-      child: Column(
-        crossAxisAlignment:
-            isSentByMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            isSentByMe ? ownUserInfo.value.userName : '工具人',
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: Colors.black45,
+    return UserInfo(
+      userId: widget.message.fromUserId,
+      builder: (BuildContext context, User user) {
+        dependOnScreenUtil(context);
+        final Widget avatar = UImage(
+          user.userAvatar,
+          placeholderBuilder: (BuildContext context) => Icon(
+            const IconData(
+              0xe642,
+              fontFamily: Constant.IconFontFamily,
             ),
-            overflow: TextOverflow.ellipsis,
+            size: 48.sp,
           ),
-          const SizedBox(height: 5),
-          buildBox(context),
-        ],
-      ),
-    );
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        mainAxisAlignment:
-            isSentByMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: isSentByMe
-            ? <Widget>[
-                messageBox,
-                const SizedBox(width: 10),
-                avatar,
-              ]
-            : <Widget>[
-                avatar,
-                const SizedBox(width: 10),
-                messageBox,
-              ],
-      ),
+          width: 48.sp,
+          height: 48.sp,
+        );
+        final Widget messageBox = Expanded(
+          child: Column(
+            crossAxisAlignment:
+                isSentByMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            children: <Widget>[
+              if (widget.showName)
+                Text(
+                  user.userName,
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.black45,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              const SizedBox(height: 5),
+              buildBox(context),
+            ],
+          ),
+        );
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            mainAxisAlignment:
+                isSentByMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: isSentByMe
+                ? <Widget>[
+                    messageBox,
+                    const SizedBox(width: 10),
+                    avatar,
+                  ]
+                : <Widget>[
+                    avatar,
+                    const SizedBox(width: 10),
+                    messageBox,
+                  ],
+          ),
+        );
+      },
     );
   }
 }
@@ -294,9 +318,7 @@ class _TextMessageBoxState extends _MessageBoxState {
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(4)),
-        color: isSentByMe
-            ? const Color(AppColor.LoginInputNormalColor)
-            : Colors.white,
+        color: isSentByMe ? const Color(0xFF9FE658) : Colors.white,
       ),
       child: _containsUrl
           ? LayoutBuilder(
@@ -346,9 +368,10 @@ class _TextMessageBoxState extends _MessageBoxState {
 }
 
 class _MessagesListView extends StatefulWidget {
-  const _MessagesListView({this.viewModel});
+  const _MessagesListView({this.viewModel, this.type});
 
   final ChatViewModel viewModel;
+  final ChatType type;
 
   @override
   _MessagesListViewState createState() => _MessagesListViewState();
@@ -444,7 +467,10 @@ class _MessagesListViewState extends State<_MessagesListView> {
                     shrinkWrap: true,
                     reverse: true,
                     itemBuilder: (BuildContext context, int index) =>
-                        _MessageBox(snapshot.data[index]),
+                        _MessageBox(
+                      message: snapshot.data[index],
+                      showName: widget.type == ChatType.friend ? false : true,
+                    ),
                     itemCount: snapshot.data.length,
                   );
                 },
@@ -458,7 +484,10 @@ class _MessagesListViewState extends State<_MessagesListView> {
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemBuilder: (BuildContext context, int index) =>
-                        _MessageBox(snapshot.data[index]),
+                        _MessageBox(
+                      message: snapshot.data[index],
+                      showName: widget.type == ChatType.friend ? false : true,
+                    ),
                     itemCount: snapshot.data.length,
                   );
                 },

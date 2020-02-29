@@ -1,57 +1,36 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:wechat/common/constant.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:wechat/model/base.dart';
 
 part 'conversation.g.dart';
 
-@CopyWith()
-class Conversation extends BaseModel {
-  const Conversation(
-      {this.avatar,
-      this.title,
-      this.titleColor = AppColor.TitleColor,
-      this.desc,
-      this.updateAt,
-      this.unreadMsgCount = 0});
-
-  final String avatar;
-  final String title;
-  final int titleColor;
-  final String desc;
-  final String updateAt;
-  final int unreadMsgCount;
+enum ConversationType {
+  @JsonValue(0)
+  user,
+  @JsonValue(1)
+  group,
 }
 
+@JsonSerializable()
 @CopyWith()
-class ConversationPageData {
-  const ConversationPageData({this.conversations});
+class Conversation extends BaseModel {
+  const Conversation({
+    this.fromId,
+    this.type,
+    this.desc,
+    this.updateAt,
+    this.unreadMsgCount,
+    this.msgId,
+  });
 
-  final List<Conversation> conversations;
+  factory Conversation.fromJson(Map<String, dynamic> json) =>
+      _$ConversationFromJson(json);
+  Map<String, dynamic> toJson() => _$ConversationToJson(this);
 
-  static ConversationPageData mock() {
-    return const ConversationPageData(conversations: [
-      Conversation(
-        avatar:
-            'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=919597481,2630034837&fm=26&gp=0.jpg',
-        title: '文件传输助手',
-        desc: '',
-        updateAt: '19:56',
-      ),
-      Conversation(
-        avatar:
-            'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=919597481,2630034837&fm=26&gp=0.jpg',
-        title: '腾讯新闻',
-        desc: '123',
-        updateAt: '17:20',
-      ),
-      Conversation(
-        avatar:
-            'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=919597481,2630034837&fm=26&gp=0.jpg',
-        title: '微信团队',
-        titleColor: 0xff586b95,
-        desc: '123',
-        updateAt: '17:12',
-      ),
-    ]);
-  }
+  final int fromId;
+  final ConversationType type;
+  final String desc;
+  final int updateAt;
+  final int unreadMsgCount;
+  final int msgId;
 }

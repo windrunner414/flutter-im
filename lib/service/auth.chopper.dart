@@ -35,7 +35,7 @@ class _$AuthService extends AuthService {
   }
 
   @override
-  Future<Response<ApiResponse<dynamic>>> register(
+  Future<Response<ApiResponse>> register(
       {String userAccount,
       String userName,
       String userPassword,
@@ -54,7 +54,7 @@ class _$AuthService extends AuthService {
       'verifyCode': verifyCode
     };
     final $request = Request('POST', $url, client.baseUrl, body: $body);
-    return client.send<ApiResponse<dynamic>, ApiResponse<dynamic>>($request);
+    return client.send<ApiResponse, ApiResponse>($request);
   }
 
   @override

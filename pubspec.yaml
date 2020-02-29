@@ -17,7 +17,7 @@ dependencies:
   json_annotation: ^3.0.1
   dartin: ^0.1.5
   rxdart: ^0.23.1
-  worker_manager: ^2.1.6
+  worker_manager: 2.1.6
   generic_json_converter_annotation: ^0.0.2
   chopper: ^3.0.1+1
   copy_with_extension: ^1.0.7
@@ -28,6 +28,7 @@ dependencies:
   webview_flutter: ^0.3.19
   qr_flutter: ^3.2.0
   qrcode: ^1.0.4
+  lpinyin: ^1.0.9
 
 dev_dependencies:
   flutter_test:

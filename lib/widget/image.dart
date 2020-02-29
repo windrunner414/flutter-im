@@ -37,6 +37,10 @@ class UImage extends StatefulWidget {
 class _UImageState extends State<UImage> {
   @override
   Widget build(BuildContext context) {
+    if (widget.url.isEmpty) {
+      _onError();
+      return _buildErrorWidget();
+    }
     if (widget.url.startsWith('asset://')) {
       return ExtendedImage.asset(
         widget.url.substring('asset://'.length),

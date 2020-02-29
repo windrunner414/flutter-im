@@ -14,12 +14,14 @@ import 'package:wechat/util/router.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/contact.dart';
+import 'package:wechat/viewmodel/conversation.dart';
 import 'package:wechat/viewmodel/home.dart';
 import 'package:wechat/viewmodel/profile.dart';
 import 'package:wechat/widget/app_bar.dart';
 import 'package:wechat/widget/full_width_button.dart';
 import 'package:wechat/widget/image.dart';
 import 'package:wechat/widget/stream_builder.dart';
+import 'package:wechat/widget/user_info.dart';
 
 part 'contact.dart';
 part 'conversation.dart';

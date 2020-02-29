@@ -77,7 +77,7 @@ void _updateClient() {
   );
   _httpClient.baseUrl = httpBaseUrl;
 
-  _webSocketClient ??= WebSocketClient();
+  _webSocketClient ??= WebSocketClient(interceptors: interceptors.interceptors);
 }
 
 abstract class BaseService extends ChopperService {}

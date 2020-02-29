@@ -19,13 +19,3 @@ extension ContactCopyWithExtension on Contact {
     );
   }
 }
-
-extension ContactsPageDataCopyWithExtension on ContactsPageData {
-  ContactsPageData copyWith({
-    List contacts,
-  }) {
-    return ContactsPageData(
-      contacts: contacts ?? this.contacts,
-    );
-  }
-}

@@ -5,6 +5,8 @@ import 'package:wechat/model/message.dart';
 import 'package:wechat/model/server_config.dart';
 import 'package:wechat/model/user.dart';
 import 'package:wechat/model/verify_code.dart';
+import 'package:wechat/model/websocket_args.dart';
+import 'package:wechat/model/websocket_message.dart';
 
 part 'model_generic_json_converter.g.dart';
 
@@ -16,6 +18,13 @@ part 'model_generic_json_converter.g.dart';
   Message,
   FriendApplication,
   FriendApplicationList,
+  WebSocketMessage,
+  UserMessageArg,
+  UserUnreadMsgSum,
+  UserUnreadMsgNum,
+  UserUnreadMessagesArg,
+  FriendList,
+  Friend,
 ])
 class ModelGenericJsonConverter<T>
     with _$ModelGenericJsonConverterMixin<T>

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:chopper/chopper.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:wechat/model/api_response.dart';
 import 'package:wechat/service/interceptors/base.dart';
 import 'package:wechat/util/worker/worker.dart';
@@ -48,13 +49,15 @@ class HttpClient extends ChopperClient {
       return response;
     } else {
       // TODO(windrunner): 需要测试
-      return response.timeout(
-        timeout,
-        onTimeout: () => throw TimeoutException(
-          'http request finished with timeout ${timeout.toString()}',
-          timeout,
+      return Future.any([
+        response,
+        Future.delayed(timeout).then(
+          (_) => throw TimeoutException(
+            'http request finished with timeout ${timeout.toString()}',
+            timeout,
+          ),
         ),
-      );
+      ]);
     }
   }
 }
@@ -93,8 +96,13 @@ class _DefaultConverter implements Converter, ErrorConverter {
       _decodeJson<ApiResponse<dynamic>, dynamic>(response);
 
   Future<Response<BodyType>> _decodeJson<BodyType, InnerType>(
-          Response<Object> response) async =>
-      response.replace<BodyType>(
-          body: ApiResponse<InnerType>.fromJson(
-              await worker.jsonDecode(response.body as String)) as BodyType);
+      Response<Object> response) async {
+    assert(() {
+      debugPrint('http response: ${response.body}');
+      return true;
+    }());
+    return response.replace<BodyType>(
+        body: ApiResponse<InnerType>.fromJson(
+            await worker.jsonDecode(response.body as String)) as BodyType);
+  }
 }

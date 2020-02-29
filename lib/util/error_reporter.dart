@@ -26,7 +26,7 @@ abstract class ErrorReporter {
         onError: (Object error, StackTrace stack) async {
       final String errorDetail =
           _formatError(error.toString(), stack.toString());
-      _showErrorPage(errorBuilder, errorDetail);
+      // _showErrorPage(errorBuilder, errorDetail);
       await _reportError(errorDetail);
     });
   }
@@ -50,7 +50,7 @@ abstract class ErrorReporter {
 
   static Future<void> _reportError(String errorDetail) async {
     assert(() {
-      print('====== Error caught by ErrorReporter ======\n' + errorDetail);
+      debugPrint('====== Error caught by ErrorReporter ======\n' + errorDetail);
       return true;
     }());
     // TODO(windrunner): 开个后台上报

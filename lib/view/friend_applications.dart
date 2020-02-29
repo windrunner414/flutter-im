@@ -71,7 +71,7 @@ class _FriendApplicationsState
                         itemExtent: 56,
                         delegate: SliverChildBuilderDelegate(
                           (BuildContext context, int index) =>
-                              StreamBuilder<FriendApplication>(
+                              IStreamBuilder<FriendApplication>(
                             stream: snapshot.data[index],
                             builder: (BuildContext context,
                                     AsyncSnapshot<FriendApplication>

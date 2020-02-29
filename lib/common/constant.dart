@@ -6,7 +6,7 @@ abstract class Config {
   static const int MinWorkerNum = 2;
   static const int MaxWorkerNum = 6;
 
-  static const int MaxHttpConcurrent = 6;
+  static const int MaxHttpConcurrent = 10;
 }
 
 // TODO(windrunner): 类型换成Color，不要int
@@ -35,7 +35,6 @@ abstract class AppColor {
 abstract class Constant {
   static const String IconFontFamily = 'appIconFont';
 
-  static const double UnReadMsgNotifyDotSize = 20.0;
   static const double ConversationMuteIcon = 18.0;
 
   static const double IndexBarWidth = 24.0;

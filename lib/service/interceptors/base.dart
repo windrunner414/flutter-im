@@ -2,10 +2,18 @@ import 'dart:async';
 
 import 'package:chopper/chopper.dart';
 import 'package:flutter/foundation.dart';
+import 'package:wechat/model/websocket_message.dart';
+
+abstract class WebSocketInterceptor {
+  FutureOr<WebSocketMessage<dynamic>> onSend(WebSocketMessage<dynamic> message);
+
+  FutureOr<WebSocketMessage<dynamic>> onReceive(
+      WebSocketMessage<dynamic> message);
+}
 
 @immutable
 abstract class BaseInterceptor
-    implements RequestInterceptor, ResponseInterceptor {
+    implements RequestInterceptor, ResponseInterceptor, WebSocketInterceptor {
   String get name;
   Set<String> get after => <String>{};
   Set<String> get before => <String>{};
@@ -18,6 +26,18 @@ abstract class BaseInterceptor
   @override
   FutureOr<Response<dynamic>> onResponse(Response<dynamic> response) {
     return response;
+  }
+
+  @override
+  FutureOr<WebSocketMessage<dynamic>> onSend(
+      WebSocketMessage<dynamic> message) {
+    return message;
+  }
+
+  @override
+  FutureOr<WebSocketMessage<dynamic>> onReceive(
+      WebSocketMessage<dynamic> message) {
+    return message;
   }
 }
 

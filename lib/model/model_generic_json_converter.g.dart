@@ -24,6 +24,21 @@ abstract class _$ModelGenericJsonConverterMixin<T extends Object> {
       case FriendApplicationList:
         return FriendApplicationList.fromJson(json as Map<String, dynamic>)
             as T;
+      case WebSocketMessage:
+        return WebSocketMessage.fromJson(json as Map<String, dynamic>) as T;
+      case UserMessageArg:
+        return UserMessageArg.fromJson(json as Map<String, dynamic>) as T;
+      case UserUnreadMsgSum:
+        return UserUnreadMsgSum.fromJson(json as Map<String, dynamic>) as T;
+      case UserUnreadMsgNum:
+        return UserUnreadMsgNum.fromJson(json as Map<String, dynamic>) as T;
+      case UserUnreadMessagesArg:
+        return UserUnreadMessagesArg.fromJson(json as Map<String, dynamic>)
+            as T;
+      case FriendList:
+        return FriendList.fromJson(json as Map<String, dynamic>) as T;
+      case Friend:
+        return Friend.fromJson(json as Map<String, dynamic>) as T;
       default:
         return json as T;
     }
@@ -45,6 +60,20 @@ abstract class _$ModelGenericJsonConverterMixin<T extends Object> {
         return (value as FriendApplication).toJson();
       case FriendApplicationList:
         return (value as FriendApplicationList).toJson();
+      case WebSocketMessage:
+        return (value as WebSocketMessage).toJson();
+      case UserMessageArg:
+        return (value as UserMessageArg).toJson();
+      case UserUnreadMsgSum:
+        return (value as UserUnreadMsgSum).toJson();
+      case UserUnreadMsgNum:
+        return (value as UserUnreadMsgNum).toJson();
+      case UserUnreadMessagesArg:
+        return (value as UserUnreadMessagesArg).toJson();
+      case FriendList:
+        return (value as FriendList).toJson();
+      case Friend:
+        return (value as Friend).toJson();
       default:
         return value;
     }
