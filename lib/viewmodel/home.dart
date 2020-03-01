@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dartin/dartin.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +8,7 @@ import 'package:wechat/common/state.dart';
 import 'package:wechat/model/friend_application.dart';
 import 'package:wechat/model/websocket_message.dart';
 import 'package:wechat/repository/auth.dart';
+import 'package:wechat/repository/message.dart';
 import 'package:wechat/repository/user_friend.dart';
 import 'package:wechat/repository/user_friend_apply.dart';
 import 'package:wechat/service/base.dart';
@@ -17,6 +19,7 @@ class HomeViewModel extends BaseViewModel {
   final AuthRepository _authRepository = inject();
   final UserFriendApplyRepository _userFriendApplyRepository = inject();
   final UserFriendRepository _userFriendRepository = inject();
+  final MessageRepository _messageRepository = inject();
 
   final BehaviorSubject<int> currentIndex = BehaviorSubject<int>.seeded(0);
   final PageController pageController = PageController(initialPage: 0);
@@ -35,10 +38,12 @@ class HomeViewModel extends BaseViewModel {
     webSocketClient.connection.listen((WebSocketEvent event) {
       if (event.type == WebSocketEventType.connected) {
         webSocketConnected.value = true;
+        _messageRepository.pullUnreadMessages();
       } else if (event.type == WebSocketEventType.closed) {
         webSocketConnected.value = false;
       }
     });
+    _messageRepository.initConversationList();
     _startTimers();
   }
 
@@ -48,6 +53,7 @@ class HomeViewModel extends BaseViewModel {
     webSocketClient.close();
     currentIndex.close();
     pageController.dispose();
+    _messageRepository.disposeConversationList();
     _stopTimers();
   }
 
@@ -89,11 +95,25 @@ class HomeViewModel extends BaseViewModel {
   }
 
   Future<void> _ping() async {
+    /// 如果此时连接断开，会立刻失败并调用reconnect，reconnect不会做任何事情
     try {
       await webSocketClient.sendAndReceive<dynamic>(
           WebSocketMessage<dynamic>(op: 0, msg: 'ping'));
-    } catch (_) {
+    } catch (e) {
+      if (e is WebSocketMessage &&
+          e.op == -1001 &&
+          e.flagId != null &&
+          e.msgType == 1 &&
+          e.msg == 'action  not found' &&
+          e.args == null) {
+        // TODO: ping发了json，服务端返回action  not found
+        return;
+      }
       if (active) {
+        assert(() {
+          debugPrint('重连：${jsonEncode(e)}');
+          return true;
+        }());
         webSocketClient.reconnect();
       }
     }

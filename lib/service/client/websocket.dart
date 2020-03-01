@@ -139,7 +139,11 @@ class WebSocketClient {
   void reconnect() => _client?.close();
 
   void send(WebSocketMessage<dynamic> message) {
-    connection?.add(WebSocketEvent(WebSocketEventType.send, message));
+    if (_client == null) {
+      throw WebSocketMessage<void>(op: -1001, msg: '连接断开');
+    } else {
+      connection?.add(WebSocketEvent(WebSocketEventType.send, message));
+    }
   }
 
   Future<WebSocketMessage<T>> receive<T>(
@@ -174,7 +178,7 @@ class WebSocketClient {
       if (!completer.isCompleted && subscription != null) {
         subscription.cancel();
         subscription = null;
-        completer.completeError(WebSocketMessage<T>(op: 1001, msg: '等待超时'));
+        completer.completeError(WebSocketMessage<T>(op: -1001, msg: '等待超时'));
       }
     });
     return completer.future;

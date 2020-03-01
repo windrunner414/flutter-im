@@ -185,42 +185,33 @@ class _ConversationPage extends BaseView<ConversationViewModel> {
 
   @override
   Widget build(BuildContext context, ConversationViewModel viewModel) {
-    return FutureBuilder<void>(
-      future: viewModel.initFuture,
-      builder: (_, AsyncSnapshot<void> snapshot) {
-        return snapshot.connectionState == ConnectionState.done
-            ? IStreamBuilder<List<Conversation>>(
-                stream: viewModel.conversations,
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<Conversation>> snapshot) {
-                  dependOnScreenUtil(context);
-                  return ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    itemBuilder: (BuildContext context, int index) {
-                      final c = snapshot.data[index];
-                      return _ConversationItem(
-                        c,
-                        (int num) {
-                          final List<Conversation> list =
-                              viewModel.conversations.value;
-                          for (int i = 0; i < list.length; ++i) {
-                            if (list[i].fromId == c.fromId) {
-                              list[i] = list[i].copyWith(
-                                  unreadMsgCount:
-                                      0 /*list[i].unreadMsgCount - num*/);
-                              viewModel.conversations.value = list;
-                              break;
-                            }
-                          }
-                        },
-                      );
-                    },
-                    itemCount: snapshot.data?.length ?? 0,
-                    addAutomaticKeepAlives: false,
-                  );
-                },
-              )
-            : Container();
+    return IStreamBuilder<List<Conversation>>(
+      stream: viewModel.conversations,
+      builder:
+          (BuildContext context, AsyncSnapshot<List<Conversation>> snapshot) {
+        dependOnScreenUtil(context);
+        return ListView.builder(
+          physics: const BouncingScrollPhysics(),
+          itemBuilder: (BuildContext context, int index) {
+            final c = snapshot.data[index];
+            return _ConversationItem(
+              c,
+              (int num) {
+                final List<Conversation> list = viewModel.conversations.value;
+                for (int i = 0; i < list.length; ++i) {
+                  if (list[i].fromId == c.fromId) {
+                    list[i] = list[i].copyWith(
+                        unreadMsgCount: 0 /*list[i].unreadMsgCount - num*/);
+                    viewModel.conversations.value = list;
+                    break;
+                  }
+                }
+              },
+            );
+          },
+          itemCount: snapshot.data?.length ?? 0,
+          addAutomaticKeepAlives: false,
+        );
       },
     );
   }
