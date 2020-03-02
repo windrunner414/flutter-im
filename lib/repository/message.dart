@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dartin/dartin.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/state.dart';
+import 'package:wechat/model/api_response.dart';
 import 'package:wechat/model/conversation.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/model/websocket_args.dart';
@@ -143,4 +144,16 @@ class MessageRepository extends BaseRepository {
   }
 
   BehaviorSubject<List<Conversation>> getConversationList() => _conversations;
+
+  PublishSubject<WebSocketMessage<UserMessageArg>> receiveUserMessage(
+          [int fromUserId]) =>
+      _messageService.receiveUserMessage(fromUserId);
+
+  Future<WebSocketMessage<dynamic>> sendUserMessage(
+          {int toUserId, String msg, MessageType msgType}) =>
+      _messageService.sendUserMessage(
+          toUserId: toUserId, msgType: msgType, msg: msg);
+
+  Future<ApiResponse<dynamic>> notifyRead({int friendId, int msgId}) async =>
+      (await _messageService.notifyRead(friendId: friendId, msgId: msgId)).body;
 }

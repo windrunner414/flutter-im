@@ -12,7 +12,7 @@ abstract class Config {
 // TODO(windrunner): 类型换成Color，不要int
 abstract class AppColor {
   static const int BackgroundColor = 0xffebebeb;
-  static const int ChatInputSectionBgColor = 0xffe8e8e8;
+  static const int ChatInputSectionBgColor = 0xfff4f4f4;
   static const int AppBarColor = 0xff303030;
   static const int TabIconNormalColor = 0xff999999;
   static const int TabIconActiveColor = 0xff46c11b;

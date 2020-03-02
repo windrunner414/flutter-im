@@ -44,32 +44,17 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/ic_file_transfer.png
-    - assets/images/ic_fengchao.png
-    - assets/images/ic_tx_news.png
-    - assets/images/ic_wx_games.png
+    - assets/images/splash.png
     - assets/images/ic_new_friend.png
     - assets/images/ic_group_chat.png
-    - assets/images/ic_tag.png
-    - assets/images/ic_public_account.png
-    - assets/images/ic_bottle_msg.png
-    - assets/images/ic_feeds.png
-    - assets/images/ic_game_entry.png
-    - assets/images/ic_mini_program.png
-    - assets/images/ic_people_nearby.png
-    - assets/images/ic_quick_scan.png
-    - assets/images/ic_quick_search.png
-    - assets/images/ic_shake_phone.png
-    - assets/images/ic_shopping.png
-    - assets/images/ic_social_circle.png
-    - assets/images/ic_wallet.png
-    - assets/images/ic_album.png
-    - assets/images/ic_collections.png
-    - assets/images/ic_cards_wallet.png
-    - assets/images/ic_emotions.png
+    - assets/images/ic_chat_add.png
+    - assets/images/ic_chat_emoji.png
+    - assets/images/ic_chat_sound.png
+    - assets/images/ic_chat_keyboard.png
+    - assets/images/ic_voice.png
     - assets/images/ic_settings.png
-    - assets/images/ic_qrcode_preview_tiny.png
-    - assets/images/default_nor_avatar.png
+    - assets/images/default_avatar.png
+    - assets/images/ic_gallery.png
     - assets/images/logo.png
   fonts:
     - family: appIconFont

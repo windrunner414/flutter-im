@@ -131,13 +131,10 @@ class AddFriendPage extends BaseView<AddFriendViewModel> {
                                         UImage(
                                           snapshot.data[index].userAvatar,
                                           placeholderBuilder:
-                                              (BuildContext context) => Icon(
-                                            const IconData(
-                                              0xe642,
-                                              fontFamily:
-                                                  Constant.IconFontFamily,
-                                            ),
-                                            size: 36.sp,
+                                              (BuildContext context) => UImage(
+                                            'asset://assets/images/default_avatar.png',
+                                            width: 36.sp,
+                                            height: 36.sp,
                                           ),
                                           width: 36.sp,
                                           height: 36.sp,

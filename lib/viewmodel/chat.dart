@@ -7,7 +7,7 @@ import 'package:wechat/common/state.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/model/websocket_args.dart';
 import 'package:wechat/model/websocket_message.dart';
-import 'package:wechat/service/message.dart';
+import 'package:wechat/repository/message.dart';
 import 'package:wechat/viewmodel/base.dart';
 
 enum ChatType { friend, group }
@@ -17,21 +17,14 @@ class ChatViewModel extends BaseViewModel {
 
   final int id;
   final ChatType type;
-  final TextEditingController messageEditingController =
-      TextEditingController();
   final BehaviorSubject<List<Message>> historicalMessages =
       BehaviorSubject<List<Message>>.seeded(<Message>[]);
   final BehaviorSubject<List<Message>> newMessages =
       BehaviorSubject<List<Message>>.seeded(<Message>[]);
 
   PublishSubject<WebSocketMessage<UserMessageArg>> _messages;
-  final MessageService _messageService = inject();
+  final MessageRepository _messageRepository = inject();
 
-  int _readNum = 0;
-  int get readNum => _readNum;
-  int _debug = 0;
-
-  // TODO(windrunner): 限制消息数量，超出一定数量就把之前的删除，需要下拉重新加载，同时限制历史消息加载的最大数量
   void _addMessages(List<Message> list, {bool isHistorical = false}) {
     if (newMessages.isClosed || historicalMessages.isClosed) {
       return;
@@ -59,20 +52,34 @@ class ChatViewModel extends BaseViewModel {
 
   Future<void> loadHistoricalMessages() async {
     final List<Message> _messages = <Message>[
-      Message(
-          fromUserId: 1, msgId: 0, msg: '${_debug++}', type: MessageType.text),
-      Message(
-          fromUserId: ownUserInfo.value.userId, msgId: 0, msg: '${_debug++}'),
-      Message(fromUserId: 1, msgId: 0, msg: '${_debug++}'),
-      Message(
-          fromUserId: ownUserInfo.value.userId, msgId: 0, msg: '${_debug++}'),
+      Message(fromUserId: 1, msgId: 0, msg: '1', type: MessageType.text),
+      Message(fromUserId: ownUserInfo.value.userId, msgId: 0, msg: '1'),
+      Message(fromUserId: 1, msgId: 0, msg: '1'),
+      Message(fromUserId: ownUserInfo.value.userId, msgId: 0, msg: '1'),
     ];
     _addMessages(_messages, isHistorical: true);
   }
 
+  Future<void> sendMessage(MessageType msgType, String msg) async {
+    if (type == ChatType.friend) {
+      await _messageRepository.sendUserMessage(
+          toUserId: id, msg: msg, msgType: msgType);
+    } else {}
+    // TODO: 让conversationList更新
+    _addMessage(
+      Message(
+        fromUserId: ownUserInfo.value.userId,
+        msg: msg,
+        type: msgType,
+        msgId: 0,
+      ),
+    );
+  }
+
   void _notifyRead(int msgId) {
-    ++_readNum;
-    _messageService.notifyRead(msgId).catchError((Object error) {});
+    _messageRepository
+        .notifyRead(friendId: id, msgId: msgId)
+        .catchError((Object error) {});
   }
 
   @override
@@ -80,16 +87,16 @@ class ChatViewModel extends BaseViewModel {
     super.init();
     loadHistoricalMessages();
     if (type == ChatType.friend) {
-      _messages = _messageService.receiveUserMessage(id);
+      _messages = _messageRepository.receiveUserMessage(id);
     } else {
-      _messages = _messageService.receiveUserMessage(id);
+      _messages = _messageRepository.receiveUserMessage(id);
     }
     _messages.listen((value) {
       _addMessage(Message(
         fromUserId: value.args.fromUserId,
         msgId: value.args.msgId,
         msg: value.msg,
-        type: Message.fromJson({'type': value.msgType}).type,
+        type: value.msgType,
       ));
       _notifyRead(value.args.msgId);
     });
@@ -98,7 +105,6 @@ class ChatViewModel extends BaseViewModel {
   @override
   void dispose() {
     super.dispose();
-    messageEditingController.dispose();
     newMessages.close();
     historicalMessages.close();
     _messages.close();

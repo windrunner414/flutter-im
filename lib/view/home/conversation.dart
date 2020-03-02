@@ -5,7 +5,7 @@ class _ConversationItem extends StatefulWidget {
       : assert(_conversation != null);
 
   final Conversation _conversation;
-  final void Function(int num) readCallback;
+  final VoidCallback readCallback;
 
   @override
   _ConversationItemState createState() => _ConversationItemState();
@@ -21,12 +21,10 @@ class _ConversationItemState extends State<_ConversationItem> {
       builder: (BuildContext context, User user) {
         final Widget avatar = UImage(
           user.userAvatar,
-          placeholderBuilder: (BuildContext context) => Icon(
-            const IconData(
-              0xe642,
-              fontFamily: Constant.IconFontFamily,
-            ),
-            size: 52.sp,
+          placeholderBuilder: (BuildContext context) => UImage(
+            'asset://assets/images/default_avatar.png',
+            width: 52.sp,
+            height: 52.sp,
           ),
           width: 52.sp,
           height: 52.sp,
@@ -103,21 +101,11 @@ class _ConversationItemState extends State<_ConversationItem> {
             setState(() => _active = false);
           },
           onTap: () async {
-            final dynamic num =
-                await router.push('/chat', arguments: <String, String>{
+            await router.push('/chat', arguments: <String, String>{
               'id': user.userId.toString(),
               'type': 'friend',
-              'title': user.userName,
             });
-            if (num is int) {
-              assert(() {
-                debugPrint('read: $num');
-                return true;
-              }());
-              widget.readCallback(num);
-            } else {
-              assert(false);
-            }
+            widget.readCallback();
           },
           onLongPress: () {},
           child: Container(
@@ -145,6 +133,7 @@ class _ConversationItemState extends State<_ConversationItem> {
                           color: const Color(AppColor.TitleColor),
                         ),
                         overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -154,6 +143,7 @@ class _ConversationItemState extends State<_ConversationItem> {
                           color: const Color(AppColor.DescTextColor),
                         ),
                         overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       )
                     ],
                   ),
@@ -196,12 +186,11 @@ class _ConversationPage extends BaseView<ConversationViewModel> {
             final c = snapshot.data[index];
             return _ConversationItem(
               c,
-              (int num) {
+              () {
                 final List<Conversation> list = viewModel.conversations.value;
                 for (int i = 0; i < list.length; ++i) {
                   if (list[i].fromId == c.fromId) {
-                    list[i] = list[i].copyWith(
-                        unreadMsgCount: 0 /*list[i].unreadMsgCount - num*/);
+                    list[i] = list[i].copyWith(unreadMsgCount: 0);
                     viewModel.conversations.value = list;
                     break;
                   }

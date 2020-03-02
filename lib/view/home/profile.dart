@@ -13,12 +13,10 @@ class _ProfileHeaderView extends StatelessWidget {
             children: <Widget>[
               UImage(
                 snapshot.data.userAvatar,
-                placeholderBuilder: (BuildContext context) => Icon(
-                  const IconData(
-                    0xe642,
-                    fontFamily: Constant.IconFontFamily,
-                  ),
-                  size: 60.sp,
+                placeholderBuilder: (BuildContext context) => UImage(
+                  'asset://assets/images/default_avatar.png',
+                  width: 60.sp,
+                  height: 60.sp,
                 ),
                 width: 60.sp,
                 height: 60.sp,

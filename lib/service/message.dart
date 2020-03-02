@@ -32,8 +32,15 @@ abstract class MessageService extends BaseService {
         WebSocketMessage(op: 4001, args: {"userId": null, "size": 1}));
   }
 
-  Future<WebSocketMessage<dynamic>> notifyRead(int msgId) {
-    return webSocketClient
-        .sendAndReceive(WebSocketMessage(op: 4002, args: {"msgId": msgId}));
+  @Post(path: '/UserMessage/clearUnReadMsg')
+  Future<Response<ApiResponse<dynamic>>> notifyRead({
+    @Field() int friendId,
+    @Field() int msgId,
+  });
+
+  Future<WebSocketMessage<dynamic>> sendUserMessage(
+      {int toUserId, String msg, MessageType msgType}) {
+    return webSocketClient.sendAndReceive(WebSocketMessage(
+        op: 1001, args: {"userId": toUserId}, msg: msg, msgType: msgType));
   }
 }

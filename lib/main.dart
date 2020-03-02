@@ -138,7 +138,7 @@ class _AppInitializerState extends State<_AppInitializer> {
         _AppInitializer.initialRoutes.skip(1).forEach(router.push);
       }),
       // 多给点时间让页面加载好
-      Future<void>.delayed(const Duration(milliseconds: 500)),
+      Future<void>.delayed(const Duration(milliseconds: 1000)),
     ]);
 
     closeSplashPage();

@@ -72,7 +72,7 @@ class Friend extends BaseModel {
   final String targetUserAccount;
   final String userAvatar;
 
-  String get showName => remark ?? targetUserName;
+  String get showName => (remark ?? '').isEmpty ? targetUserName : remark;
 }
 
 @JsonSerializable()

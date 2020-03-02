@@ -60,10 +60,9 @@ final Set<AppRouteSetting> appRoutes = <AppRouteSetting>{
     path: '/chat',
     handler: (_, Map<String, String> arguments) => ChatPage(
       id: int.parse(arguments['id']),
-      title: arguments['title'],
       type: arguments['type'] == 'friend' ? ChatType.friend : ChatType.group,
     ),
-    parameters: <String>{'id', 'title', 'type'},
+    parameters: <String>{'id', 'type'},
   ),
   AppRouteSetting(
     path: '/webView',

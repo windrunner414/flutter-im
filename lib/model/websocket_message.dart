@@ -1,5 +1,6 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:wechat/model/message.dart';
 import 'package:wechat/model/model_generic_json_converter.dart';
 
 part 'websocket_message.g.dart';
@@ -18,7 +19,7 @@ class WebSocketMessage<T> {
   @ModelGenericJsonConverter()
   final T args;
   final String msg;
-  final int msgType;
+  final MessageType msgType;
   final int flagId;
 
   static int _flagId = 0;

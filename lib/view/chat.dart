@@ -23,11 +23,10 @@ import 'package:wechat/widget/user_info.dart';
 export 'package:wechat/viewmodel/chat.dart' show ChatType;
 
 class ChatPage extends BaseView<ChatViewModel> {
-  ChatPage({@required this.id, @required this.type, @required this.title});
+  ChatPage({@required this.id, @required this.type});
 
   final int id;
   final ChatType type;
-  final String title;
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -35,69 +34,23 @@ class ChatPage extends BaseView<ChatViewModel> {
   @override
   Widget build(BuildContext context, ChatViewModel viewModel) {
     dependOnScreenUtil(context);
-    return WillPopScope(
-      onWillPop: () async {
-        router.pop(viewModel.readNum);
-        return false;
-      },
-      child: UnFocusScope(
-        child: Scaffold(
-          appBar: IAppBar(title: Text(title)),
-          body: Container(
-            color: const Color(AppColor.BackgroundColor),
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: _MessagesListView(viewModel: viewModel, type: type),
-                ),
-                Container(
-                  color: const Color(AppColor.ChatInputSectionBgColor),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Container(
-                          color: Colors.white,
-                          child: TextField(
-                            controller: viewModel.messageEditingController,
-                            scrollPhysics: const BouncingScrollPhysics(),
-                            maxLines: 5,
-                            minLines: 1,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(4)),
-                                borderSide: BorderSide.none,
-                              ),
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 8),
-                              isDense: true,
-                            ),
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      FlatButton(
-                        onPressed: () {},
-                        child: Text(
-                          '发送',
-                          style:
-                              TextStyle(fontSize: 16.sp, color: Colors.white),
-                        ),
-                        color: const Color(AppColor.LoginInputNormalColor),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 4, vertical: 6),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+    return UnFocusScope(
+      child: Scaffold(
+        appBar: IAppBar(
+          title: UserInfo(
+            userId: id,
+            builder: (_, User user) => Text(user.userName),
+          ),
+        ),
+        body: Container(
+          color: const Color(AppColor.BackgroundColor),
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: _MessagesListView(viewModel: viewModel, type: type),
+              ),
+              _MessageEditArea(viewModel: viewModel),
+            ],
           ),
         ),
       ),
@@ -109,6 +62,253 @@ class _ChatPageState extends BaseViewState<ChatViewModel, ChatPage> {
   @override
   ChatViewModel createViewModel() =>
       inject(params: <dynamic>[widget.id, widget.type]);
+}
+
+class _MessageEditArea extends StatefulWidget {
+  _MessageEditArea({this.viewModel});
+
+  final ChatViewModel viewModel;
+
+  @override
+  _MessageEditAreaState createState() => _MessageEditAreaState();
+}
+
+class _MessageEditAreaState extends State<_MessageEditArea> {
+  static const List<String> emoji = [
+    '😀',
+    '😁',
+    '😂',
+    '😃',
+    '😄',
+    '😅',
+    '😆',
+    '😉',
+    '😊',
+    '😋',
+    '😎',
+    '😍',
+    '😘',
+    '😗',
+    '😙',
+    '😚',
+    '☺',
+    '😇',
+    '😐',
+    '😑',
+    '😶',
+    '😏',
+    '😣',
+    '😥',
+    '😮',
+    '😯',
+    '😪',
+    '😫',
+    '😴',
+    '😌',
+    '😛',
+    '😜',
+    '😝',
+    '😒',
+    '😓',
+    '😔',
+    '😕',
+    '😲',
+    '😷',
+    '😖',
+    '😞',
+    '😟',
+    '😤',
+    '😢',
+    '😭',
+    '😦',
+    '😧',
+    '😨',
+    '😬',
+    '😰',
+    '😱',
+    '😳',
+    '😵',
+    '😡',
+    '😠',
+  ];
+
+  bool _showSendButton = false;
+  bool _showEmoji = false;
+  bool _showMore = false;
+  final TextEditingController _messageEditingController =
+      TextEditingController();
+  final FocusNode _messageInputFocus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _messageEditingController.addListener(() {
+      if (_messageEditingController.value.text.isEmpty) {
+        if (_showSendButton) {
+          setState(() {
+            _showSendButton = false;
+          });
+        }
+      } else {
+        if (!_showSendButton) {
+          setState(() {
+            _showSendButton = true;
+          });
+        }
+      }
+    });
+    _messageInputFocus.addListener(() {
+      if (_messageInputFocus.hasFocus) {
+        setState(() {
+          _showMore = false;
+          _showEmoji = false;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _messageEditingController.dispose();
+    _messageInputFocus.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: const Color(AppColor.ChatInputSectionBgColor),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      child: Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: Container(
+                  color: Colors.white,
+                  child: TextField(
+                    controller: _messageEditingController,
+                    focusNode: _messageInputFocus,
+                    scrollPhysics: const BouncingScrollPhysics(),
+                    maxLines: 5,
+                    minLines: 1,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: EdgeInsets.all(8),
+                      isDense: true,
+                    ),
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+              GestureDetector(
+                child: UImage(
+                  _showEmoji
+                      ? 'asset://assets/images/ic_chat_keyboard.png'
+                      : 'asset://assets/images/ic_chat_emoji.png',
+                  width: 32,
+                  height: 32,
+                ),
+                onTap: () {
+                  setState(() {
+                    _messageInputFocus.unfocus();
+                    _showMore = false;
+                    _showEmoji = !_showEmoji;
+                  });
+                },
+              ),
+              const SizedBox(width: 6),
+              if (_showSendButton)
+                FlatButton(
+                  onPressed: () {
+                    final String text = _messageEditingController.text;
+                    if (text.isNotEmpty) {
+                      _messageEditingController.text = '';
+                      widget.viewModel
+                          .sendMessage(MessageType.text, text)
+                          .catchError((Object error) {});
+                    }
+                  },
+                  child: Text(
+                    '发送',
+                    style: TextStyle(fontSize: 16.sp, color: Colors.white),
+                  ),
+                  color: const Color(AppColor.LoginInputNormalColor),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                )
+              else
+                GestureDetector(
+                  child: UImage(
+                    'asset://assets/images/ic_chat_add.png',
+                    width: 32,
+                    height: 32,
+                  ),
+                  onTap: () {
+                    setState(() {
+                      _messageInputFocus.unfocus();
+                      _showEmoji = false;
+                      _showMore = !_showMore;
+                    });
+                  },
+                ),
+            ],
+          ),
+          if (_showEmoji)
+            SizedBox(
+              height: 196,
+              child: GridView.extent(
+                padding: const EdgeInsets.only(top: 14),
+                maxCrossAxisExtent: 30,
+                mainAxisSpacing: 6,
+                crossAxisSpacing: 6,
+                physics: const BouncingScrollPhysics(),
+                children: List.generate(
+                  emoji.length,
+                  (index) => GestureDetector(
+                    onTap: () {
+                      final c = _messageEditingController;
+                      c.text += emoji[index];
+                      c.selection =
+                          TextSelection.collapsed(offset: c.text.length);
+                    },
+                    child: Text(
+                      emoji[index],
+                      style: TextStyle(fontSize: 24),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          if (_showMore)
+            SizedBox(
+              height: 150,
+              child: GridView.extent(
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+                maxCrossAxisExtent: 50,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                physics: const BouncingScrollPhysics(),
+                children: <Widget>[
+                  UImage(
+                    'asset://assets/images/ic_gallery.png',
+                    width: 50,
+                    height: 50,
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 class _MessageBox extends StatefulWidget {
@@ -142,12 +342,10 @@ abstract class _MessageBoxState extends State<_MessageBox> {
         dependOnScreenUtil(context);
         final Widget avatar = UImage(
           user.userAvatar,
-          placeholderBuilder: (BuildContext context) => Icon(
-            const IconData(
-              0xe642,
-              fontFamily: Constant.IconFontFamily,
-            ),
-            size: 48.sp,
+          placeholderBuilder: (BuildContext context) => UImage(
+            'asset://assets/images/default_avatar.png',
+            width: 48.sp,
+            height: 48.sp,
           ),
           width: 48.sp,
           height: 48.sp,

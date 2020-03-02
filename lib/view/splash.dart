@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wechat/util/screen.dart';
+import 'package:wechat/widget/image.dart';
 
 class SplashPage extends StatefulWidget {
   @override
@@ -24,11 +25,14 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     dependOnScreenUtil(context);
-    return GestureDetector(
-      onTap: () => print('点击了启动屏'),
-      child: Container(
-        child: const Text('启动屏'),
-      ),
+    return LayoutBuilder(
+      builder: (_, BoxConstraints constraints) {
+        return UImage(
+          'asset://assets/images/splash.png',
+          width: constraints.maxWidth,
+          height: constraints.maxHeight,
+        );
+      },
     );
   }
 }

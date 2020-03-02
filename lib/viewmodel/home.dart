@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/friend_application.dart';
+import 'package:wechat/model/message.dart';
 import 'package:wechat/model/websocket_message.dart';
 import 'package:wechat/repository/auth.dart';
 import 'package:wechat/repository/message.dart';
@@ -102,10 +103,10 @@ class HomeViewModel extends BaseViewModel {
     } catch (e) {
       if (e is WebSocketMessage &&
           e.op == -1001 &&
+          e.msgType == MessageType.text &&
           e.flagId != null &&
-          e.msgType == 1 &&
-          e.msg == 'action  not found' &&
-          e.args == null) {
+          e.args == null &&
+          e.msg == "action  not found") {
         // TODO: ping发了json，服务端返回action  not found
         return;
       }

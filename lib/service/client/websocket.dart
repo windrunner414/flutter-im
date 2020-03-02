@@ -204,10 +204,21 @@ class WebSocketClient {
           if (op == null || event.data?.op == op) {
             final WebSocketMessage<dynamic> data = event.data;
             if (T == dynamic) {
-              subject.add(data as WebSocketMessage<T>);
+              if (!subject.isClosed) {
+                subject.add(data as WebSocketMessage<T>);
+              }
             } else {
-              subject.add(WebSocketMessage<T>.fromJson(
-                  await worker.jsonDecode(await worker.jsonEncode(data))));
+              try {
+                final converted =
+                    await worker.jsonDecode(await worker.jsonEncode(data));
+                if (!subject.isClosed) {
+                  subject.add(WebSocketMessage<T>.fromJson(converted));
+                }
+              } catch (e) {
+                if (!subject.isClosed) {
+                  subject.addError(e);
+                }
+              }
             }
           }
           break;
@@ -220,7 +231,7 @@ class WebSocketClient {
         closeSubject();
       }
     });
-    subject.doOnDone(() {
+    subject.done.then((_) {
       if (subscription != null) {
         subscription.cancel();
         subscription = null;

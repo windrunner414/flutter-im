@@ -5,19 +5,25 @@ extension PublishSubjectExtension<T> on PublishSubject<T> {
     final PublishSubject<T> subject = PublishSubject<T>();
     listen(
       (T value) {
+        if (subject.isClosed) {
+          return;
+        }
         if (filter(value)) {
           subject.add(value);
         }
       },
-      onError: (Object error, StackTrace stackTrace) =>
-          subject.addError(error, stackTrace),
+      onError: (Object error, StackTrace stackTrace) {
+        if (!subject.isClosed) {
+          subject.addError(error, stackTrace);
+        }
+      },
       onDone: () {
         if (!subject.isClosed) {
           subject.close();
         }
       },
     );
-    subject.doOnDone(() {
+    subject.done.then((value) {
       if (!isClosed) {
         close();
       }
