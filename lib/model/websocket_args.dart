@@ -46,16 +46,3 @@ class UserMessageArg {
   final int addTime;
   final String msg;
 }
-
-@JsonSerializable()
-@CopyWith()
-class UserUnreadMessagesArg {
-  UserUnreadMessagesArg({this.total, this.list});
-
-  factory UserUnreadMessagesArg.fromJson(Map<String, dynamic> json) =>
-      _$UserUnreadMessagesArgFromJson(json);
-  Map<String, dynamic> toJson() => _$UserUnreadMessagesArgToJson(this);
-
-  final int total;
-  final List<UserMessageArg> list;
-}

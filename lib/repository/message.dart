@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:dartin/dartin.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/state.dart';
-import 'package:wechat/model/api_response.dart';
 import 'package:wechat/model/conversation.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/model/websocket_args.dart';
@@ -21,7 +20,7 @@ class MessageRepository extends BaseRepository {
   static String get conversationListStorageKey =>
       'conversation_list_${ownUserInfo.value.userId}';
 
-  static const int conversationListMaxNum = 50;
+  static const int conversationListMaxLength = 100;
 
   void initConversationList() {
     disposeConversationList();
@@ -64,10 +63,10 @@ class MessageRepository extends BaseRepository {
     _conversations = BehaviorSubject();
   }
 
-  int _find(List<Conversation> list, int fromUserId) {
+  int _find(List<Conversation> list, int fromId, ConversationType type) {
     int findIndex = -1;
     for (int i = 0; i < list.length; ++i) {
-      if (list[i].fromId == fromUserId) {
+      if (list[i].fromId == fromId && list[i].type == type) {
         findIndex = i;
         break;
       }
@@ -77,70 +76,53 @@ class MessageRepository extends BaseRepository {
 
   void _onReceiveUserMessage(WebSocketMessage<UserMessageArg> message) {
     final List<Conversation> list = _conversations.value;
-    // TODO(windrunner414): 可以优化成Map<String, int>+List<Conversation>, id: index去掉遍历
-    int findIndex = _find(list, message.args.fromUserId);
+    int findIndex =
+        _find(list, message.args.fromUserId, ConversationType.friend);
     if (findIndex == -1) {
       final Conversation conversation = Conversation(
         fromId: message.args.fromUserId,
-        type: ConversationType.user,
-        desc: message.args.msg ?? message.msg, // 如果是获取的未读消息就是args.msg
-        updateAt: message.args.addTime ?? DateTime.now().millisecondsSinceEpoch,
-        unreadMsgCount: 1,
-        msgId: message.args.msgId,
+        type: ConversationType.friend,
+        msg: message.msg,
+        updateAt: DateTime.now().millisecondsSinceEpoch,
+        unreadMsgNum: 1,
+        msgType: message.msgType,
       );
       list.insert(0, conversation);
-      if (list.length > conversationListMaxNum) {
+      if (list.length > conversationListMaxLength) {
         list.removeLast();
       }
     } else {
-      if (message.args.msgId > list[findIndex].msgId) {
-        final Conversation conversation = list.removeAt(findIndex);
-        list.insert(
-          0,
-          conversation.copyWith(
-            desc: message.args.msg ?? message.msg,
-            updateAt:
-                message.args.addTime ?? DateTime.now().millisecondsSinceEpoch,
-            unreadMsgCount: message.args.msg != null
-                ? conversation.unreadMsgCount
-                : conversation.unreadMsgCount + 1, // args.msg为null时是新接收的不然是拉的未读
-            msgId: message.args.msgId,
-          ),
-        );
-      }
+      final Conversation conversation = list.removeAt(findIndex);
+      list.insert(
+        0,
+        conversation.copyWith(
+          msg: message.msg,
+          updateAt: DateTime.now().millisecondsSinceEpoch,
+          unreadMsgNum: conversation.unreadMsgNum + 1,
+          msgType: message.msgType,
+        ),
+      );
     }
     _conversations.value = list;
   }
 
   Future<void> pullUnreadMessages() async {
-    try {
-      final UserUnreadMsgSum unreadSum =
-          (await _messageService.getUserUnreadMsgSum()).body.result;
-      final list = _conversations.value;
-      for (UserUnreadMsgNum unread in unreadSum.list) {
-        int findIndex = _find(list, unread.fromUserId);
-        if (findIndex == -1) {
-          list.add(Conversation(
-            fromId: unread.fromUserId,
-            type: ConversationType.user,
-            desc: '',
-            updateAt: DateTime.now().millisecondsSinceEpoch,
-            unreadMsgCount: unread.num,
-            msgId: -1,
-          ));
-        } else {
-          list[findIndex] =
-              list[findIndex].copyWith(unreadMsgCount: unread.num);
-        }
+    final list = _conversations.value;
+    final List<Conversation> conversations =
+        (await _messageService.getUnReadConversationList()).body.result.list;
+    for (var conversation in conversations) {
+      int findIndex = _find(list, conversation.fromId, conversation.type);
+      if (findIndex == -1) {
+        list.add(conversation);
+      } else {
+        list[findIndex] = conversation;
       }
-      _conversations.value = list;
-
-      final lastUnread = (await _messageService.getUserLastUnreadMessages());
-      for (var unread in lastUnread.args.list) {
-        _onReceiveUserMessage(
-            WebSocketMessage(op: lastUnread.op, args: unread));
-      }
-    } catch (_) {}
+    }
+    list.sort((Conversation a, Conversation b) => b.updateAt - a.updateAt);
+    if (list.length > conversationListMaxLength) {
+      list.removeRange(conversationListMaxLength, list.length);
+    }
+    _conversations.value = list;
   }
 
   BehaviorSubject<List<Conversation>> getConversationList() => _conversations;
@@ -154,6 +136,18 @@ class MessageRepository extends BaseRepository {
       _messageService.sendUserMessage(
           toUserId: toUserId, msgType: msgType, msg: msg);
 
-  Future<ApiResponse<dynamic>> notifyRead({int friendId, int msgId}) async =>
-      (await _messageService.notifyRead(friendId: friendId, msgId: msgId)).body;
+  Future<WebSocketMessage<dynamic>> notifyRead(
+          {int fromId, int msgId, ConversationType type}) =>
+      _messageService.notifyRead(
+        fromId: fromId,
+        msgId: msgId,
+        msgType: type == ConversationType.friend ? 1 : 2,
+      );
+
+  Future<MessageList> getHistoricalUserMessages(
+          {int friendUserId, int lastMsgId}) async =>
+      (await _messageService.getHistoricalUserMessages(
+              friendUserId: friendUserId, lastMsgId: lastMsgId))
+          .body
+          .result;
 }

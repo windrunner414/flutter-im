@@ -1,4 +1,5 @@
 import 'package:dartin/dartin.dart';
+import 'package:wechat/model/conversation.dart';
 import 'package:wechat/repository/auth.dart';
 import 'package:wechat/repository/common.dart';
 import 'package:wechat/repository/file.dart';
@@ -39,8 +40,8 @@ final Module viewModelModule = Module(<DartIn<dynamic>>[
   factory<SettingViewModel>(({params}) => SettingViewModel()),
   factory<ContactViewModel>(({params}) => ContactViewModel()),
   factory<AddFriendViewModel>(({params}) => AddFriendViewModel()),
-  factory<ChatViewModel>(({params}) =>
-      ChatViewModel(id: params.get(0) as int, type: params.get(1) as ChatType)),
+  factory<ChatViewModel>(({params}) => ChatViewModel(
+      id: params.get(0) as int, type: params.get(1) as ConversationType)),
   factory<HomeViewModel>(({params}) => HomeViewModel()),
   factory<UserViewModel>(({params}) => UserViewModel()),
   factory<FriendApplicationsViewModel>(

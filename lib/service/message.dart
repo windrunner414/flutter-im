@@ -1,6 +1,7 @@
 import 'package:chopper/chopper.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/model/api_response.dart';
+import 'package:wechat/model/conversation.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/model/websocket_args.dart';
 import 'package:wechat/model/websocket_message.dart';
@@ -14,8 +15,14 @@ abstract class MessageService extends BaseService {
   static MessageService create([ChopperClient client]) =>
       _$MessageService(client);
 
-  @Get(path: '/UserMessage/getUnReadMsgSum')
-  Future<Response<ApiResponse<UserUnreadMsgSum>>> getUserUnreadMsgSum();
+  @Get(path: '/UserMessageReadList/getAll')
+  Future<Response<ApiResponse<ConversationList>>> getUnReadConversationList();
+
+  @Get(path: '/UserMessage/getAll')
+  Future<Response<ApiResponse<MessageList>>> getHistoricalUserMessages({
+    @Query() int friendUserId,
+    @Query() int lastMsgId,
+  });
 
   PublishSubject<WebSocketMessage<UserMessageArg>> receiveUserMessage(
       [int fromUserId]) {
@@ -27,16 +34,16 @@ abstract class MessageService extends BaseService {
     return subject;
   }
 
-  Future<WebSocketMessage<UserUnreadMessagesArg>> getUserLastUnreadMessages() {
-    return webSocketClient.sendAndReceive(
-        WebSocketMessage(op: 4001, args: {"userId": null, "size": 1}));
+  Future<WebSocketMessage<dynamic>> notifyRead({
+    int fromId,
+    int msgId,
+    int msgType,
+  }) {
+    return webSocketClient.sendAndReceive(WebSocketMessage(
+      op: 4002,
+      args: {"msgId": msgId, "fromId": fromId, "msgType": msgType},
+    ));
   }
-
-  @Post(path: '/UserMessage/clearUnReadMsg')
-  Future<Response<ApiResponse<dynamic>>> notifyRead({
-    @Field() int friendId,
-    @Field() int msgId,
-  });
 
   Future<WebSocketMessage<dynamic>> sendUserMessage(
       {int toUserId, String msg, MessageType msgType}) {

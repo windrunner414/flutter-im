@@ -31,7 +31,7 @@ class _ConversationItemState extends State<_ConversationItem> {
         );
 
         Widget avatarContainer;
-        if (widget._conversation.unreadMsgCount > 0) {
+        if (widget._conversation.unreadMsgNum > 0) {
           final Widget unreadMsgCountText = Container(
             width: 24,
             height: 24,
@@ -41,9 +41,9 @@ class _ConversationItemState extends State<_ConversationItem> {
               color: const Color(AppColor.NotifyDotBgColor),
             ),
             child: Text(
-              widget._conversation.unreadMsgCount > 99
+              widget._conversation.unreadMsgNum > 99
                   ? '99+'
-                  : widget._conversation.unreadMsgCount.toString(),
+                  : widget._conversation.unreadMsgNum.toString(),
               style: TextStyle(
                 fontSize: 12.sp,
                 color: const Color(AppColor.NotifyDotTextColor),
@@ -137,7 +137,7 @@ class _ConversationItemState extends State<_ConversationItem> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        widget._conversation.desc,
+                        widget._conversation.msg,
                         style: TextStyle(
                           fontSize: 12.sp,
                           color: const Color(AppColor.DescTextColor),
@@ -190,7 +190,7 @@ class _ConversationPage extends BaseView<ConversationViewModel> {
                 final List<Conversation> list = viewModel.conversations.value;
                 for (int i = 0; i < list.length; ++i) {
                   if (list[i].fromId == c.fromId) {
-                    list[i] = list[i].copyWith(unreadMsgCount: 0);
+                    list[i] = list[i].copyWith(unreadMsgNum: 0);
                     viewModel.conversations.value = list;
                     break;
                   }

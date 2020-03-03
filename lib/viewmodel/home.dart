@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dartin/dartin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:wechat/common/exception.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/friend_application.dart';
 import 'package:wechat/model/message.dart';
@@ -39,7 +40,13 @@ class HomeViewModel extends BaseViewModel {
     webSocketClient.connection.listen((WebSocketEvent event) {
       if (event.type == WebSocketEventType.connected) {
         webSocketConnected.value = true;
-        _messageRepository.pullUnreadMessages();
+        _messageRepository.pullUnreadMessages().catchError((Object error) {
+          assert(() {
+            debugPrint('获取未读消息失败，重连：$error');
+            return true;
+          }());
+          webSocketClient.reconnect();
+        });
       } else if (event.type == WebSocketEventType.closed) {
         webSocketConnected.value = false;
       }
@@ -55,6 +62,8 @@ class HomeViewModel extends BaseViewModel {
     currentIndex.close();
     pageController.dispose();
     _messageRepository.disposeConversationList();
+    friendApplicationNum.close();
+    webSocketConnected.close();
     _stopTimers();
   }
 
@@ -64,10 +73,9 @@ class HomeViewModel extends BaseViewModel {
     _refreshFriendList();
     _timers.add(Timer.periodic(
         const Duration(minutes: 5), (_) => _refreshUserProfile()));
-    // TODO(windrunner): 应该做一个Event Util，支持register/unregister/trigger事件并传参，在这里register刷新onFriendApplyNumUpdate事件处理，verify申请后trigger
     _timers.add(Timer.periodic(
         const Duration(seconds: 5), (_) => _refreshFriendApplyNum()));
-    _timers.add(Timer.periodic(const Duration(seconds: 10), (_) => _ping()));
+    _timers.add(Timer.periodic(const Duration(seconds: 15), (_) => _ping()));
     _timers.add(Timer.periodic(
         const Duration(seconds: 5), (_) => _refreshFriendList()));
   }
@@ -85,11 +93,11 @@ class HomeViewModel extends BaseViewModel {
   void _refreshUserProfile() =>
       _authRepository.getSelfInfo().catchError((Object error) {});
 
-  // TODO(windrunner): 【不重要】若onError内出错，比如onError: (Error e) {}，e不是Object会报错，会同时导致报一个WorkerTask<Object, String>不是Task<String, Map<String, dynamic>>的错误，原因可能在ThrowErrorInterceptor，需要看chopper的处理了
   void _refreshFriendApplyNum() {
     _userFriendApplyRepository
         .getFriendApplicationList(
             page: 1, limit: 1, state: FriendApplicationState.waiting)
+        .bindTo(this, 'refreshFriendApplyNum')
         .then((FriendApplicationList result) =>
             friendApplicationNum.value = result.total)
         .catchError((Object e) {});
@@ -98,15 +106,20 @@ class HomeViewModel extends BaseViewModel {
   Future<void> _ping() async {
     /// 如果此时连接断开，会立刻失败并调用reconnect，reconnect不会做任何事情
     try {
-      await webSocketClient.sendAndReceive<dynamic>(
-          WebSocketMessage<dynamic>(op: 0, msg: 'ping'));
+      await webSocketClient
+          .sendAndReceive<dynamic>(
+            WebSocketMessage<dynamic>(op: 0, msg: 'ping'),
+            const Duration(seconds: 10),
+          )
+          .bindTo(this, 'ping');
     } catch (e) {
-      if (e is WebSocketMessage &&
-          e.op == -1001 &&
-          e.msgType == MessageType.text &&
-          e.flagId != null &&
-          e.args == null &&
-          e.msg == "action  not found") {
+      if (e is CancelException ||
+          (e is WebSocketMessage &&
+              e.op == -1001 &&
+              e.msgType == MessageType.text &&
+              e.flagId != null &&
+              e.args == null &&
+              e.msg == "action  not found")) {
         // TODO: ping发了json，服务端返回action  not found
         return;
       }

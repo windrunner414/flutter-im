@@ -27,8 +27,8 @@ class Message extends BaseModel {
     this.fromUserId,
     this.msgId,
     this.msg,
-    this.type,
-    this.bytes,
+    this.msgType,
+    this.data,
     this.sendState,
   });
 
@@ -38,37 +38,22 @@ class Message extends BaseModel {
 
   final int fromUserId;
   final int msgId;
-  final MessageType type;
+  final MessageType msgType;
   String msg;
 
   @JsonKey(ignore: true)
-  final List<int> bytes;
+  dynamic data;
   @JsonKey(ignore: true)
-  final BehaviorSubject<SendState> sendState;
+  BehaviorSubject<SendState> sendState;
 }
 
 @JsonSerializable()
-@CopyWith()
-class UserUnreadMsgNum extends BaseModel {
-  UserUnreadMsgNum({this.fromUserId, this.num});
+class MessageList extends BaseModel {
+  MessageList({this.list});
 
-  factory UserUnreadMsgNum.fromJson(Map<String, dynamic> json) =>
-      _$UserUnreadMsgNumFromJson(json);
-  Map<String, dynamic> toJson() => _$UserUnreadMsgNumToJson(this);
+  factory MessageList.fromJson(Map<String, dynamic> json) =>
+      _$MessageListFromJson(json);
+  Map<String, dynamic> toJson() => _$MessageListToJson(this);
 
-  final int fromUserId;
-  final int num;
-}
-
-@JsonSerializable()
-@CopyWith()
-class UserUnreadMsgSum extends BaseModel {
-  UserUnreadMsgSum({this.total, this.list});
-
-  factory UserUnreadMsgSum.fromJson(Map<String, dynamic> json) =>
-      _$UserUnreadMsgSumFromJson(json);
-  Map<String, dynamic> toJson() => _$UserUnreadMsgSumToJson(this);
-
-  final int total;
-  final List<UserUnreadMsgNum> list;
+  final List<Message> list;
 }

@@ -3,16 +3,20 @@ import 'dart:ui';
 
 import 'package:badges/badges.dart';
 import 'package:dartin/dartin.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/constant.dart';
 import 'package:wechat/common/state.dart';
+import 'package:wechat/model/conversation.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/model/user.dart';
+import 'package:wechat/service/base.dart';
 import 'package:wechat/util/router.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
@@ -23,13 +27,11 @@ import 'package:wechat/widget/stream_builder.dart';
 import 'package:wechat/widget/unfocus_scope.dart';
 import 'package:wechat/widget/user_info.dart';
 
-export 'package:wechat/viewmodel/chat.dart' show ChatType;
-
 class ChatPage extends BaseView<ChatViewModel> {
   ChatPage({@required this.id, @required this.type});
 
   final int id;
-  final ChatType type;
+  final ConversationType type;
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -338,9 +340,11 @@ class _MessageBox extends StatefulWidget {
 
   @override
   _MessageBoxState createState() {
-    switch (message.type) {
+    switch (message.msgType) {
       case MessageType.text:
         return _TextMessageBoxState();
+      case MessageType.image:
+        return _ImageMessageBoxState();
       default:
         return _TextMessageBoxState();
     }
@@ -358,42 +362,44 @@ abstract class _MessageBoxState extends State<_MessageBox> {
     return UserInfo(
       userId: widget.message.fromUserId,
       builder: (BuildContext context, User user) {
-        dependOnScreenUtil(context);
-        final Widget avatar = UImage(
-          user.userAvatar,
-          placeholderBuilder: (BuildContext context) => UImage(
-            'asset://assets/images/default_avatar.png',
-            width: 48.sp,
-            height: 48.sp,
-          ),
-          width: 48.sp,
-          height: 48.sp,
-        );
-        final Widget messageBox = Flexible(
-          child: Column(
-            crossAxisAlignment:
-                isSentByMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-            children: <Widget>[
-              if (widget.showName)
-                Text(
-                  user.userName,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.black45,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              const SizedBox(height: 5),
-              buildBox(context),
-            ],
-          ),
-        );
-        final Widget retry = IStreamBuilder(
+        return IStreamBuilder(
           stream: widget.message.sendState,
           builder: (_, AsyncSnapshot<SendState> snapshot) {
+            dependOnScreenUtil(context);
+            final Widget avatar = UImage(
+              user.userAvatar,
+              placeholderBuilder: (BuildContext context) => UImage(
+                'asset://assets/images/default_avatar.png',
+                width: 48.sp,
+                height: 48.sp,
+              ),
+              width: 48.sp,
+              height: 48.sp,
+            );
+            final Widget messageBox = Flexible(
+              child: Column(
+                crossAxisAlignment: isSentByMe
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
+                children: <Widget>[
+                  if (widget.showName)
+                    Text(
+                      user.userName,
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.black45,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  const SizedBox(height: 5),
+                  buildBox(context),
+                ],
+              ),
+            );
+            Widget status;
             switch (snapshot.data) {
               case SendState.sending:
-                return Padding(
+                status = Padding(
                   padding: const EdgeInsets.only(top: 8, right: 10),
                   child: SpinKitRing(
                     color: Colors.black26,
@@ -401,9 +407,11 @@ abstract class _MessageBoxState extends State<_MessageBox> {
                     lineWidth: 1,
                   ),
                 );
+                break;
               case SendState.failed:
-                return GestureDetector(
-                  onTap: () => widget.viewModel.reSend(widget.message),
+                status = GestureDetector(
+                  onTap: () =>
+                      setState(() => widget.viewModel.reSend(widget.message)),
                   child: Padding(
                     padding: const EdgeInsets.only(top: 8, right: 10),
                     child: Badge(
@@ -417,33 +425,70 @@ abstract class _MessageBoxState extends State<_MessageBox> {
                     ),
                   ),
                 );
+                break;
               default:
-                return Container();
             }
+
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                mainAxisAlignment: isSentByMe
+                    ? MainAxisAlignment.end
+                    : MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: isSentByMe
+                    ? <Widget>[
+                        if (status != null) status,
+                        messageBox,
+                        const SizedBox(width: 10),
+                        avatar,
+                      ]
+                    : <Widget>[
+                        avatar,
+                        const SizedBox(width: 10),
+                        messageBox,
+                      ],
+              ),
+            );
           },
-        );
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            mainAxisAlignment:
-                isSentByMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: isSentByMe
-                ? <Widget>[
-                    retry,
-                    messageBox,
-                    const SizedBox(width: 10),
-                    avatar,
-                  ]
-                : <Widget>[
-                    avatar,
-                    const SizedBox(width: 10),
-                    messageBox,
-                  ],
-          ),
         );
       },
     );
+  }
+}
+
+class _ImageMessageBoxState extends _MessageBoxState {
+  @override
+  Widget buildBox(BuildContext context) {
+    final imageProvider = widget.message.data != null
+        ? ExtendedMemoryImageProvider(widget.message.data)
+        : ExtendedNetworkImageProvider(
+            staticFileBaseUrl + widget.message.msg,
+            cache: !kIsWeb,
+          );
+    //TODO:loading占位以及加载完后判断列表atBottom就跳转到尾部
+    final Widget image = ExtendedImage(
+      // TODO: 疑似dart2.8.0-dev的bug，as下就行，不然编译报错
+      image: imageProvider as ImageProvider,
+      filterQuality: FilterQuality.low,
+      enableMemoryCache: true,
+      clearMemoryCacheIfFailed: true,
+    );
+    if (widget.message.sendState?.value == SendState.sending) {
+      return Stack(children: <Widget>[
+        image,
+        Positioned.fill(
+          child: Opacity(
+            opacity: 0.4,
+            child: Container(
+              color: Colors.black,
+            ),
+          ),
+        ),
+      ]);
+    } else {
+      return image;
+    }
   }
 }
 
@@ -623,133 +668,126 @@ class _MessagesListView extends StatefulWidget {
   const _MessagesListView({this.viewModel, this.type});
 
   final ChatViewModel viewModel;
-  final ChatType type;
+  final ConversationType type;
 
   @override
   _MessagesListViewState createState() => _MessagesListViewState();
 }
 
 class _MessagesListViewState extends State<_MessagesListView> {
-  final GlobalKey _historicalMessagesListKey = GlobalKey();
-  final ScrollController _wrapScrollController = ScrollController();
-  final EasyRefreshController _refreshController = EasyRefreshController();
-  double _lastHistoricalMessagesListHeight = 0;
+  final UniqueKey _centerKey = UniqueKey();
+  final ScrollController _scrollController = ScrollController();
   bool _atBottom = true;
+  bool _inLoadingHistory = true;
+  Timer _goBottomTimer;
 
   @override
   void initState() {
     super.initState();
-    _wrapScrollController.addListener(() {
-      _atBottom = _wrapScrollController.offset ==
-          _wrapScrollController.position.maxScrollExtent;
+    _scrollController.addListener(() {
+      _atBottom = _scrollController.offset >=
+          _scrollController.position.maxScrollExtent -
+              0.1; // TODO:加了一个0.1高度的box来让他能滚动
     });
-    Timer.run(_refreshController.callRefresh);
+    _goBottomTimer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+      final max = _scrollController.position.maxScrollExtent;
+      if (_atBottom && _scrollController.offset != max) {
+        _scrollController.jumpTo(max);
+      }
+    });
+    _loadHistory(true);
   }
 
   @override
   void dispose() {
     super.dispose();
-    _wrapScrollController.dispose();
-    _refreshController.dispose();
+    _scrollController.dispose();
+    _goBottomTimer.cancel();
   }
 
-  // TODO(windrunner): 暂时用此下策，这个函数会在渲染后调用，导致会闪一下
-  // TODO(windrunner): 三个listView，里层两个其中一个铺满屏幕，另一个shrinkWrap，方向和外层一样，或者两个listview，里层一个，方向和外层相反，高度铺满。listview全部NeverScrollablePhysic最外面套一个gesturedetector，创建一个simulation，drag时间自己计算偏移来移动里面两个listview，里层铺满的到顶了就移动外层，外层到顶了就移动里层
-  void _onHistoricalMessagesUpdate() {
-    final double height = (_historicalMessagesListKey.currentContext
-            ?.findRenderObject() as RenderBox)
-        ?.size
-        ?.height;
-    if (height != null && height != _lastHistoricalMessagesListHeight) {
-      _wrapScrollController.jumpTo((_wrapScrollController.offset +
-              height -
-              _lastHistoricalMessagesListHeight)
-          .clamp(0, _wrapScrollController.position.maxScrollExtent)
-          .toDouble());
-      _lastHistoricalMessagesListHeight = height;
-    }
-  }
-
-  void _onNewMessagesUpdate() {
-    if (_atBottom) {
-      _wrapScrollController
-          .jumpTo(_wrapScrollController.position.maxScrollExtent);
-    }
+  void _loadHistory([bool isFirst = false]) {
+    widget.viewModel.loadHistoricalMessages(isFirst).whenComplete(() {
+      if (mounted) {
+        setState(() => _inLoadingHistory = false);
+      }
+    }).catchError((_) {});
   }
 
   @override
   Widget build(BuildContext context) {
     dependOnScreenUtil(context);
-    return EasyRefresh.custom(
-      scrollController: _wrapScrollController,
-      onRefresh: widget.viewModel.loadHistoricalMessages,
-      controller: _refreshController,
-      header: CustomHeader(
-        extent: 40.0,
-        triggerDistance: 50.0,
-        headerBuilder: (BuildContext context,
-                RefreshMode refreshState,
-                double pulledExtent,
-                double refreshTriggerPullDistance,
-                double refreshIndicatorExtent,
-                AxisDirection axisDirection,
-                bool float,
-                Duration completeDuration,
-                bool enableInfiniteRefresh,
-                bool success,
-                bool noMore) =>
-            SpinKitRing(
-          size: 24.sp,
-          lineWidth: 1,
-          color: Colors.black45,
-        ),
+    return NotificationListener<OverscrollIndicatorNotification>(
+      onNotification: (overScroll) {
+        overScroll.disallowGlow();
+        if (!_inLoadingHistory) {
+          _loadHistory();
+          setState(() => _inLoadingHistory = true);
+        }
+        return false;
+      },
+      child: Scrollable(
+        controller: _scrollController,
+        physics: const ClampingScrollPhysics(),
+        viewportBuilder: (BuildContext context, ViewportOffset offset) {
+          return IStreamBuilder(
+            stream: Rx.merge({
+              widget.viewModel.newMessages,
+              widget.viewModel.historicalMessages,
+            }),
+            builder: (BuildContext context, _) {
+              final historicalMessages =
+                  widget.viewModel.historicalMessages.value;
+              final newMessages = widget.viewModel.newMessages.value;
+              final lists = [
+                if (_inLoadingHistory)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: SpinKitRing(
+                        color: Colors.black45,
+                        lineWidth: 1,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) => _MessageBox(
+                      message: historicalMessages[index],
+                      showName:
+                          widget.type == ConversationType.friend ? false : true,
+                      viewModel: widget.viewModel,
+                    ),
+                    childCount: historicalMessages.length,
+                    addAutomaticKeepAlives: false,
+                  ),
+                ),
+                // TODO: 如果上面不有一点就无法滑动了，原因未知，暂时workaround
+                SliverToBoxAdapter(child: SizedBox(height: 0.1)),
+                SliverToBoxAdapter(key: _centerKey),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) => _MessageBox(
+                      message: newMessages[index],
+                      showName:
+                          widget.type == ConversationType.friend ? false : true,
+                      viewModel: widget.viewModel,
+                    ),
+                    childCount: newMessages.length,
+                    addAutomaticKeepAlives: false,
+                  ),
+                ),
+              ];
+              return Viewport(
+                offset: offset,
+                center: _centerKey,
+                slivers: lists,
+                cacheExtent: 300,
+              );
+            },
+          );
+        },
       ),
-      slivers: <Widget>[
-        SliverList(
-          delegate: SliverChildListDelegate(
-            <Widget>[
-              IStreamBuilder<List<Message>>(
-                stream: widget.viewModel.historicalMessages,
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<Message>> snapshot) {
-                  Timer.run(_onHistoricalMessagesUpdate);
-                  return ListView.builder(
-                    key: _historicalMessagesListKey,
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    reverse: true,
-                    itemBuilder: (BuildContext context, int index) =>
-                        _MessageBox(
-                      message: snapshot.data[index],
-                      showName: widget.type == ChatType.friend ? false : true,
-                      viewModel: widget.viewModel,
-                    ),
-                    itemCount: snapshot.data.length,
-                  );
-                },
-              ),
-              IStreamBuilder<List<Message>>(
-                stream: widget.viewModel.newMessages,
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<Message>> snapshot) {
-                  Timer.run(_onNewMessagesUpdate);
-                  return ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, int index) =>
-                        _MessageBox(
-                      message: snapshot.data[index],
-                      showName: widget.type == ChatType.friend ? false : true,
-                      viewModel: widget.viewModel,
-                    ),
-                    itemCount: snapshot.data.length,
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

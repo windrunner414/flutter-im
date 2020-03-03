@@ -1,5 +1,6 @@
 import 'package:generic_json_converter_annotation/generic_json_converter_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:wechat/model/conversation.dart';
 import 'package:wechat/model/friend_application.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/model/server_config.dart';
@@ -16,13 +17,13 @@ part 'model_generic_json_converter.g.dart';
   UserList,
   ServerConfig,
   Message,
+  MessageList,
   FriendApplication,
   FriendApplicationList,
   WebSocketMessage,
   UserMessageArg,
-  UserUnreadMsgSum,
-  UserUnreadMsgNum,
-  UserUnreadMessagesArg,
+  Conversation,
+  ConversationList,
   FriendList,
   Friend,
 ])

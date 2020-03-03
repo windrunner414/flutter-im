@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wechat/common/state.dart';
+import 'package:wechat/model/conversation.dart';
 import 'package:wechat/util/router.dart';
 import 'package:wechat/view/add_friend.dart';
 import 'package:wechat/view/business_card.dart';
@@ -60,7 +61,9 @@ final Set<AppRouteSetting> appRoutes = <AppRouteSetting>{
     path: '/chat',
     handler: (_, Map<String, String> arguments) => ChatPage(
       id: int.parse(arguments['id']),
-      type: arguments['type'] == 'friend' ? ChatType.friend : ChatType.group,
+      type: arguments['type'] == 'friend'
+          ? ConversationType.friend
+          : ConversationType.group,
     ),
     parameters: <String>{'id', 'type'},
   ),

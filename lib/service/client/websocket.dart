@@ -241,8 +241,10 @@ class WebSocketClient {
   }
 
   Future<WebSocketMessage<T>> sendAndReceive<T>(
-      WebSocketMessage<dynamic> message) {
+    WebSocketMessage<dynamic> message, [
+    Duration timeout = const Duration(seconds: 15),
+  ]) {
     send(message);
-    return receive<T>(flagId: message.flagId);
+    return receive<T>(flagId: message.flagId, timeout: timeout);
   }
 }
