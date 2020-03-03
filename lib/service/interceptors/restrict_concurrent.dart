@@ -25,6 +25,7 @@ class _RestrictConcurrentDelegate {
   }
 }
 
+// TODO: 有个问题请求超时不是chopper内部实现的导致一个请求等很久才调用onResponse释放
 class RestrictConcurrentInterceptor extends BaseInterceptor {
   @override
   String get name => 'RestrictConcurrent';
@@ -36,6 +37,7 @@ class RestrictConcurrentInterceptor extends BaseInterceptor {
 
   @override
   FutureOr<Request> onRequest(Request request) {
+    return request;
     final FutureOr<void> doRequest = delegate.wantRequest();
     if (doRequest is Future<void>) {
       return doRequest.then((void _) => request);
@@ -46,6 +48,7 @@ class RestrictConcurrentInterceptor extends BaseInterceptor {
 
   @override
   Response<dynamic> onResponse(Response<dynamic> response) {
+    return response;
     delegate.requestFinished();
     return response;
   }

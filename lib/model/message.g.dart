@@ -8,15 +8,19 @@ part of 'message.dart';
 
 extension MessageCopyWithExtension on Message {
   Message copyWith({
+    List bytes,
     int fromUserId,
     String msg,
     int msgId,
+    BehaviorSubject sendState,
     MessageType type,
   }) {
     return Message(
+      bytes: bytes ?? this.bytes,
       fromUserId: fromUserId ?? this.fromUserId,
       msg: msg ?? this.msg,
       msgId: msgId ?? this.msgId,
+      sendState: sendState ?? this.sendState,
       type: type ?? this.type,
     );
   }

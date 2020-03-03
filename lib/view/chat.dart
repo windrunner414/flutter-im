@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:badges/badges.dart';
 import 'package:dartin/dartin.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:wechat/common/constant.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/message.dart';
@@ -174,6 +177,20 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
     _messageInputFocus.dispose();
   }
 
+  void _sendImages() async {
+    try {
+      var resultList = await MultiImagePicker.pickImages(
+        maxImages: 10,
+        enableCamera: true,
+      );
+      for (var result in resultList) {
+        List<int> bytes =
+            (await result.getByteData(quality: 80)).buffer.asUint8List();
+        widget.viewModel.sendImage(bytes);
+      }
+    } catch (_) {}
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -230,9 +247,7 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
                     final String text = _messageEditingController.text;
                     if (text.isNotEmpty) {
                       _messageEditingController.text = '';
-                      widget.viewModel
-                          .sendMessage(MessageType.text, text)
-                          .catchError((Object error) {});
+                      widget.viewModel.sendText(text);
                     }
                   },
                   child: Text(
@@ -297,11 +312,14 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
                 crossAxisSpacing: 8,
                 physics: const BouncingScrollPhysics(),
                 children: <Widget>[
-                  UImage(
-                    'asset://assets/images/ic_gallery.png',
-                    width: 50,
-                    height: 50,
-                  ),
+                  GestureDetector(
+                    onTap: _sendImages,
+                    child: UImage(
+                      'asset://assets/images/ic_gallery.png',
+                      width: 50,
+                      height: 50,
+                    ),
+                  )
                 ],
               ),
             ),
@@ -312,8 +330,9 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
 }
 
 class _MessageBox extends StatefulWidget {
-  const _MessageBox({this.message, this.showName});
+  const _MessageBox({this.message, this.showName, this.viewModel});
 
+  final ChatViewModel viewModel;
   final Message message;
   final bool showName;
 
@@ -350,7 +369,7 @@ abstract class _MessageBoxState extends State<_MessageBox> {
           width: 48.sp,
           height: 48.sp,
         );
-        final Widget messageBox = Expanded(
+        final Widget messageBox = Flexible(
           child: Column(
             crossAxisAlignment:
                 isSentByMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -369,6 +388,40 @@ abstract class _MessageBoxState extends State<_MessageBox> {
             ],
           ),
         );
+        final Widget retry = IStreamBuilder(
+          stream: widget.message.sendState,
+          builder: (_, AsyncSnapshot<SendState> snapshot) {
+            switch (snapshot.data) {
+              case SendState.sending:
+                return Padding(
+                  padding: const EdgeInsets.only(top: 8, right: 10),
+                  child: SpinKitRing(
+                    color: Colors.black26,
+                    size: 18,
+                    lineWidth: 1,
+                  ),
+                );
+              case SendState.failed:
+                return GestureDetector(
+                  onTap: () => widget.viewModel.reSend(widget.message),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8, right: 10),
+                    child: Badge(
+                      badgeContent: Icon(
+                        Icons.refresh,
+                        size: 14,
+                        color: Colors.white,
+                      ),
+                      badgeColor: Colors.red,
+                      elevation: 0,
+                    ),
+                  ),
+                );
+              default:
+                return Container();
+            }
+          },
+        );
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
@@ -377,6 +430,7 @@ abstract class _MessageBoxState extends State<_MessageBox> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: isSentByMe
                 ? <Widget>[
+                    retry,
                     messageBox,
                     const SizedBox(width: 10),
                     avatar,
@@ -668,6 +722,7 @@ class _MessagesListViewState extends State<_MessagesListView> {
                         _MessageBox(
                       message: snapshot.data[index],
                       showName: widget.type == ChatType.friend ? false : true,
+                      viewModel: widget.viewModel,
                     ),
                     itemCount: snapshot.data.length,
                   );
@@ -685,6 +740,7 @@ class _MessagesListViewState extends State<_MessagesListView> {
                         _MessageBox(
                       message: snapshot.data[index],
                       showName: widget.type == ChatType.friend ? false : true,
+                      viewModel: widget.viewModel,
                     ),
                     itemCount: snapshot.data.length,
                   );

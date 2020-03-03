@@ -48,7 +48,6 @@ class HttpClient extends ChopperClient {
     if (timeout == null) {
       return response;
     } else {
-      // TODO(windrunner): 需要测试
       return Future.any([
         response,
         Future.delayed(timeout).then(
@@ -98,7 +97,7 @@ class _DefaultConverter implements Converter, ErrorConverter {
   Future<Response<BodyType>> _decodeJson<BodyType, InnerType>(
       Response<Object> response) async {
     assert(() {
-      debugPrint('http response: ${response.body}');
+      debugPrint('http response: ${response.statusCode}: ${response.body}');
       return true;
     }());
     return response.replace<BodyType>(

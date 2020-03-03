@@ -29,6 +29,7 @@ dependencies:
   qr_flutter: ^3.2.0
   qrcode: ^1.0.4
   lpinyin: ^1.0.9
+  multi_image_picker: ^4.6.1
 
 dev_dependencies:
   flutter_test:

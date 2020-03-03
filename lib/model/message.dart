@@ -1,5 +1,6 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:wechat/model/base.dart';
 
 part 'message.g.dart';
@@ -17,10 +18,19 @@ enum MessageType {
   system,
 }
 
+enum SendState { sending, success, failed }
+
 @JsonSerializable()
 @CopyWith()
 class Message extends BaseModel {
-  const Message({this.fromUserId, this.msgId, this.msg, this.type});
+  Message({
+    this.fromUserId,
+    this.msgId,
+    this.msg,
+    this.type,
+    this.bytes,
+    this.sendState,
+  });
 
   factory Message.fromJson(Map<String, dynamic> json) =>
       _$MessageFromJson(json);
@@ -29,7 +39,12 @@ class Message extends BaseModel {
   final int fromUserId;
   final int msgId;
   final MessageType type;
-  final String msg;
+  String msg;
+
+  @JsonKey(ignore: true)
+  final List<int> bytes;
+  @JsonKey(ignore: true)
+  final BehaviorSubject<SendState> sendState;
 }
 
 @JsonSerializable()

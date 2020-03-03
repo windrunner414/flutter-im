@@ -1,6 +1,7 @@
 import 'package:dartin/dartin.dart';
 import 'package:wechat/repository/auth.dart';
 import 'package:wechat/repository/common.dart';
+import 'package:wechat/repository/file.dart';
 import 'package:wechat/repository/message.dart';
 import 'package:wechat/repository/user.dart';
 import 'package:wechat/repository/user_friend.dart';
@@ -8,6 +9,7 @@ import 'package:wechat/repository/user_friend_apply.dart';
 import 'package:wechat/service/auth.dart';
 import 'package:wechat/service/base.dart';
 import 'package:wechat/service/common.dart';
+import 'package:wechat/service/file.dart';
 import 'package:wechat/service/interceptors/auth.dart';
 import 'package:wechat/service/interceptors/base.dart';
 import 'package:wechat/service/interceptors/restrict_concurrent.dart';
@@ -53,6 +55,7 @@ final Module repositoryModule = Module(<DartIn<dynamic>>[
   single<UserFriendApplyRepository>(({params}) => UserFriendApplyRepository()),
   single<MessageRepository>(({params}) => MessageRepository()),
   single<UserFriendRepository>(({params}) => UserFriendRepository()),
+  single<FileRepository>(({params}) => FileRepository()),
 ]);
 
 final Module serviceModule = Module(<DartIn<dynamic>>[
@@ -70,6 +73,7 @@ final Module serviceModule = Module(<DartIn<dynamic>>[
       ({params}) => UserFriendApplyService.create(httpClient)),
   single<MessageService>(({params}) => MessageService.create(httpClient)),
   single<UserFriendService>(({params}) => UserFriendService.create(httpClient)),
+  single<FileService>(({params}) => FileService.create(httpClient)),
 ]);
 
 final List<Module> appModules = <Module>[

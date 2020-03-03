@@ -43,5 +43,9 @@
         <key>NSAllowsArbitraryLoads</key>
         <true/>
     </dict>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>发送图片</string>
+    <key>NSCameraUsageDescription</key>
+    <string>发送照片</string>
 </dict>
 </plist>
