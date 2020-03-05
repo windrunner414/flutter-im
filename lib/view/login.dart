@@ -146,11 +146,12 @@ class LoginPage extends BaseView<LoginViewModel> {
             ),
             SizedBox(height: 30.height),
             FlatButton(
-              onPressed: () => viewModel
-                  .login()
-                  .catchAll((Object error) => showToast(error.toString()),
-                      test: exceptCancelException)
-                  .showLoadingUntilComplete(),
+              onPressed: () => viewModel.login().catchAll(
+                (Object error) {
+                  showToast(error.toString());
+                },
+                test: exceptCancelException,
+              ).showLoadingUntilComplete(),
               color: const Color(AppColor.LoginInputActiveColor),
               padding: EdgeInsets.symmetric(vertical: 10.height),
               child: Center(

@@ -3,6 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'websocket_args.g.dart';
 
+/// 后端返回的fromUserId一会儿string一会儿int很sb
 class _FromUserIdConverter implements JsonConverter<int, dynamic> {
   const _FromUserIdConverter();
 
@@ -25,24 +26,24 @@ class _FromUserIdConverter implements JsonConverter<int, dynamic> {
 
 @JsonSerializable()
 @CopyWith()
-class UserMessageArg {
-  UserMessageArg({
+class MessageArg {
+  MessageArg({
     this.fromUserId,
     this.msgId,
     this.extraData,
-    int addTime,
-    this.msg,
-  }) : addTime =
-            (addTime ?? 99999999999) < 9999999999 ? addTime * 1000 : addTime;
+    this.groupId,
+    this.toUserId,
+  });
 
-  factory UserMessageArg.fromJson(Map<String, dynamic> json) =>
-      _$UserMessageArgFromJson(json);
-  Map<String, dynamic> toJson() => _$UserMessageArgToJson(this);
+  factory MessageArg.fromJson(Map<String, dynamic> json) =>
+      _$MessageArgFromJson(json);
+  Map<String, dynamic> toJson() => _$MessageArgToJson(this);
 
   @_FromUserIdConverter()
   final int fromUserId;
   final int msgId;
   final String extraData;
-  final int addTime;
-  final String msg;
+  final int groupId;
+  @JsonKey(name: 'userId')
+  final int toUserId;
 }

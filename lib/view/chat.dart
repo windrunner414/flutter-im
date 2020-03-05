@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:badges/badges.dart';
@@ -14,6 +15,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/constant.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/conversation.dart';
+import 'package:wechat/model/group.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/model/user.dart';
 import 'package:wechat/service/base.dart';
@@ -22,10 +24,11 @@ import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/chat.dart';
 import 'package:wechat/widget/app_bar.dart';
+import 'package:wechat/widget/friend_user_info.dart';
 import 'package:wechat/widget/image.dart';
+import 'package:wechat/widget/joined_group_info.dart';
 import 'package:wechat/widget/stream_builder.dart';
 import 'package:wechat/widget/unfocus_scope.dart';
-import 'package:wechat/widget/user_info.dart';
 
 class ChatPage extends BaseView<ChatViewModel> {
   ChatPage({@required this.id, @required this.type});
@@ -42,10 +45,15 @@ class ChatPage extends BaseView<ChatViewModel> {
     return UnFocusScope(
       child: Scaffold(
         appBar: IAppBar(
-          title: UserInfo(
-            userId: id,
-            builder: (_, User user) => Text(user.userName),
-          ),
+          title: type == ConversationType.friend
+              ? FriendUserInfo(
+                  userId: id,
+                  builder: (_, User user) => Text(user.userName),
+                )
+              : JoinedGroupInfo(
+                  groupId: id,
+                  builder: (_, Group group) => Text(group.groupName),
+                ),
         ),
         body: Container(
           color: const Color(AppColor.BackgroundColor),
@@ -195,138 +203,152 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: const Color(AppColor.ChatInputSectionBgColor),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      child: Column(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Container(
-                  color: Colors.white,
-                  child: TextField(
-                    controller: _messageEditingController,
-                    focusNode: _messageInputFocus,
-                    scrollPhysics: const BouncingScrollPhysics(),
-                    maxLines: 5,
-                    minLines: 1,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: EdgeInsets.all(8),
-                      isDense: true,
+    final Widget input = Column(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                color: Colors.white,
+                child: TextField(
+                  controller: _messageEditingController,
+                  focusNode: _messageInputFocus,
+                  scrollPhysics: const BouncingScrollPhysics(),
+                  maxLines: 5,
+                  minLines: 1,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                      borderSide: BorderSide.none,
                     ),
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
+                    contentPadding: EdgeInsets.all(8),
+                    isDense: true,
+                  ),
+                  style: TextStyle(
+                    fontSize: 16,
                   ),
                 ),
               ),
-              const SizedBox(width: 6),
+            ),
+            const SizedBox(width: 6),
+            GestureDetector(
+              child: UImage(
+                _showEmoji
+                    ? 'asset://assets/images/ic_chat_keyboard.png'
+                    : 'asset://assets/images/ic_chat_emoji.png',
+                width: 32,
+                height: 32,
+              ),
+              onTap: () {
+                setState(() {
+                  _messageInputFocus.unfocus();
+                  _showMore = false;
+                  _showEmoji = !_showEmoji;
+                });
+              },
+            ),
+            const SizedBox(width: 6),
+            if (_showSendButton)
+              FlatButton(
+                onPressed: () {
+                  final String text = _messageEditingController.text;
+                  if (text.isNotEmpty) {
+                    _messageEditingController.text = '';
+                    widget.viewModel.sendText(text);
+                  }
+                },
+                child: Text(
+                  '发送',
+                  style: TextStyle(fontSize: 16.sp, color: Colors.white),
+                ),
+                color: const Color(AppColor.LoginInputNormalColor),
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              )
+            else
               GestureDetector(
                 child: UImage(
-                  _showEmoji
-                      ? 'asset://assets/images/ic_chat_keyboard.png'
-                      : 'asset://assets/images/ic_chat_emoji.png',
+                  'asset://assets/images/ic_chat_add.png',
                   width: 32,
                   height: 32,
                 ),
                 onTap: () {
                   setState(() {
                     _messageInputFocus.unfocus();
-                    _showMore = false;
-                    _showEmoji = !_showEmoji;
+                    _showEmoji = false;
+                    _showMore = !_showMore;
                   });
                 },
               ),
-              const SizedBox(width: 6),
-              if (_showSendButton)
-                FlatButton(
-                  onPressed: () {
-                    final String text = _messageEditingController.text;
-                    if (text.isNotEmpty) {
-                      _messageEditingController.text = '';
-                      widget.viewModel.sendText(text);
-                    }
+          ],
+        ),
+        if (_showEmoji)
+          SizedBox(
+            height: 196,
+            child: GridView.extent(
+              padding: const EdgeInsets.only(top: 14),
+              maxCrossAxisExtent: 30,
+              mainAxisSpacing: 6,
+              crossAxisSpacing: 6,
+              physics: const BouncingScrollPhysics(),
+              children: List.generate(
+                emoji.length,
+                (index) => GestureDetector(
+                  onTap: () {
+                    final c = _messageEditingController;
+                    c.text += emoji[index];
+                    c.selection =
+                        TextSelection.collapsed(offset: c.text.length);
                   },
                   child: Text(
-                    '发送',
-                    style: TextStyle(fontSize: 16.sp, color: Colors.white),
+                    emoji[index],
+                    style: TextStyle(fontSize: 24),
                   ),
-                  color: const Color(AppColor.LoginInputNormalColor),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                )
-              else
-                GestureDetector(
-                  child: UImage(
-                    'asset://assets/images/ic_chat_add.png',
-                    width: 32,
-                    height: 32,
-                  ),
-                  onTap: () {
-                    setState(() {
-                      _messageInputFocus.unfocus();
-                      _showEmoji = false;
-                      _showMore = !_showMore;
-                    });
-                  },
                 ),
-            ],
+              ),
+            ),
           ),
-          if (_showEmoji)
-            SizedBox(
-              height: 196,
-              child: GridView.extent(
-                padding: const EdgeInsets.only(top: 14),
-                maxCrossAxisExtent: 30,
-                mainAxisSpacing: 6,
-                crossAxisSpacing: 6,
-                physics: const BouncingScrollPhysics(),
-                children: List.generate(
-                  emoji.length,
-                  (index) => GestureDetector(
-                    onTap: () {
-                      final c = _messageEditingController;
-                      c.text += emoji[index];
-                      c.selection =
-                          TextSelection.collapsed(offset: c.text.length);
-                    },
-                    child: Text(
-                      emoji[index],
-                      style: TextStyle(fontSize: 24),
-                    ),
+        if (_showMore)
+          SizedBox(
+            height: 150,
+            child: GridView.extent(
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+              maxCrossAxisExtent: 50,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              physics: const BouncingScrollPhysics(),
+              children: <Widget>[
+                GestureDetector(
+                  onTap: _sendImages,
+                  child: UImage(
+                    'asset://assets/images/ic_gallery.png',
+                    width: 50,
+                    height: 50,
                   ),
-                ),
-              ),
+                )
+              ],
             ),
-          if (_showMore)
-            SizedBox(
-              height: 150,
-              child: GridView.extent(
-                padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
-                maxCrossAxisExtent: 50,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                physics: const BouncingScrollPhysics(),
-                children: <Widget>[
-                  GestureDetector(
-                    onTap: _sendImages,
-                    child: UImage(
-                      'asset://assets/images/ic_gallery.png',
-                      width: 50,
-                      height: 50,
-                    ),
-                  )
-                ],
-              ),
+          ),
+      ],
+    );
+    return Container(
+      color: const Color(AppColor.ChatInputSectionBgColor),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      child: widget.viewModel.type == ConversationType.friend
+          ? input
+          : JoinedGroupInfo(
+              groupId: widget.viewModel.id,
+              builder: (BuildContext context, Group group) {
+                return group.isForbidden
+                    ? Center(
+                        child: Text(
+                          '禁言中',
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                      )
+                    : input;
+              },
             ),
-        ],
-      ),
     );
   }
 }
@@ -359,7 +381,7 @@ abstract class _MessageBoxState extends State<_MessageBox> {
 
   @override
   Widget build(BuildContext context) {
-    return UserInfo(
+    return FriendUserInfo(
       userId: widget.message.fromUserId,
       builder: (BuildContext context, User user) {
         return IStreamBuilder(
@@ -460,16 +482,23 @@ abstract class _MessageBoxState extends State<_MessageBox> {
 class _ImageMessageBoxState extends _MessageBoxState {
   @override
   Widget buildBox(BuildContext context) {
-    final imageProvider = widget.message.data != null
-        ? ExtendedMemoryImageProvider(widget.message.data)
-        : ExtendedNetworkImageProvider(
-            staticFileBaseUrl + widget.message.msg,
-            cache: !kIsWeb,
-          );
-    //TODO:loading占位以及加载完后判断列表atBottom就跳转到尾部
-    final Widget image = ExtendedImage(
+    ImageProvider imageProvider;
+    try {
       // TODO: 疑似dart2.8.0-dev的bug，as下就行，不然编译报错
-      image: imageProvider as ImageProvider,
+      imageProvider = (widget.message.data != null
+          ? ExtendedMemoryImageProvider(widget.message.data)
+          : ExtendedNetworkImageProvider(
+              // 同步解析就行
+              staticFileBaseUrl + jsonDecode(widget.message.msg)['src'],
+              cache: !kIsWeb,
+            )) as ImageProvider;
+    } catch (_) {
+      //TODO:加载失败图片+extendedImage loadState失败后也设置同样的图片
+      imageProvider =
+          ExtendedAssetImageProvider('assets/images/chat_image_error.png');
+    }
+    final Widget image = ExtendedImage(
+      image: imageProvider,
       filterQuality: FilterQuality.low,
       enableMemoryCache: true,
       clearMemoryCacheIfFailed: true,
@@ -730,10 +759,11 @@ class _MessagesListViewState extends State<_MessagesListView> {
         physics: const ClampingScrollPhysics(),
         viewportBuilder: (BuildContext context, ViewportOffset offset) {
           return IStreamBuilder(
-            stream: Rx.merge({
+            stream: Rx.combineLatest2(
               widget.viewModel.newMessages,
               widget.viewModel.historicalMessages,
-            }),
+              (a, b) => null,
+            ),
             builder: (BuildContext context, _) {
               final historicalMessages =
                   widget.viewModel.historicalMessages.value;

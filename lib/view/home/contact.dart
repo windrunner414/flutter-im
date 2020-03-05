@@ -1,105 +1,5 @@
 part of 'home.dart';
 
-const double CONTACT_ITEM_DESIGN_HEIGHT = 56;
-const double GROUP_TITLE_DESIGN_HEIGHT = 24;
-
-class _ContactItem extends StatefulWidget {
-  const _ContactItem({
-    @required this.avatar,
-    @required this.title,
-    this.groupTitle,
-    @required this.onPressed,
-  });
-
-  final String avatar;
-  final String title;
-  final String groupTitle;
-  final VoidCallback onPressed;
-
-  @override
-  _ContactItemState createState() => _ContactItemState();
-
-  static double height(bool hasGroupTitle) =>
-      CONTACT_ITEM_DESIGN_HEIGHT +
-      (hasGroupTitle ? GROUP_TITLE_DESIGN_HEIGHT : 0);
-}
-
-class _ContactItemState extends State<_ContactItem> {
-  bool _active = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final Widget item = GestureDetector(
-      onTapDown: (_) {
-        setState(() => _active = true);
-      },
-      onTapUp: (_) {
-        setState(() => _active = false);
-      },
-      onTapCancel: () {
-        setState(() => _active = false);
-      },
-      onTap: widget.onPressed,
-      onLongPress: () {},
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        height: CONTACT_ITEM_DESIGN_HEIGHT,
-        color: _active
-            ? const Color(AppColor.ContactItemActiveBgColor)
-            : Colors.white,
-        child: Container(
-          decoration: const BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                width: 0.5,
-                color: Color(AppColor.DividerColor),
-              ),
-            ),
-          ),
-          child: Row(
-            children: <Widget>[
-              UImage(
-                widget.avatar,
-                placeholderBuilder: (BuildContext context) => const UImage(
-                  'asset://assets/images/default_avatar.png',
-                  width: 36,
-                  height: 36,
-                ),
-                width: 36,
-                height: 36,
-              ),
-              const SizedBox(width: 10),
-              Text(widget.title, style: const TextStyle(fontSize: 16)),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    return widget.groupTitle != null
-        ? Column(
-            children: <Widget>[
-              Container(
-                height: GROUP_TITLE_DESIGN_HEIGHT,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                color: const Color(AppColor.ContactGroupTitleBgColor),
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  widget.groupTitle,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Color(AppColor.ContactGroupTitleColor),
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-              item,
-            ],
-          )
-        : item;
-  }
-}
-
 class _ContactPage extends BaseView<ContactViewModel> {
   const _ContactPage({this.friendApplicationNum});
 
@@ -156,7 +56,7 @@ class _ContactPageState extends BaseViewState<ContactViewModel, _ContactPage>
       _groups[0]: 0,
     };
 
-    double totalPos = _functionButtons.length * _ContactItem.height(false);
+    double totalPos = _functionButtons.length * ContactItem.height(false);
     for (int i = 0; i < contacts.length; ++i) {
       bool hasGroupTitle = true;
       if (i > 0 &&
@@ -167,7 +67,7 @@ class _ContactPageState extends BaseViewState<ContactViewModel, _ContactPage>
       if (hasGroupTitle) {
         _groupTitlePos[contacts[i].nameIndex] = totalPos;
       }
-      totalPos += _ContactItem.height(hasGroupTitle);
+      totalPos += ContactItem.height(hasGroupTitle);
     }
   }
 
@@ -214,7 +114,7 @@ class _ContactPageState extends BaseViewState<ContactViewModel, _ContactPage>
         Stack(
           alignment: Alignment.center,
           children: <Widget>[
-            _ContactItem(
+            ContactItem(
               avatar: 'asset://assets/images/ic_new_friend.png',
               title: '新的朋友',
               onPressed: () => router.push('/friendApplications'),
@@ -242,12 +142,10 @@ class _ContactPageState extends BaseViewState<ContactViewModel, _ContactPage>
             ),
           ],
         ),
-        _ContactItem(
+        ContactItem(
           avatar: 'asset://assets/images/ic_group_chat.png',
-          title: '群聊',
-          onPressed: () {
-            print('点击了群聊');
-          },
+          title: '我的群聊',
+          onPressed: () => router.push('/joinedGroupList'),
         ),
       ];
 
@@ -291,7 +189,7 @@ class _ContactPageState extends BaseViewState<ContactViewModel, _ContactPage>
                       snapshot.data[contactIndex - 1].nameIndex) {
                 hasGroupTitle = false;
               }
-              return _ContactItem(
+              return ContactItem(
                 avatar: contact.avatar,
                 title: contact.name,
                 groupTitle: hasGroupTitle ? contact.nameIndex : null,

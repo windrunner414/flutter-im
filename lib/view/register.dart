@@ -114,15 +114,15 @@ class RegisterPage extends BaseView<RegisterViewModel> {
             ),
             SizedBox(height: 30.height),
             FlatButton(
-              onPressed: () => viewModel
-                  .register()
-                  .then((_) {
-                    showToast('注册成功');
-                    router.pop();
-                  })
-                  .catchAll((Object error) => showToast(error.toString()),
-                      test: exceptCancelException)
-                  .showLoadingUntilComplete(),
+              onPressed: () => viewModel.register().then((_) {
+                showToast('注册成功');
+                router.pop();
+              }).catchAll(
+                (Object error) {
+                  showToast(error.toString());
+                },
+                test: exceptCancelException,
+              ).showLoadingUntilComplete(),
               color: const Color(AppColor.LoginInputActiveColor),
               padding: EdgeInsets.symmetric(vertical: 10.height),
               child: Center(

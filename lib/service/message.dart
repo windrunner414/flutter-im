@@ -1,4 +1,5 @@
 import 'package:chopper/chopper.dart';
+import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/model/api_response.dart';
 import 'package:wechat/model/conversation.dart';
@@ -20,24 +21,36 @@ abstract class MessageService extends BaseService {
 
   @Get(path: '/UserMessage/getAll')
   Future<Response<ApiResponse<MessageList>>> getHistoricalUserMessages({
-    @Query() int friendUserId,
+    @Query() @required int friendUserId,
     @Query() int lastMsgId,
   });
 
-  PublishSubject<WebSocketMessage<UserMessageArg>> receiveUserMessage(
-      [int fromUserId]) {
-    final subject = webSocketClient.receiveMany<UserMessageArg>(op: 1101);
-    if (fromUserId != null) {
-      return subject.pipeAndFilter((WebSocketMessage<UserMessageArg> value) =>
-          value.args.fromUserId == fromUserId);
+  PublishSubject<WebSocketMessage<MessageArg>> receiveUserMessage(
+      [int userId]) {
+    PublishSubject<WebSocketMessage<MessageArg>> subject =
+        webSocketClient.receiveMany<MessageArg>(op: 1101);
+    if (userId != null) {
+      subject = subject.pipeAndFilter((WebSocketMessage<MessageArg> value) =>
+          value.args.fromUserId == userId);
+    }
+    return subject;
+  }
+
+  PublishSubject<WebSocketMessage<MessageArg>> receiveGroupMessage(
+      [int groupId]) {
+    PublishSubject<WebSocketMessage<MessageArg>> subject =
+        webSocketClient.receiveMany<MessageArg>(op: 2101);
+    if (groupId != null) {
+      subject = subject.pipeAndFilter((WebSocketMessage<MessageArg> value) =>
+          value.args.groupId == groupId);
     }
     return subject;
   }
 
   Future<WebSocketMessage<dynamic>> notifyRead({
-    int fromId,
-    int msgId,
-    int msgType,
+    @required int fromId,
+    @required int msgId,
+    @required int msgType,
   }) {
     return webSocketClient.sendAndReceive(WebSocketMessage(
       op: 4002,
@@ -45,9 +58,30 @@ abstract class MessageService extends BaseService {
     ));
   }
 
-  Future<WebSocketMessage<dynamic>> sendUserMessage(
-      {int toUserId, String msg, MessageType msgType}) {
+  Future<WebSocketMessage<dynamic>> sendUserMessage({
+    @required int toUserId,
+    @required String msg,
+    @required MessageType msgType,
+  }) {
     return webSocketClient.sendAndReceive(WebSocketMessage(
-        op: 1001, args: {"userId": toUserId}, msg: msg, msgType: msgType));
+      op: 1001,
+      args: {"userId": toUserId},
+      msg: msg,
+      msgType: msgType,
+    ));
+  }
+
+  Future<WebSocketMessage<dynamic>> sendGroupMessage({
+    int toUserId,
+    @required int groupId,
+    @required String msg,
+    @required MessageType msgType,
+  }) {
+    return webSocketClient.sendAndReceive(WebSocketMessage(
+      op: 2001,
+      args: {"groupId": groupId, "userId": toUserId},
+      msg: msg,
+      msgType: msgType,
+    ));
   }
 }

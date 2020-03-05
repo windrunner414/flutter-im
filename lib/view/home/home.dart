@@ -9,6 +9,7 @@ import 'package:wechat/common/constant.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/contacts.dart';
 import 'package:wechat/model/conversation.dart';
+import 'package:wechat/model/message.dart';
 import 'package:wechat/model/user.dart';
 import 'package:wechat/util/router.dart';
 import 'package:wechat/util/screen.dart';
@@ -18,10 +19,11 @@ import 'package:wechat/viewmodel/conversation.dart';
 import 'package:wechat/viewmodel/home.dart';
 import 'package:wechat/viewmodel/profile.dart';
 import 'package:wechat/widget/app_bar.dart';
+import 'package:wechat/widget/contact_item.dart';
+import 'package:wechat/widget/friend_user_info.dart';
 import 'package:wechat/widget/full_width_button.dart';
 import 'package:wechat/widget/image.dart';
 import 'package:wechat/widget/stream_builder.dart';
-import 'package:wechat/widget/user_info.dart';
 
 part 'contact.dart';
 part 'conversation.dart';
@@ -98,6 +100,9 @@ class HomePage extends BaseView<HomeViewModel> {
                 switch (selected) {
                   case _PopupMenuItems.addFriend:
                     router.push('/addFriend');
+                    break;
+                  case _PopupMenuItems.createGroup:
+                    router.push('/createGroup');
                     break;
                   default:
                 }

@@ -1,11 +1,9 @@
 part of 'home.dart';
 
 class _ConversationItem extends StatefulWidget {
-  const _ConversationItem(this._conversation, this.readCallback)
-      : assert(_conversation != null);
+  const _ConversationItem(this._conversation) : assert(_conversation != null);
 
   final Conversation _conversation;
-  final VoidCallback readCallback;
 
   @override
   _ConversationItemState createState() => _ConversationItemState();
@@ -14,9 +12,26 @@ class _ConversationItem extends StatefulWidget {
 class _ConversationItemState extends State<_ConversationItem> {
   bool _active = false;
 
+  String get _messageDescription {
+    switch (widget._conversation.msgType) {
+      case MessageType.text:
+        return widget._conversation.msg;
+      case MessageType.audio:
+        return '[语音]';
+      case MessageType.image:
+        return '[图片]';
+      case MessageType.video:
+        return '[视频]';
+      case MessageType.system:
+        return '[系统] ${widget._conversation.msg}';
+      default:
+        return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return UserInfo(
+    return FriendUserInfo(
       userId: widget._conversation.fromId,
       builder: (BuildContext context, User user) {
         final Widget avatar = UImage(
@@ -100,12 +115,11 @@ class _ConversationItemState extends State<_ConversationItem> {
           onTapCancel: () {
             setState(() => _active = false);
           },
-          onTap: () async {
-            await router.push('/chat', arguments: <String, String>{
+          onTap: () {
+            router.push('/chat', arguments: <String, String>{
               'id': user.userId.toString(),
               'type': 'friend',
             });
-            widget.readCallback();
           },
           onLongPress: () {},
           child: Container(
@@ -137,7 +151,7 @@ class _ConversationItemState extends State<_ConversationItem> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        widget._conversation.msg,
+                        _messageDescription,
                         style: TextStyle(
                           fontSize: 12.sp,
                           color: const Color(AppColor.DescTextColor),
@@ -183,20 +197,7 @@ class _ConversationPage extends BaseView<ConversationViewModel> {
         return ListView.builder(
           physics: const BouncingScrollPhysics(),
           itemBuilder: (BuildContext context, int index) {
-            final c = snapshot.data[index];
-            return _ConversationItem(
-              c,
-              () {
-                final List<Conversation> list = viewModel.conversations.value;
-                for (int i = 0; i < list.length; ++i) {
-                  if (list[i].fromId == c.fromId) {
-                    list[i] = list[i].copyWith(unreadMsgNum: 0);
-                    viewModel.conversations.value = list;
-                    break;
-                  }
-                }
-              },
-            );
+            return _ConversationItem(snapshot.data[index]);
           },
           itemCount: snapshot.data?.length ?? 0,
           addAutomaticKeepAlives: false,

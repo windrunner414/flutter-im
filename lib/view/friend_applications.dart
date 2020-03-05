@@ -12,29 +12,26 @@ import 'package:wechat/widget/app_bar.dart';
 import 'package:wechat/widget/image.dart';
 import 'package:wechat/widget/stream_builder.dart';
 
-class FriendApplications extends BaseView<FriendApplicationsViewModel> {
-  const FriendApplications();
-
+class FriendApplicationsPage extends BaseView<FriendApplicationsViewModel> {
   @override
-  _FriendApplicationsState createState() => _FriendApplicationsState();
+  _FriendApplicationsPageState createState() => _FriendApplicationsPageState();
 
   @override
   Widget build(BuildContext context, FriendApplicationsViewModel viewModel) =>
       null;
 }
 
-class _FriendApplicationsState
-    extends BaseViewState<FriendApplicationsViewModel, FriendApplications> {
+class _FriendApplicationsPageState
+    extends BaseViewState<FriendApplicationsViewModel, FriendApplicationsPage> {
   @override
   void initState() {
     super.initState();
-    viewModel
-        .loadMore()
-        .catchAll(
-          (Object error) => showToast(error.toString()),
-          test: exceptCancelException,
-        )
-        .showLoadingUntilComplete();
+    viewModel.loadMore().catchAll(
+      (Object error) {
+        showToast(error.toString());
+      },
+      test: exceptCancelException,
+    ).showLoadingUntilComplete();
   }
 
   @override
@@ -63,9 +60,11 @@ class _FriendApplicationsState
                       enableInfiniteLoad: false,
                     ),
                     onLoad: () => viewModel.loadMore().catchAll(
-                          (Object error) => showToast(error.toString()),
-                          test: exceptCancelException,
-                        ),
+                      (Object error) {
+                        showToast(error.toString());
+                      },
+                      test: exceptCancelException,
+                    ),
                     slivers: <Widget>[
                       SliverFixedExtentList(
                         itemExtent: 56,
@@ -134,14 +133,15 @@ class _FriendApplicationsState
                     FlatButton(
                       onPressed: () => viewModel
                           .verify(
-                            index: index,
-                            state: FriendApplicationState.accepted,
-                          )
+                        index: index,
+                        state: FriendApplicationState.accepted,
+                      )
                           .catchAll(
-                            (Object error) => showToast(error.toString()),
-                            test: exceptCancelException,
-                          )
-                          .showLoadingUntilComplete(),
+                        (Object error) {
+                          showToast(error.toString());
+                        },
+                        test: exceptCancelException,
+                      ).showLoadingUntilComplete(),
                       color: const Color(AppColor.LoginInputNormalColor),
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       child: Text(
@@ -156,14 +156,15 @@ class _FriendApplicationsState
                     OutlineButton(
                       onPressed: () => viewModel
                           .verify(
-                            index: index,
-                            state: FriendApplicationState.rejected,
-                          )
+                        index: index,
+                        state: FriendApplicationState.rejected,
+                      )
                           .catchAll(
-                            (Object error) => showToast(error.toString()),
-                            test: exceptCancelException,
-                          )
-                          .showLoadingUntilComplete(),
+                        (Object error) {
+                          showToast(error.toString());
+                        },
+                        test: exceptCancelException,
+                      ).showLoadingUntilComplete(),
                       color: Colors.white70,
                       borderSide: const BorderSide(
                         color: Color(AppColor.LoginInputNormalColor),

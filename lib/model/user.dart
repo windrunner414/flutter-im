@@ -14,13 +14,14 @@ enum UserState {
 @JsonSerializable()
 @CopyWith()
 class User extends BaseModel {
-  const User(
-      {this.userAccount,
-      this.userName,
-      this.userId,
-      this.userAvatar,
-      this.state,
-      this.userSession});
+  const User({
+    this.userAccount,
+    this.userName,
+    this.userId,
+    this.userAvatar,
+    this.state,
+    this.userSession,
+  });
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
   Map<String, dynamic> toJson() => _$UserToJson(this);

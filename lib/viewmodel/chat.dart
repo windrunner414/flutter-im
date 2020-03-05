@@ -8,10 +8,9 @@ import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/conversation.dart';
 import 'package:wechat/model/message.dart';
-import 'package:wechat/model/websocket_args.dart';
-import 'package:wechat/model/websocket_message.dart';
 import 'package:wechat/repository/file.dart';
 import 'package:wechat/repository/message.dart';
+import 'package:wechat/util/worker/worker.dart';
 import 'package:wechat/viewmodel/base.dart';
 
 class ChatViewModel extends BaseViewModel {
@@ -19,12 +18,13 @@ class ChatViewModel extends BaseViewModel {
 
   final int id;
   final ConversationType type;
+
   final BehaviorSubject<List<Message>> historicalMessages =
       BehaviorSubject<List<Message>>.seeded(<Message>[]);
   final BehaviorSubject<List<Message>> newMessages =
       BehaviorSubject<List<Message>>.seeded(<Message>[]);
 
-  PublishSubject<WebSocketMessage<UserMessageArg>> _messages;
+  PublishSubject<Message> _messages;
   final MessageRepository _messageRepository = inject();
   final FileRepository _fileRepository = inject();
 
@@ -59,12 +59,20 @@ class ChatViewModel extends BaseViewModel {
     final MessageList list = await _messageRepository
         .getHistoricalUserMessages(friendUserId: id, lastMsgId: _lastMsgId)
         .bindTo(this, 'loadHistoricalMessages');
-    _lastMsgId = list.list.last.msgId;
+    _lastMsgId = list.list.last.msgId - 1;
     _addMessages(first ? list.list.reversed : list.list, isHistorical: !first);
+    if (first) {
+      _notifyRead(list.list.first.msgId);
+    }
   }
 
   Future<void> _sendMessage(Message message, [bool isReSend = false]) async {
     try {
+      if (type == ConversationType.group) {
+        message = message.copyWith(groupId: id);
+      } else {
+        message = message.copyWith(toUserId: id);
+      }
       if (message.sendState != null && !message.sendState.isClosed) {
         message.sendState.close();
       }
@@ -74,26 +82,27 @@ class ChatViewModel extends BaseViewModel {
       }
       if (message.msg.isEmpty) {
         if (message.msgType == MessageType.image) {
-          message.msg = await _fileRepository
-              .uploadFile(
-                MultipartFile.fromBytes(
-                  'file',
-                  message.data,
-                  filename: 'image.jpg',
-                  contentType: MediaType('image', 'jpeg'),
-                ),
-              )
-              .bindTo(this);
+          message.msg = await worker.jsonEncode({
+            "src": await _fileRepository
+                .uploadImage(
+                  MultipartFile.fromBytes(
+                    'file',
+                    message.data,
+                    filename: 'image.jpg',
+                    contentType: MediaType('image', 'jpeg'),
+                  ),
+                )
+                .bindTo(this)
+          });
         }
       }
-      if (type == ConversationType.friend) {
-        await _messageRepository
-            .sendUserMessage(
-                toUserId: id, msg: message.msg, msgType: message.msgType)
-            .bindTo(this);
-      } else {}
+
+      /// 不bindTo，一直等到返回结果，如果成功了就updateConversation
+      await _messageRepository.sendMessage(message);
+
       message.sendState.value = SendState.success;
       message.sendState.close();
+      _messageRepository.updateConversation(message, addUnreadMsgNum: false);
     } catch (_) {
       message.sendState.value = SendState.failed;
       message.sendState.close();
@@ -133,24 +142,30 @@ class ChatViewModel extends BaseViewModel {
   void init() {
     super.init();
     if (type == ConversationType.friend) {
-      _messages = _messageRepository.receiveUserMessage(id);
+      _messages = _messageRepository.receiveMessage(userId: id);
     } else {
-      _messages = _messageRepository.receiveUserMessage(id);
+      _messages = _messageRepository.receiveMessage(groupId: id);
     }
     _messages.listen((value) {
-      _addMessage(Message(
-        fromUserId: value.args.fromUserId,
-        msgId: value.args.msgId,
-        msg: value.msg,
-        msgType: value.msgType,
-      ));
-      _notifyRead(value.args.msgId);
+      _addMessage(value);
+      _notifyRead(value.msgId);
     });
   }
 
   @override
   void dispose() {
     super.dispose();
+
+    final conversationsSubject = _messageRepository.getConversationList();
+    final List<Conversation> conversations = conversationsSubject.value;
+    final int index =
+        _messageRepository.findInConversationList(conversations, id, type);
+
+    if (index != -1) {
+      conversations[index] = conversations[index].copyWith(unreadMsgNum: 0);
+      conversationsSubject.value = conversations;
+    }
+
     newMessages.close();
     historicalMessages.close();
     _messages.close();

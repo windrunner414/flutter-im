@@ -3,6 +3,7 @@ import 'package:wechat/model/conversation.dart';
 import 'package:wechat/repository/auth.dart';
 import 'package:wechat/repository/common.dart';
 import 'package:wechat/repository/file.dart';
+import 'package:wechat/repository/group.dart';
 import 'package:wechat/repository/message.dart';
 import 'package:wechat/repository/user.dart';
 import 'package:wechat/repository/user_friend.dart';
@@ -11,6 +12,7 @@ import 'package:wechat/service/auth.dart';
 import 'package:wechat/service/base.dart';
 import 'package:wechat/service/common.dart';
 import 'package:wechat/service/file.dart';
+import 'package:wechat/service/group.dart';
 import 'package:wechat/service/interceptors/auth.dart';
 import 'package:wechat/service/interceptors/base.dart';
 import 'package:wechat/service/interceptors/restrict_concurrent.dart';
@@ -23,6 +25,7 @@ import 'package:wechat/viewmodel/add_friend.dart';
 import 'package:wechat/viewmodel/chat.dart';
 import 'package:wechat/viewmodel/contact.dart';
 import 'package:wechat/viewmodel/conversation.dart';
+import 'package:wechat/viewmodel/create_group.dart';
 import 'package:wechat/viewmodel/friend_applications.dart';
 import 'package:wechat/viewmodel/home.dart';
 import 'package:wechat/viewmodel/login.dart';
@@ -47,6 +50,7 @@ final Module viewModelModule = Module(<DartIn<dynamic>>[
   factory<FriendApplicationsViewModel>(
       ({params}) => FriendApplicationsViewModel()),
   factory<ConversationViewModel>(({params}) => ConversationViewModel()),
+  factory<CreateGroupViewModel>(({params}) => CreateGroupViewModel()),
 ]);
 
 final Module repositoryModule = Module(<DartIn<dynamic>>[
@@ -57,6 +61,7 @@ final Module repositoryModule = Module(<DartIn<dynamic>>[
   single<MessageRepository>(({params}) => MessageRepository()),
   single<UserFriendRepository>(({params}) => UserFriendRepository()),
   single<FileRepository>(({params}) => FileRepository()),
+  single<GroupRepository>(({params}) => GroupRepository()),
 ]);
 
 final Module serviceModule = Module(<DartIn<dynamic>>[
@@ -75,6 +80,7 @@ final Module serviceModule = Module(<DartIn<dynamic>>[
   single<MessageService>(({params}) => MessageService.create(httpClient)),
   single<UserFriendService>(({params}) => UserFriendService.create(httpClient)),
   single<FileService>(({params}) => FileService.create(httpClient)),
+  single<GroupService>(({params}) => GroupService.create(httpClient)),
 ]);
 
 final List<Module> appModules = <Module>[

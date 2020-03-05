@@ -10,6 +10,7 @@ import 'package:wechat/model/friend_application.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/model/websocket_message.dart';
 import 'package:wechat/repository/auth.dart';
+import 'package:wechat/repository/group.dart';
 import 'package:wechat/repository/message.dart';
 import 'package:wechat/repository/user_friend.dart';
 import 'package:wechat/repository/user_friend_apply.dart';
@@ -22,6 +23,7 @@ class HomeViewModel extends BaseViewModel {
   final UserFriendApplyRepository _userFriendApplyRepository = inject();
   final UserFriendRepository _userFriendRepository = inject();
   final MessageRepository _messageRepository = inject();
+  final GroupRepository _groupRepository = inject();
 
   final BehaviorSubject<int> currentIndex = BehaviorSubject<int>.seeded(0);
   final PageController pageController = PageController(initialPage: 0);
@@ -71,6 +73,7 @@ class HomeViewModel extends BaseViewModel {
     _refreshUserProfile();
     _refreshFriendApplyNum();
     _refreshFriendList();
+    _refreshJoinedGroupList();
     _timers.add(Timer.periodic(
         const Duration(minutes: 5), (_) => _refreshUserProfile()));
     _timers.add(Timer.periodic(
@@ -78,6 +81,8 @@ class HomeViewModel extends BaseViewModel {
     _timers.add(Timer.periodic(const Duration(seconds: 15), (_) => _ping()));
     _timers.add(Timer.periodic(
         const Duration(seconds: 5), (_) => _refreshFriendList()));
+    _timers.add(Timer.periodic(
+        const Duration(seconds: 5), (_) => _refreshJoinedGroupList()));
   }
 
   void _stopTimers() {
@@ -86,6 +91,9 @@ class HomeViewModel extends BaseViewModel {
       return true;
     });
   }
+
+  void _refreshJoinedGroupList() =>
+      _groupRepository.getJoined().catchError((Object error) {});
 
   void _refreshFriendList() =>
       _userFriendRepository.getAll().catchError((Object error) {});

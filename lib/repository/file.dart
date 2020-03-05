@@ -6,6 +6,9 @@ import 'package:wechat/service/file.dart';
 class FileRepository extends BaseRepository {
   final FileService _fileService = inject();
 
-  Future<String> uploadFile(MultipartFile file) async =>
+  Future<String> uploadImage(MultipartFile file) async =>
       (await _fileService.uploadImage(file)).body.result;
+
+  Future<String> uploadAvatar(MultipartFile file) async =>
+      (await _fileService.uploadAvatar(file)).body.result;
 }

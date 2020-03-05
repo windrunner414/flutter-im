@@ -41,19 +41,15 @@ class MessageRepository extends BaseRepository {
       _conversations.value = <Conversation>[];
     }
 
-    final PublishSubject<WebSocketMessage<UserMessageArg>> userMessages =
-        _messageService.receiveUserMessage();
-
-    userMessages.listen((WebSocketMessage<UserMessageArg> message) {
-      _onReceiveUserMessage(message);
-    });
+    final PublishSubject<Message> messages = receiveMessage();
+    messages.listen(updateConversation);
 
     _conversations.listen((value) async {
       await StorageUtil.setString(
           conversationListStorageKey, await worker.jsonEncode(value));
     }, onDone: () {
-      if (!userMessages.isClosed) {
-        userMessages.close();
+      if (!messages.isClosed) {
+        messages.close();
       }
     });
   }
@@ -63,7 +59,11 @@ class MessageRepository extends BaseRepository {
     _conversations = BehaviorSubject();
   }
 
-  int _find(List<Conversation> list, int fromId, ConversationType type) {
+  int findInConversationList(
+    List<Conversation> list,
+    int fromId,
+    ConversationType type,
+  ) {
     int findIndex = -1;
     for (int i = 0; i < list.length; ++i) {
       if (list[i].fromId == fromId && list[i].type == type) {
@@ -74,17 +74,19 @@ class MessageRepository extends BaseRepository {
     return findIndex;
   }
 
-  void _onReceiveUserMessage(WebSocketMessage<UserMessageArg> message) {
+  void updateConversation(Message message, {bool addUnreadMsgNum = true}) {
     final List<Conversation> list = _conversations.value;
-    int findIndex =
-        _find(list, message.args.fromUserId, ConversationType.friend);
+    final ConversationType type = message.groupId != null
+        ? ConversationType.group
+        : ConversationType.friend;
+    int findIndex = findInConversationList(list, message.conversationId, type);
     if (findIndex == -1) {
       final Conversation conversation = Conversation(
-        fromId: message.args.fromUserId,
-        type: ConversationType.friend,
+        fromId: message.conversationId,
+        type: type,
         msg: message.msg,
-        updateAt: DateTime.now().millisecondsSinceEpoch,
-        unreadMsgNum: 1,
+        updateAt: DateTime.now().toUtc().millisecondsSinceEpoch,
+        unreadMsgNum: addUnreadMsgNum ? 1 : 0,
         msgType: message.msgType,
       );
       list.insert(0, conversation);
@@ -97,8 +99,8 @@ class MessageRepository extends BaseRepository {
         0,
         conversation.copyWith(
           msg: message.msg,
-          updateAt: DateTime.now().millisecondsSinceEpoch,
-          unreadMsgNum: conversation.unreadMsgNum + 1,
+          updateAt: DateTime.now().toUtc().millisecondsSinceEpoch,
+          unreadMsgNum: addUnreadMsgNum ? conversation.unreadMsgNum + 1 : null,
           msgType: message.msgType,
         ),
       );
@@ -111,7 +113,8 @@ class MessageRepository extends BaseRepository {
     final List<Conversation> conversations =
         (await _messageService.getUnReadConversationList()).body.result.list;
     for (var conversation in conversations) {
-      int findIndex = _find(list, conversation.fromId, conversation.type);
+      int findIndex =
+          findInConversationList(list, conversation.fromId, conversation.type);
       if (findIndex == -1) {
         list.add(conversation);
       } else {
@@ -127,14 +130,90 @@ class MessageRepository extends BaseRepository {
 
   BehaviorSubject<List<Conversation>> getConversationList() => _conversations;
 
-  PublishSubject<WebSocketMessage<UserMessageArg>> receiveUserMessage(
-          [int fromUserId]) =>
-      _messageService.receiveUserMessage(fromUserId);
+  PublishSubject<Message> receiveMessage({int userId, int groupId}) {
+    assert(userId == null || groupId == null);
+    PublishSubject<Message> subject = PublishSubject();
+    PublishSubject<WebSocketMessage<MessageArg>> user;
+    PublishSubject<WebSocketMessage<MessageArg>> group;
+    if (userId == null && groupId == null) {
+      user = _messageService.receiveUserMessage();
+      group = _messageService.receiveGroupMessage();
+    } else if (userId != null) {
+      user = _messageService.receiveUserMessage(userId);
+    } else {
+      group = _messageService.receiveGroupMessage(groupId);
+    }
+    if (user != null) {
+      user.listen((value) {
+        if (!subject.isClosed) {
+          subject.add(Message(
+            fromUserId: value.args.fromUserId,
+            toUserId: value.args.toUserId,
+            groupId: value.args.groupId,
+            msgId: value.args.msgId,
+            msg: value.msg,
+            msgType: value.msgType,
+          ));
+        }
+      }, onError: (Object e) {
+        if (!subject.isClosed) {
+          subject.addError(e);
+        }
+      }, onDone: () {
+        if (!subject.isClosed) {
+          subject.close();
+        }
+      });
+    }
+    if (group != null) {
+      group.listen((value) {
+        if (!subject.isClosed) {
+          subject.add(Message(
+            fromUserId: value.args.fromUserId,
+            toUserId: value.args.toUserId,
+            groupId: value.args.groupId,
+            msgId: value.args.msgId,
+            msg: value.msg,
+            msgType: value.msgType,
+          ));
+        }
+      }, onError: (Object e) {
+        if (!subject.isClosed) {
+          subject.addError(e);
+        }
+      }, onDone: () {
+        if (!subject.isClosed) {
+          subject.close();
+        }
+      });
+    }
+    subject.done.then((_) {
+      if (user != null && !user.isClosed) {
+        user.close();
+      }
+      if (group != null && !group.isClosed) {
+        group.close();
+      }
+    });
+    return subject;
+  }
 
-  Future<WebSocketMessage<dynamic>> sendUserMessage(
-          {int toUserId, String msg, MessageType msgType}) =>
-      _messageService.sendUserMessage(
-          toUserId: toUserId, msgType: msgType, msg: msg);
+  Future<WebSocketMessage<dynamic>> sendMessage(Message message) {
+    if (message.groupId == null) {
+      return _messageService.sendUserMessage(
+        toUserId: message.toUserId,
+        msgType: message.msgType,
+        msg: message.msg,
+      );
+    } else {
+      return _messageService.sendGroupMessage(
+        groupId: message.groupId,
+        msg: message.msg,
+        msgType: message.msgType,
+        toUserId: message.toUserId,
+      );
+    }
+  }
 
   Future<WebSocketMessage<dynamic>> notifyRead(
           {int fromId, int msgId, ConversationType type}) =>

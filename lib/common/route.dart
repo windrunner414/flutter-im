@@ -6,8 +6,10 @@ import 'package:wechat/util/router.dart';
 import 'package:wechat/view/add_friend.dart';
 import 'package:wechat/view/business_card.dart';
 import 'package:wechat/view/chat.dart';
+import 'package:wechat/view/create_group.dart';
 import 'package:wechat/view/friend_applications.dart';
 import 'package:wechat/view/home/home.dart';
+import 'package:wechat/view/joined_group_list.dart';
 import 'package:wechat/view/login.dart';
 import 'package:wechat/view/need_login.dart';
 import 'package:wechat/view/register.dart';
@@ -78,6 +80,9 @@ final Set<AppRouteSetting> appRoutes = <AppRouteSetting>{
       path: '/businessCard', handler: (_, __) => BusinessCardPage()),
   AppRouteSetting(
     path: '/friendApplications',
-    handler: (_, __) => const FriendApplications(),
+    handler: (_, __) => FriendApplicationsPage(),
   ),
+  AppRouteSetting(path: '/createGroup', handler: (_, __) => CreateGroupPage()),
+  AppRouteSetting(
+      path: '/joinedGroupList', handler: (_, __) => JoinedGroupListPage())
 };

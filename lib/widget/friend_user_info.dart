@@ -5,19 +5,19 @@ import 'package:wechat/widget/stream_builder.dart';
 
 typedef UserInfoBuilder = Widget Function(BuildContext context, User user);
 
-class UserInfo extends StatefulWidget {
-  const UserInfo({@required this.userId, @required this.builder});
+class FriendUserInfo extends StatefulWidget {
+  const FriendUserInfo({@required this.userId, @required this.builder});
 
   final int userId;
   final UserInfoBuilder builder;
 
   @override
-  _UserInfoState createState() => _UserInfoState();
+  _FriendUserInfoState createState() => _FriendUserInfoState();
 }
 
-class _UserInfoState extends State<UserInfo> {
+class _FriendUserInfoState extends State<FriendUserInfo> {
   Widget _cached;
-  User _lastInfo = null;
+  User _lastInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class _UserInfoState extends State<UserInfo> {
       );
     } else {
       return IStreamBuilder(
-        stream: cachedUser,
+        stream: friendList,
         builder: _build,
       );
     }
@@ -48,7 +48,7 @@ class _UserInfoState extends State<UserInfo> {
           u1.userId == u2.userId;
     }
 
-    final u = findUserInfoInCache(widget.userId);
+    final u = findUserInfoInFriendList(widget.userId);
     if (_cached != null && equal(_lastInfo, u)) {
       return _cached;
     }
@@ -69,7 +69,7 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   @override
-  void didUpdateWidget(UserInfo oldWidget) {
+  void didUpdateWidget(FriendUserInfo oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.userId != widget.userId ||
         oldWidget.builder != widget.builder) {

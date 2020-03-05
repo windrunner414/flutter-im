@@ -73,11 +73,15 @@ class _DefaultConverter implements Converter, ErrorConverter {
       override: false,
     );
 
-    if (req.body is Map && req.body is! Map<String, String>) {
-      req = req.replace(
-          body: (req.body as Map<Object, Object>).map<String, String>(
-              (Object key, Object value) =>
-                  MapEntry<String, String>(key.toString(), value.toString())));
+    if (req.body is Map) {
+      Map<String, String> body = {};
+      for (MapEntry<Object, Object> entry
+          in (req.body as Map<Object, Object>).entries) {
+        if (entry.value != null) {
+          body[entry.key.toString()] = entry.value.toString();
+        }
+      }
+      req = req.replace(body: body);
     }
 
     return req;

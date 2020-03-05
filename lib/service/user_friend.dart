@@ -11,5 +11,9 @@ abstract class UserFriendService extends BaseService {
       _$UserFriendService(client);
 
   @Get(path: '/getAll')
-  Future<Response<ApiResponse<FriendList>>> getAll();
+  Future<Response<ApiResponse<FriendList>>> getAll({
+    @Query() int page,
+    @Query() int limit = 999999999,
+    @Query() String keyword,
+  });
 }

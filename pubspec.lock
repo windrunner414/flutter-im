@@ -133,14 +133,14 @@ packages:
       name: chopper
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.1+1"
+    version: "3.0.2"
   chopper_generator:
     dependency: "direct dev"
     description:
-      path: "C:\\Users\\windr\\AndroidStudioProjects\\chopper\\chopper_generator"
-      relative: false
-    source: path
-    version: "3.0.2+1"
+      name: chopper_generator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.4"
   code_builder:
     dependency: transitive
     description:
@@ -172,9 +172,11 @@ packages:
   copy_with_extension_gen:
     dependency: "direct dev"
     description:
-      path: "C:\\Users\\windr\\AndroidStudioProjects\\copy_with_extension\\copy_with_extension_gen"
-      relative: false
-    source: path
+      path: copy_with_extension_gen
+      ref: HEAD
+      resolved-ref: "3c52c1b5f9e9ed625b9104530ab314a1a62fe0ce"
+      url: "https://github.com/windrunner414/copy_with_extension"
+    source: git
     version: "1.0.7"
   crypto:
     dependency: transitive

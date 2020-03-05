@@ -17,4 +17,13 @@ abstract class FileService extends BaseService {
   Future<Response<ApiResponse<String>>> uploadImage(
     @PartFile() MultipartFile file,
   );
+
+  @Put(
+    path: '/User/UploadFile/image',
+    headers: {contentTypeKey: 'multipart/form-data'},
+  )
+  @multipart
+  Future<Response<ApiResponse<String>>> uploadAvatar(
+    @PartFile() MultipartFile file,
+  );
 }
