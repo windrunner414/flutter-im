@@ -9,6 +9,7 @@ import 'package:wechat/common/constant.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/contacts.dart';
 import 'package:wechat/model/conversation.dart';
+import 'package:wechat/model/group.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/model/user.dart';
 import 'package:wechat/util/router.dart';
@@ -23,6 +24,7 @@ import 'package:wechat/widget/contact_item.dart';
 import 'package:wechat/widget/friend_user_info.dart';
 import 'package:wechat/widget/full_width_button.dart';
 import 'package:wechat/widget/image.dart';
+import 'package:wechat/widget/joined_group_info.dart';
 import 'package:wechat/widget/stream_builder.dart';
 
 part 'contact.dart';

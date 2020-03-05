@@ -104,7 +104,6 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
     '😗',
     '😙',
     '😚',
-    '☺',
     '😇',
     '😐',
     '😑',
@@ -287,7 +286,7 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
             height: 196,
             child: GridView.extent(
               padding: const EdgeInsets.only(top: 14),
-              maxCrossAxisExtent: 30,
+              maxCrossAxisExtent: 32,
               mainAxisSpacing: 6,
               crossAxisSpacing: 6,
               physics: const BouncingScrollPhysics(),
@@ -302,7 +301,7 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
                   },
                   child: Text(
                     emoji[index],
-                    style: TextStyle(fontSize: 24),
+                    style: TextStyle(fontSize: 22),
                   ),
                 ),
               ),
@@ -633,7 +632,7 @@ class _TextMessageBoxState extends _MessageBoxState {
   @override
   Widget buildBox(BuildContext context) {
     final TextStyle textStyle = TextStyle(
-      fontSize: 16.sp,
+      fontSize: 18.sp,
       color: Colors.black87,
     );
     final Widget text = SelectableText.rich(

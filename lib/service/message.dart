@@ -25,6 +25,12 @@ abstract class MessageService extends BaseService {
     @Query() int lastMsgId,
   });
 
+  @Get(path: '/GroupMessage/getAll')
+  Future<Response<ApiResponse<MessageList>>> getHistoricalGroupMessages({
+    @Query() @required int groupId,
+    @Query() int lastMsgId,
+  });
+
   PublishSubject<WebSocketMessage<MessageArg>> receiveUserMessage(
       [int userId]) {
     PublishSubject<WebSocketMessage<MessageArg>> subject =

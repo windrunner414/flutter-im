@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <!--沉浸式状态栏，AppBar的颜色-->
+  <meta name="theme-color" content="#303030">
+  <!--UC和腾讯X5强制竖屏-->
+  <meta name="screen-orientation" content="portrait">
+  <meta name="x5-orientation" content="portrait">
+  <title>wechat</title>
+  <!--其他浏览器横屏禁止使用-->
+  <style>
+    #orientation-tip {
+      display: none;
+    }
+
+    @media screen and (orientation: landscape) {
+      #orientation-tip {
+        display: block;
+        z-index: 2333333;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #ffffff;
+      }
+
+      #orientation-tip div {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 26px;
+        color: #333333;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="orientation-tip"><div>请竖屏使用</div></div>
+  <script src="main.dart.js" type="application/javascript"></script>
+</body>
+</html>

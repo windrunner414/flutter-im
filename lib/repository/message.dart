@@ -130,18 +130,17 @@ class MessageRepository extends BaseRepository {
 
   BehaviorSubject<List<Conversation>> getConversationList() => _conversations;
 
-  PublishSubject<Message> receiveMessage({int userId, int groupId}) {
-    assert(userId == null || groupId == null);
+  PublishSubject<Message> receiveMessage({int id, ConversationType type}) {
     PublishSubject<Message> subject = PublishSubject();
     PublishSubject<WebSocketMessage<MessageArg>> user;
     PublishSubject<WebSocketMessage<MessageArg>> group;
-    if (userId == null && groupId == null) {
+    if (type == null) {
       user = _messageService.receiveUserMessage();
       group = _messageService.receiveGroupMessage();
-    } else if (userId != null) {
-      user = _messageService.receiveUserMessage(userId);
+    } else if (type == ConversationType.friend) {
+      user = _messageService.receiveUserMessage(id);
     } else {
-      group = _messageService.receiveGroupMessage(groupId);
+      group = _messageService.receiveGroupMessage(id);
     }
     if (user != null) {
       user.listen((value) {
@@ -223,10 +222,17 @@ class MessageRepository extends BaseRepository {
         msgType: type == ConversationType.friend ? 1 : 2,
       );
 
-  Future<MessageList> getHistoricalUserMessages(
-          {int friendUserId, int lastMsgId}) async =>
-      (await _messageService.getHistoricalUserMessages(
-              friendUserId: friendUserId, lastMsgId: lastMsgId))
+  Future<MessageList> getHistoricalMessages(
+          {int id, int lastMsgId, ConversationType type}) async =>
+      (await (type == ConversationType.friend
+              ? _messageService.getHistoricalUserMessages(
+                  friendUserId: id,
+                  lastMsgId: lastMsgId,
+                )
+              : _messageService.getHistoricalGroupMessages(
+                  groupId: id,
+                  lastMsgId: lastMsgId,
+                )))
           .body
           .result;
 }

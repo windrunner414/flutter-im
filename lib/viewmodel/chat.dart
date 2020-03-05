@@ -57,12 +57,38 @@ class ChatViewModel extends BaseViewModel {
 
   Future<void> loadHistoricalMessages(bool first) async {
     final MessageList list = await _messageRepository
-        .getHistoricalUserMessages(friendUserId: id, lastMsgId: _lastMsgId)
+        .getHistoricalMessages(id: id, lastMsgId: _lastMsgId, type: type)
         .bindTo(this, 'loadHistoricalMessages');
-    _lastMsgId = list.list.last.msgId - 1;
-    _addMessages(first ? list.list.reversed : list.list, isHistorical: !first);
+
     if (first) {
+      if (newMessages.isClosed) {
+        return;
+      }
+
+      /// 滤重，找出获取的记录中最新的一条消息在新接收的消息中排在第几位，然后去掉这么多条消息
+      var latestMessage = list.list.first;
+      bool find = false;
+      int i = 0;
+      for (var nm in newMessages.value) {
+        if (++i >= list.list.length) {
+          break;
+        }
+        if (latestMessage.msgId == nm.msgId) {
+          find = true;
+          break;
+        }
+      }
+      Iterable<Message> add = list.list.reversed;
+      if (find) {
+        add = add.take(list.list.length - i);
+      }
+      newMessages.value = newMessages.value..insertAll(0, add);
+      _lastMsgId = newMessages.value.first.msgId - 1;
+
       _notifyRead(list.list.first.msgId);
+    } else {
+      _lastMsgId = list.list.last.msgId - 1;
+      _addMessages(list.list, isHistorical: true);
     }
   }
 
@@ -141,15 +167,12 @@ class ChatViewModel extends BaseViewModel {
   @override
   void init() {
     super.init();
-    if (type == ConversationType.friend) {
-      _messages = _messageRepository.receiveMessage(userId: id);
-    } else {
-      _messages = _messageRepository.receiveMessage(groupId: id);
-    }
-    _messages.listen((value) {
-      _addMessage(value);
-      _notifyRead(value.msgId);
-    });
+    _messages = _messageRepository.receiveMessage(id: id, type: type)
+      ..skipWhile((value) => value.fromUserId == ownUserInfo.value.userId)
+          .listen((value) {
+        _addMessage(value);
+        _notifyRead(value.msgId);
+      });
   }
 
   @override
