@@ -168,8 +168,7 @@ class ChatViewModel extends BaseViewModel {
   void init() {
     super.init();
     _messages = _messageRepository.receiveMessage(id: id, type: type)
-      ..skipWhile((value) => value.fromUserId == ownUserInfo.value.userId)
-          .listen((value) {
+      ..listen((value) {
         _addMessage(value);
         _notifyRead(value.msgId);
       });
