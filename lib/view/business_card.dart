@@ -12,7 +12,7 @@ class BusinessCardPage extends StatelessWidget {
             const SizedBox(height: 40),
             Center(
               child: QrImage(
-                data: 'route://user,' + ownUserInfo.value.userId.toString(),
+                data: 'user://' + ownUserInfo.value.userAccount.toString(),
                 errorCorrectionLevel: QrErrorCorrectLevel.H,
                 size: 196,
                 errorStateBuilder: (BuildContext context, Object error) =>

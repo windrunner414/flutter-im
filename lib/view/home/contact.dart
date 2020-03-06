@@ -193,7 +193,13 @@ class _ContactPageState extends BaseViewState<ContactViewModel, _ContactPage>
                 avatar: contact.avatar,
                 title: contact.name,
                 groupTitle: hasGroupTitle ? contact.nameIndex : null,
-                onPressed: () {},
+                onPressed: () => router.push(
+                  '/user',
+                  arguments: <String, String>{
+                    'userId': contact.id.toString(),
+                    'groupId': null,
+                  },
+                ),
               );
             },
             itemCount: snapshot.data.length + _functionButtons.length + 1,

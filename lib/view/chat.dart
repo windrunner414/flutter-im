@@ -45,16 +45,31 @@ class ChatPage extends BaseView<ChatViewModel> {
     return UnFocusScope(
       child: Scaffold(
         appBar: IAppBar(
-          title: type == ConversationType.friend
-              ? FriendUserInfo(
-                  userId: id,
-                  builder: (_, User user) => Text(user.userName),
-                )
-              : JoinedGroupInfo(
-                  groupId: id,
-                  builder: (_, Group group) => Text(group.groupName),
-                ),
-        ),
+            title: type == ConversationType.friend
+                ? FriendUserInfo(
+                    userId: id,
+                    builder: (_, User user) => Text(user.userName),
+                  )
+                : JoinedGroupInfo(
+                    groupId: id,
+                    builder: (_, Group group) => Text(group.groupName),
+                  ),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.dehaze),
+                onPressed: () {
+                  if (type == ConversationType.friend) {
+                    router.push(
+                      '/user',
+                      arguments: <String, String>{
+                        'userId': id.toString(),
+                        'groupId': null,
+                      },
+                    );
+                  }
+                },
+              ),
+            ]),
         body: Container(
           color: const Color(AppColor.BackgroundColor),
           child: Column(
@@ -263,6 +278,7 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
                 color: const Color(AppColor.LoginInputNormalColor),
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                splashColor: Colors.transparent,
               )
             else
               GestureDetector(

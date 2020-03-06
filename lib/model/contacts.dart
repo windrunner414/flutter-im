@@ -9,9 +9,11 @@ class Contact extends BaseModel {
     this.avatar,
     this.name,
     this.nameIndex,
+    this.id,
   });
 
   final String avatar;
   final String name;
   final String nameIndex;
+  final int id;
 }

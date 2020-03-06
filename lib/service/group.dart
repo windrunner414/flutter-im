@@ -2,6 +2,8 @@ import 'package:chopper/chopper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:wechat/model/api_response.dart';
 import 'package:wechat/model/group.dart';
+import 'package:wechat/model/group_user.dart';
+import 'package:wechat/model/user.dart';
 import 'package:wechat/service/base.dart';
 
 part 'group.chopper.dart';
@@ -21,5 +23,11 @@ abstract class GroupService extends BaseService {
     @Query() int page,
     @Query() int limit = 999999999,
     @Query() String keyword,
+  });
+
+  @Get(path: '/GroupUser/getOne')
+  Future<Response<ApiResponse<GroupUser>>> getUserInfo({
+    @Query() @required int groupId,
+    @Query() @required int userId,
   });
 }

@@ -1,8 +1,10 @@
 import 'package:generic_json_converter_annotation/generic_json_converter_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:wechat/model/conversation.dart';
+import 'package:wechat/model/friend.dart';
 import 'package:wechat/model/friend_application.dart';
 import 'package:wechat/model/group.dart';
+import 'package:wechat/model/group_user.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/model/server_config.dart';
 import 'package:wechat/model/user.dart';
@@ -29,6 +31,7 @@ part 'model_generic_json_converter.g.dart';
   Friend,
   Group,
   GroupList,
+  GroupUser,
 ])
 class ModelGenericJsonConverter<T>
     with _$ModelGenericJsonConverterMixin<T>

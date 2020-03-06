@@ -86,7 +86,7 @@ class _ProfilePage extends BaseView<ProfileViewModel> {
           SizedBox(height: SEPARATE_SIZE.height),
           FullWidthButton(
             iconPath: 'asset://assets/images/ic_settings.png',
-            title: '设置',
+            title: Text('设置'),
             showDivider: true,
             onPressed: () => router.push('/setting'),
           ),

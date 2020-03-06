@@ -4,20 +4,22 @@ import 'package:wechat/common/constant.dart';
 import 'package:wechat/util/screen.dart';
 
 class LoginInput extends StatelessWidget {
-  const LoginInput(
-      {Key key,
-      @required this.label,
-      this.controller,
-      this.inputFormatters,
-      this.keyboardType,
-      this.obscureText = false})
-      : super(key: key);
+  const LoginInput({
+    Key key,
+    @required this.label,
+    this.controller,
+    this.inputFormatters,
+    this.keyboardType,
+    this.obscureText = false,
+    this.contentPadding = EdgeInsets.zero,
+  }) : super(key: key);
 
   final String label;
   final TextEditingController controller;
   final List<TextInputFormatter> inputFormatters;
   final TextInputType keyboardType;
   final bool obscureText;
+  final EdgeInsets contentPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +37,16 @@ class LoginInput extends StatelessWidget {
             fontSize: 18.sp,
           ),
           decoration: InputDecoration(
-              isDense: true,
-              contentPadding: const EdgeInsets.symmetric(vertical: 4),
-              labelText: label == null ? null : label + '：',
-              enabledBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color(AppColor.LoginInputNormalColor),
-                ),
-              )),
+            isDense: true,
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 4) + contentPadding,
+            labelText: label == null ? null : label + '：',
+            enabledBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(
+                color: Color(AppColor.LoginInputNormalColor),
+              ),
+            ),
+          ),
           inputFormatters: inputFormatters,
           keyboardType: keyboardType,
           obscureText: obscureText,

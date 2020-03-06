@@ -1,4 +1,5 @@
 import 'package:rxdart/rxdart.dart';
+import 'package:wechat/model/friend.dart';
 import 'package:wechat/model/group.dart';
 import 'package:wechat/model/user.dart';
 import 'package:wechat/util/storage.dart';

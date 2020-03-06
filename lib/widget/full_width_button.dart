@@ -7,21 +7,22 @@ class FullWidthButton extends StatelessWidget {
   const FullWidthButton({
     Key key,
     @required this.title,
-    @required this.iconPath,
+    this.iconPath,
     @required this.onPressed,
     this.showDivider = false,
-  })  : assert(iconPath != null),
-        assert(title != null),
+    this.padding = EdgeInsets.zero,
+  })  : assert(title != null),
         assert(onPressed != null),
         super(key: key);
 
   static const double HORIZONTAL_PADDING = 20.0;
   static const double VERTICAL_PADDING = 13.0;
 
-  final String title;
+  final Widget title;
   final String iconPath;
   final bool showDivider;
   final VoidCallback onPressed;
+  final EdgeInsets padding;
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +30,22 @@ class FullWidthButton extends StatelessWidget {
     final Widget pureButton = Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        UImage(
-          iconPath,
-          width: 24.sp,
-          height: 24.sp,
-        ),
-        const SizedBox(width: HORIZONTAL_PADDING),
+        if (iconPath != null) ...[
+          Padding(
+            padding: const EdgeInsets.only(top: 1),
+            child: UImage(
+              iconPath,
+              width: 24.sp,
+              height: 24.sp,
+            ),
+          ),
+          const SizedBox(width: HORIZONTAL_PADDING),
+        ],
         Expanded(
-          child: Text(title, style: TextStyle(fontSize: 16.sp)),
+          child: DefaultTextStyle(
+            style: TextStyle(fontSize: 16.sp, color: Colors.black87),
+            child: title,
+          ),
         ),
         Icon(
           const IconData(
@@ -52,12 +61,14 @@ class FullWidthButton extends StatelessWidget {
     return FlatButton(
       onPressed: onPressed,
       padding: EdgeInsets.only(
-        left: HORIZONTAL_PADDING.width,
-        right: HORIZONTAL_PADDING.width,
-        top: VERTICAL_PADDING.height,
-        bottom: showDivider ? 0 : VERTICAL_PADDING.height,
-      ),
+            left: HORIZONTAL_PADDING.width,
+            right: HORIZONTAL_PADDING.width,
+            top: VERTICAL_PADDING.height,
+            bottom: showDivider ? 0 : VERTICAL_PADDING.height,
+          ) +
+          padding,
       color: Colors.white,
+      splashColor: Colors.transparent,
       child: showDivider
           ? Container(
               decoration: const BoxDecoration(

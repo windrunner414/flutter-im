@@ -46,7 +46,8 @@ final Module viewModelModule = Module(<DartIn<dynamic>>[
   factory<ChatViewModel>(({params}) => ChatViewModel(
       id: params.get(0) as int, type: params.get(1) as ConversationType)),
   factory<HomeViewModel>(({params}) => HomeViewModel()),
-  factory<UserViewModel>(({params}) => UserViewModel()),
+  factory<UserViewModel>(({params}) => UserViewModel(
+      userId: params.get(0) as int, groupId: params.get(1) as int)),
   factory<FriendApplicationsViewModel>(
       ({params}) => FriendApplicationsViewModel()),
   factory<ConversationViewModel>(({params}) => ConversationViewModel()),

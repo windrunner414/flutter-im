@@ -15,6 +15,7 @@ import 'package:wechat/view/need_login.dart';
 import 'package:wechat/view/register.dart';
 import 'package:wechat/view/server_setting.dart';
 import 'package:wechat/view/setting.dart';
+import 'package:wechat/view/user.dart';
 import 'package:wechat/view/webview.dart';
 
 class AppRouteSetting extends RouteSetting {
@@ -84,5 +85,15 @@ final Set<AppRouteSetting> appRoutes = <AppRouteSetting>{
   ),
   AppRouteSetting(path: '/createGroup', handler: (_, __) => CreateGroupPage()),
   AppRouteSetting(
-      path: '/joinedGroupList', handler: (_, __) => JoinedGroupListPage())
+      path: '/joinedGroupList', handler: (_, __) => JoinedGroupListPage()),
+  AppRouteSetting(
+    path: '/user',
+    handler: (_, Map<String, String> arguments) => UserPage(
+      userId: int.tryParse(arguments['userId']),
+      groupId: arguments['groupId'] == null
+          ? null
+          : int.tryParse(arguments['groupId']),
+    ),
+    parameters: <String>{'userId', 'groupId'},
+  ),
 };

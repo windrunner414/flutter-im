@@ -4,7 +4,7 @@ import 'package:lpinyin/lpinyin.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/contacts.dart';
-import 'package:wechat/model/user.dart';
+import 'package:wechat/model/friend.dart';
 import 'package:wechat/util/worker/worker.dart';
 import 'package:wechat/viewmodel/base.dart';
 
@@ -62,6 +62,7 @@ class ContactViewModel extends BaseViewModel {
           avatar: user.userAvatar,
           name: user.showName,
           nameIndex: nameIndex,
+          id: user.targetUserId,
         ),
       );
     }
