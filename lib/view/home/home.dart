@@ -106,7 +106,9 @@ class HomePage extends BaseView<HomeViewModel> {
                   case _PopupMenuItems.createGroup:
                     router.push('/createGroup');
                     break;
-                  default:
+                  case _PopupMenuItems.scanQrCode:
+                    router.push('/scanQrCode');
+                    break;
                 }
               },
               tooltip: '菜单',

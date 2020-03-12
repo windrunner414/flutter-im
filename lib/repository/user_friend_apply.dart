@@ -7,8 +7,11 @@ import 'package:wechat/service/user_friend_apply.dart';
 class UserFriendApplyRepository extends BaseRepository {
   final UserFriendApplyService _userFriendApplyService = inject();
 
-  Future<void> addFriend({@required int userId, String note}) async =>
-      await _userFriendApplyService.addFriend(userId: userId, note: note);
+  Future<void> addFriend({@required String userAccount, String note}) async =>
+      await _userFriendApplyService.addFriend(
+        userAccount: userAccount,
+        note: note,
+      );
 
   Future<FriendApplicationList> getFriendApplicationList(
           {@required int page,

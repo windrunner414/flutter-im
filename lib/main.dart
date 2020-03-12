@@ -37,6 +37,9 @@ void main() {
           Locale('zh', 'CN'),
         ],
         title: Config.AppName,
+        theme: ThemeData(
+          primarySwatch: Colors.green,
+        ),
         navigatorObservers: <NavigatorObserver>[
           BotToastNavigatorObserver(),
           ErrorReporterNavigatorObserver(),

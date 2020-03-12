@@ -151,8 +151,8 @@ class AddFriendPage extends BaseView<AddFriendViewModel> {
                                     FlatButton(
                                       onPressed: () => viewModel
                                           .addFriend(
-                                              userId:
-                                                  snapshot.data[index].userId)
+                                              userAccount: snapshot
+                                                  .data[index].userAccount)
                                           .then((_) => showToast('好友申请已发送'))
                                           .catchAll(
                                         (Object error) {

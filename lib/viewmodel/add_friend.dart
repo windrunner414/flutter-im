@@ -26,10 +26,11 @@ class AddFriendViewModel extends BaseViewModel {
     return await _loadMore();
   }
 
-  Future<void> addFriend({@required int userId}) => _userFriendApplyRepository
-      .addFriend(userId: userId)
-      .bindTo(this)
-      .wrapError();
+  Future<void> addFriend({@required String userAccount}) =>
+      _userFriendApplyRepository
+          .addFriend(userAccount: userAccount)
+          .bindTo(this)
+          .wrapError();
 
   Future<void> _loadMore() async {
     final UserList userList = await _userRepository

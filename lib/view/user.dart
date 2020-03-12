@@ -13,7 +13,6 @@ import 'package:wechat/viewmodel/user.dart';
 import 'package:wechat/widget/app_bar.dart';
 import 'package:wechat/widget/full_width_button.dart';
 import 'package:wechat/widget/image.dart';
-import 'package:wechat/widget/login_input.dart';
 import 'package:wechat/widget/stream_builder.dart';
 
 class _ProfileHeaderView extends StatelessWidget {
@@ -210,7 +209,7 @@ class UserPage extends BaseView<UserViewModel> {
             ),
             const SizedBox(height: 15),
             FullWidthButton(
-              padding: const EdgeInsets.symmetric(vertical: 2),
+              padding: const EdgeInsets.symmetric(vertical: 4),
               onPressed: () async {
                 final String remark =
                     await _editRemark(context, snapshot.data.remark);
@@ -260,14 +259,18 @@ class UserPage extends BaseView<UserViewModel> {
             SizedBox(
               width: double.infinity,
               child: FlatButton(
-                padding: const EdgeInsets.symmetric(vertical: 20),
+                padding: const EdgeInsets.symmetric(vertical: 18),
                 color: Colors.white,
                 splashColor: Colors.transparent,
                 onPressed: () {
-                  router.push('/chat', arguments: <String, String>{
-                    'id': userId.toString(),
-                    'type': 'friend',
-                  });
+                  router.pushAndRemoveUntil(
+                    '/chat',
+                    (Route route) => route.isFirst,
+                    arguments: <String, String>{
+                      'id': userId.toString(),
+                      'type': 'friend',
+                    },
+                  );
                 },
                 child: Text(
                   '发送消息',
@@ -290,59 +293,26 @@ class UserPage extends BaseView<UserViewModel> {
     currentRemark ??= '';
     final TextEditingController textEditingController =
         TextEditingController.fromValue(TextEditingValue(text: currentRemark));
-    final bool saved = await showDialog(
+    final bool save = await showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return Material(
-          type: MaterialType.transparency,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Container(
-                color: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    left: 15,
-                    right: 15,
-                    bottom: 8,
-                  ),
-                  child: Stack(
-                    children: <Widget>[
-                      LoginInput(
-                        controller: textEditingController,
-                        label: '备注',
-                        contentPadding: const EdgeInsets.only(right: 100),
-                      ),
-                      Positioned(
-                        right: 2,
-                        bottom: 14,
-                        child: FlatButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(true);
-                          },
-                          child: Text(
-                            '确定',
-                            style:
-                                TextStyle(fontSize: 16.sp, color: Colors.white),
-                          ),
-                          color: const Color(AppColor.LoginInputNormalColor),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 4, vertical: 6),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          splashColor: Colors.transparent,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+      builder: (BuildContext context) => AlertDialog(
+        title: Text('修改备注'),
+        content: TextField(
+          controller: textEditingController,
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: Text("取消"),
+            onPressed: () => Navigator.of(context).pop(),
           ),
-        );
-      },
+          FlatButton(
+            child: Text("确定"),
+            onPressed: () => Navigator.of(context).pop(true),
+          ),
+        ],
+      ),
     );
-    if (saved == true) {
+    if (save == true) {
       final newRemark = textEditingController.text;
       if (currentRemark != newRemark) {
         return newRemark;

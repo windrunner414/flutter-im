@@ -13,6 +13,7 @@ import 'package:wechat/view/joined_group_list.dart';
 import 'package:wechat/view/login.dart';
 import 'package:wechat/view/need_login.dart';
 import 'package:wechat/view/register.dart';
+import 'package:wechat/view/scan_qr.dart';
 import 'package:wechat/view/server_setting.dart';
 import 'package:wechat/view/setting.dart';
 import 'package:wechat/view/user.dart';
@@ -96,4 +97,5 @@ final Set<AppRouteSetting> appRoutes = <AppRouteSetting>{
     ),
     parameters: <String>{'userId', 'groupId'},
   ),
+  AppRouteSetting(path: '/scanQrCode', handler: (_, __) => ScanQrPage()),
 };
