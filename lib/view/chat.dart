@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:rxdart/rxdart.dart';
@@ -718,12 +719,13 @@ class _MessagesListView extends StatefulWidget {
   _MessagesListViewState createState() => _MessagesListViewState();
 }
 
-class _MessagesListViewState extends State<_MessagesListView> {
+class _MessagesListViewState extends State<_MessagesListView>
+    with SingleTickerProviderStateMixin {
   final UniqueKey _centerKey = UniqueKey();
   final ScrollController _scrollController = ScrollController();
   bool _atBottom = true;
   bool _inLoadingHistory = true;
-  Timer _goBottomTimer;
+  Ticker _goBottomTicker;
 
   @override
   void initState() {
@@ -733,20 +735,23 @@ class _MessagesListViewState extends State<_MessagesListView> {
           _scrollController.position.maxScrollExtent -
               0.1; // TODO:加了一个0.1高度的box来让他能滚动
     });
-    _goBottomTimer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+    _goBottomTicker = createTicker((_) {
       final max = _scrollController.position.maxScrollExtent;
       if (_atBottom && _scrollController.offset != max) {
         _scrollController.jumpTo(max);
       }
-    });
+    })
+      ..start();
     _loadHistory(true);
   }
 
   @override
   void dispose() {
-    super.dispose();
+    _goBottomTicker
+      ..stop()
+      ..dispose();
     _scrollController.dispose();
-    _goBottomTimer.cancel();
+    super.dispose();
   }
 
   void _loadHistory([bool isFirst = false]) {
@@ -763,6 +768,7 @@ class _MessagesListViewState extends State<_MessagesListView> {
     return NotificationListener<OverscrollIndicatorNotification>(
       onNotification: (overScroll) {
         overScroll.disallowGlow();
+        // TODO: 下拉一点会触发加载，如果没有拉到顶停下来，加载结束后再拉一点，又会触发加载。可以像微信那样触发加载后自动到顶部，等到拉到顶之后再开始加载
         if (!_inLoadingHistory) {
           _loadHistory();
           setState(() => _inLoadingHistory = true);
