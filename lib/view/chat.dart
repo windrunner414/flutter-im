@@ -163,6 +163,7 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
   bool _showSendButton = false;
   bool _showEmoji = false;
   bool _showMore = false;
+  bool _showVoice = false;
   final TextEditingController _messageEditingController =
       TextEditingController();
   final FocusNode _messageInputFocus = FocusNode();
@@ -211,7 +212,10 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
       for (var result in resultList) {
         List<int> bytes =
             (await result.getByteData(quality: 80)).buffer.asUint8List();
-        widget.viewModel.sendImage(bytes);
+        widget.viewModel.send(Message(
+          msgType: MessageType.image,
+          data: bytes,
+        ));
       }
     } catch (_) {}
   }
@@ -222,27 +226,67 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
       children: <Widget>[
         Row(
           children: <Widget>[
+            GestureDetector(
+              child: UImage(
+                _showVoice
+                    ? 'asset://assets/images/ic_chat_keyboard.png'
+                    : 'asset://assets/images/ic_chat_sound.png',
+                width: 32,
+                height: 32,
+              ),
+              onTap: () {
+                setState(() {
+                  _messageInputFocus.unfocus();
+                  _showMore = false;
+                  _showEmoji = false;
+                  _showVoice = !_showVoice;
+                });
+              },
+            ),
+            const SizedBox(width: 6),
             Expanded(
               child: Container(
                 color: Colors.white,
-                child: TextField(
-                  controller: _messageEditingController,
-                  focusNode: _messageInputFocus,
-                  scrollPhysics: const BouncingScrollPhysics(),
-                  maxLines: 5,
-                  minLines: 1,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(4)),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: EdgeInsets.all(8),
-                    isDense: true,
-                  ),
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
+                child: _showVoice
+                    ? Material(
+                        child: InkWell(
+                          splashColor: Colors.transparent,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(4)),
+                            ),
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.all(7), // 7的话高度跟输入框一样
+                            child: Text(
+                              '长按录音',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                          onTap: () {},
+                        ),
+                      )
+                    : TextField(
+                        controller: _messageEditingController,
+                        focusNode: _messageInputFocus,
+                        scrollPhysics: const BouncingScrollPhysics(),
+                        maxLines: 5,
+                        minLines: 1,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.all(8),
+                          isDense: true,
+                        ),
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
               ),
             ),
             const SizedBox(width: 6),
@@ -258,6 +302,7 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
                 setState(() {
                   _messageInputFocus.unfocus();
                   _showMore = false;
+                  _showVoice = false;
                   _showEmoji = !_showEmoji;
                 });
               },
@@ -269,7 +314,10 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
                   final String text = _messageEditingController.text;
                   if (text.isNotEmpty) {
                     _messageEditingController.text = '';
-                    widget.viewModel.sendText(text);
+                    widget.viewModel.send(Message(
+                      msgType: MessageType.text,
+                      msg: text,
+                    ));
                   }
                 },
                 child: Text(
@@ -292,6 +340,7 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
                   setState(() {
                     _messageInputFocus.unfocus();
                     _showEmoji = false;
+                    _showVoice = false;
                     _showMore = !_showMore;
                   });
                 },
@@ -414,6 +463,38 @@ abstract class _MessageBoxState extends State<_MessageBox> {
               width: 48.sp,
               height: 48.sp,
             );
+            Widget status;
+            switch (snapshot.data) {
+              case SendState.sending:
+                status = Padding(
+                  padding: const EdgeInsets.only(top: 2, right: 10),
+                  child: SpinKitRing(
+                    color: Colors.black26,
+                    size: 18,
+                    lineWidth: 1,
+                  ),
+                );
+                break;
+              case SendState.failed:
+                status = GestureDetector(
+                  onTap: () =>
+                      setState(() => widget.viewModel.reSend(widget.message)),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 2, right: 10),
+                    child: Badge(
+                      badgeContent: Icon(
+                        Icons.refresh,
+                        size: 14,
+                        color: Colors.white,
+                      ),
+                      badgeColor: Colors.red,
+                      elevation: 0,
+                    ),
+                  ),
+                );
+                break;
+              default:
+            }
             final Widget messageBox = Flexible(
               child: Column(
                 crossAxisAlignment: isSentByMe
@@ -430,42 +511,20 @@ abstract class _MessageBoxState extends State<_MessageBox> {
                       overflow: TextOverflow.ellipsis,
                     ),
                   const SizedBox(height: 5),
-                  buildBox(context),
+                  if (status != null)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        status,
+                        Flexible(child: buildBox(context)),
+                      ],
+                    )
+                  else
+                    buildBox(context),
                 ],
               ),
             );
-            Widget status;
-            switch (snapshot.data) {
-              case SendState.sending:
-                status = Padding(
-                  padding: const EdgeInsets.only(top: 8, right: 10),
-                  child: SpinKitRing(
-                    color: Colors.black26,
-                    size: 18,
-                    lineWidth: 1,
-                  ),
-                );
-                break;
-              case SendState.failed:
-                status = GestureDetector(
-                  onTap: () =>
-                      setState(() => widget.viewModel.reSend(widget.message)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 8, right: 10),
-                    child: Badge(
-                      badgeContent: Icon(
-                        Icons.refresh,
-                        size: 14,
-                        color: Colors.white,
-                      ),
-                      badgeColor: Colors.red,
-                      elevation: 0,
-                    ),
-                  ),
-                );
-                break;
-              default:
-            }
 
             return Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -476,7 +535,6 @@ abstract class _MessageBoxState extends State<_MessageBox> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: isSentByMe
                     ? <Widget>[
-                        if (status != null) status,
                         messageBox,
                         const SizedBox(width: 10),
                         avatar,
@@ -510,6 +568,7 @@ class _ImageMessageBoxState extends _MessageBoxState {
             )) as ImageProvider;
     } catch (_) {
       //TODO:加载失败图片+extendedImage loadState失败后也设置同样的图片
+      //TODO:现在这图片不在assets文件夹里没法显示出来，需要找个图片放进去
       imageProvider =
           ExtendedAssetImageProvider('assets/images/chat_image_error.png');
     }
@@ -532,7 +591,27 @@ class _ImageMessageBoxState extends _MessageBoxState {
         ),
       ]);
     } else {
-      return image;
+      return GestureDetector(
+        child: image,
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return ExtendedImage(
+                image: imageProvider,
+                mode: ExtendedImageMode.gesture,
+                initGestureConfigHandler: (_) => GestureConfig(
+                  minScale: 0.8,
+                  maxScale: 1.5,
+                  animationMinScale: 0.6,
+                  animationMaxScale: 1.8,
+                ),
+                filterQuality: FilterQuality.high,
+              );
+            },
+          );
+        },
+      );
     }
   }
 }
@@ -736,8 +815,11 @@ class _MessagesListViewState extends State<_MessagesListView>
               0.1; // TODO:加了一个0.1高度的box来让他能滚动
     });
     _goBottomTicker = createTicker((_) {
+      if (!_atBottom) {
+        return;
+      }
       final max = _scrollController.position.maxScrollExtent;
-      if (_atBottom && _scrollController.offset != max) {
+      if (_scrollController.offset != max) {
         _scrollController.jumpTo(max);
       }
     })

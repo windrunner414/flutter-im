@@ -7,12 +7,11 @@ import 'package:wechat/util/worker/worker.dart';
 
 final BehaviorSubject<User> ownUserInfo = BehaviorSubject<User>();
 final BehaviorSubject<FriendList> friendList = BehaviorSubject<FriendList>();
-final BehaviorSubject<GroupList> groupList = BehaviorSubject<GroupList>();
+final BehaviorSubject<GroupList> joinedGroupList = BehaviorSubject<GroupList>();
 
 const String _OwnUserInfoStorageKey = 'auth.own_user_info';
 const String _FriendListStorageKey = 'friend_list';
 const String _GroupListStorageKey = 'group_list';
-const int _MaxCachedNoFriendUserNum = 500;
 
 Future<void> initAppState() async {
   final String json = StorageUtil.get(_OwnUserInfoStorageKey);
@@ -32,10 +31,10 @@ Future<void> initAppState() async {
   });
 
   final String groupListJson = StorageUtil.get(_GroupListStorageKey);
-  groupList.value = groupListJson == null
+  joinedGroupList.value = groupListJson == null
       ? GroupList(total: 0, list: [])
       : GroupList.fromJson(await worker.jsonDecode(groupListJson));
-  groupList.listen((value) async {
+  joinedGroupList.listen((value) async {
     await StorageUtil.setString(
         _GroupListStorageKey, await worker.jsonEncode(value));
   });
@@ -59,7 +58,7 @@ User findUserInfoInFriendList(int id) {
 // TODO:可以做的优化：homeViewModel中不用不断重复拉取好友、群组，拉一次成功了就行了，然后通过好友/创建群等地方来修改friendList/groupList
 // TODO:同时friendList和groupList可以转换为id对应的map来高效查找
 Group findGroupInfoInJoinedGroup(int id) {
-  final list = groupList.value.list;
+  final list = joinedGroupList.value.list;
   for (Group group in list) {
     if (group.groupId == id) {
       return group;

@@ -29,11 +29,11 @@ class Message extends BaseModel {
     this.groupId,
     this.toUserId,
     this.msgId,
-    this.msg,
+    String msg,
     this.msgType,
     this.data,
     this.sendState,
-  });
+  }) : msg = msg ?? '';
 
   factory Message.fromJson(Map<String, dynamic> json) =>
       _$MessageFromJson(json);

@@ -42,7 +42,6 @@ class ChatViewModel extends BaseViewModel {
     }
   }
 
-  // TODO: 让conversationList更新
   void _addMessage(Message message, {bool isHistorical = false}) {
     if (newMessages.isClosed || historicalMessages.isClosed) {
       return;
@@ -94,11 +93,6 @@ class ChatViewModel extends BaseViewModel {
 
   Future<void> _sendMessage(Message message, [bool isReSend = false]) async {
     try {
-      if (type == ConversationType.group) {
-        message = message.copyWith(groupId: id);
-      } else {
-        message = message.copyWith(toUserId: id);
-      }
       if (message.sendState != null && !message.sendState.isClosed) {
         message.sendState.close();
       }
@@ -139,22 +133,18 @@ class ChatViewModel extends BaseViewModel {
     _sendMessage(message, true);
   }
 
-  void sendText(String msg) {
-    final Message message = Message(
-      fromUserId: ownUserInfo.value.userId,
-      msg: msg,
-      msgType: MessageType.text,
-    );
-    _sendMessage(message);
-  }
-
-  void sendImage(List<int> bytes) {
-    Message message = Message(
-      fromUserId: ownUserInfo.value.userId,
-      msg: '',
-      msgType: MessageType.image,
-      data: bytes,
-    );
+  void send(Message message) {
+    if (type == ConversationType.group) {
+      message = message.copyWith(
+        groupId: id,
+        fromUserId: ownUserInfo.value.userId,
+      );
+    } else {
+      message = message.copyWith(
+        toUserId: id,
+        fromUserId: ownUserInfo.value.userId,
+      );
+    }
     _sendMessage(message);
   }
 

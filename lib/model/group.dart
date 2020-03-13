@@ -58,6 +58,29 @@ class Group extends BaseModel {
   final String groupName;
   final String groupAvatar;
   final int manageUserId;
+
+  @override
+  bool operator ==(dynamic other) {
+    if (super == other) {
+      return true;
+    }
+    if (other is Group) {
+      return groupUserListId == other.groupUserListId &&
+          groupId == other.groupId &&
+          userId == other.userId &&
+          userName == other.userName &&
+          userGroupName == other.userGroupName &&
+          addTime == other.addTime &&
+          lastSpeakTime == other.lastSpeakTime &&
+          isForbidden == other.isForbidden &&
+          state == other.state &&
+          groupName == other.groupName &&
+          groupAvatar == other.groupAvatar &&
+          manageUserId == other.manageUserId;
+    } else {
+      return false;
+    }
+  }
 }
 
 @JsonSerializable()

@@ -60,8 +60,10 @@ class WebSocketClient {
             try {
               _client.add(await worker.jsonEncode(message));
             } catch (e) {
-              _virtualConnection
-                  .add(const WebSocketEvent(WebSocketEventType.closed));
+              if (!_virtualConnection.isClosed) {
+                _virtualConnection
+                    .add(const WebSocketEvent(WebSocketEventType.closed));
+              }
             }
           } else if (!_virtualConnection.isClosed) {
             _virtualConnection

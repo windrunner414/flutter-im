@@ -17,7 +17,7 @@ class JoinedGroupListPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4),
         child: IStreamBuilder(
-          stream: groupList,
+          stream: joinedGroupList,
           builder: (BuildContext context, AsyncSnapshot<GroupList> snapshot) {
             return ListView.separated(
               itemBuilder: (BuildContext context, int index) {

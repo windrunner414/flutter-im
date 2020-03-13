@@ -15,8 +15,8 @@ class GroupRepository extends BaseRepository {
           .result;
 
   Future<GroupList> getJoined() async {
-    groupList.value = (await _groupService.getJoined()).body.result;
-    return groupList.value;
+    joinedGroupList.value = (await _groupService.getJoined()).body.result;
+    return joinedGroupList.value;
   }
 
   Future<GroupUser> getUserInfo({

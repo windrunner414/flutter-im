@@ -32,6 +32,23 @@ class User extends BaseModel {
   final String userAvatar;
   final UserState state;
   final String userSession;
+
+  @override
+  bool operator ==(dynamic other) {
+    if (super == other) {
+      return true;
+    }
+    if (other is User) {
+      return userAccount == other.userAccount &&
+          userName == other.userName &&
+          userId == other.userId &&
+          userAvatar == other.userAvatar &&
+          state == other.state &&
+          userSession == other.userSession;
+    } else {
+      return false;
+    }
+  }
 }
 
 @JsonSerializable()

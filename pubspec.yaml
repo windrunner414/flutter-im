@@ -30,6 +30,7 @@ dependencies:
   qrcode: ^1.0.4
   lpinyin: ^1.0.9
   multi_image_picker: ^4.6.1
+  flutter_audio_recorder: ^0.5.5
 
 dev_dependencies:
   flutter_test:

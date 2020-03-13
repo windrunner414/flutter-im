@@ -41,6 +41,10 @@ class HomeViewModel extends BaseViewModel {
         webSocketBaseUrl + '/?userSession=' + ownUserInfo.value.userSession);
     webSocketClient.connection.listen((WebSocketEvent event) {
       if (event.type == WebSocketEventType.connected) {
+        assert(() {
+          debugPrint('webSocket已连接');
+          return true;
+        }());
         webSocketConnected.value = true;
         _messageRepository.pullUnreadMessages().catchError((Object error) {
           assert(() {
@@ -50,6 +54,10 @@ class HomeViewModel extends BaseViewModel {
           webSocketClient.reconnect();
         });
       } else if (event.type == WebSocketEventType.closed) {
+        assert(() {
+          debugPrint('webSocket已断开');
+          return true;
+        }());
         webSocketConnected.value = false;
       }
     });

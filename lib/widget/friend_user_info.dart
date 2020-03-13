@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/user.dart';
@@ -16,7 +18,7 @@ class FriendUserInfo extends StatefulWidget {
 }
 
 class _FriendUserInfoState extends State<FriendUserInfo> {
-  Widget _cached;
+  StreamSubscription _subscription;
   User _lastInfo;
 
   @override
@@ -24,57 +26,54 @@ class _FriendUserInfoState extends State<FriendUserInfo> {
     if (widget.userId == ownUserInfo.value.userId) {
       return IStreamBuilder(
         stream: ownUserInfo,
-        builder: (BuildContext context, _) =>
-            widget.builder(context, ownUserInfo.value),
+        builder: (BuildContext context, AsyncSnapshot<User> snapshot) =>
+            widget.builder(context, snapshot.data),
       );
     } else {
-      return IStreamBuilder(
-        stream: friendList,
-        builder: _build,
+      return widget.builder(
+        context,
+        _lastInfo ??
+            User(
+              userAvatar: '',
+              userName: '用户${widget.userId}',
+              userId: widget.userId,
+            ),
       );
     }
   }
 
-  Widget _build(BuildContext context, _) {
-    bool equal(User u1, User u2) {
-      if (u1 == u2) {
-        return true;
-      }
-      if (u1 == null || u2 == null) {
-        return false;
-      }
-      return u1.userName == u2.userName &&
-          u1.userAvatar == u2.userAvatar &&
-          u1.userId == u2.userId;
+  @override
+  void initState() {
+    super.initState();
+    if (widget.userId == ownUserInfo.value.userId) {
+      return;
     }
+    _lastInfo = findUserInfoInFriendList(widget.userId);
+    _subscription = friendList.skip(1).listen((value) {
+      final User u = findUserInfoInFriendList(widget.userId);
+      if (u != _lastInfo) {
+        setState(() {
+          _lastInfo = u;
+        });
+      }
+    });
+  }
 
-    final u = findUserInfoInFriendList(widget.userId);
-    if (_cached != null && equal(_lastInfo, u)) {
-      return _cached;
-    }
-    _lastInfo = u;
-    if (u != null) {
-      _cached = widget.builder(context, u);
-    } else {
-      _cached = widget.builder(
-        context,
-        User(
-          userAvatar: '',
-          userName: '用户${widget.userId}',
-          userId: widget.userId,
-        ),
-      );
-    }
-    return _cached;
+  @override
+  void dispose() {
+    super.dispose();
+    _subscription?.cancel();
   }
 
   @override
   void didUpdateWidget(FriendUserInfo oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.userId != widget.userId ||
-        oldWidget.builder != widget.builder) {
-      _cached = null;
-      _lastInfo = null;
+    if (oldWidget.userId != widget.userId) {
+      if (widget.userId == ownUserInfo.value.userId) {
+        _lastInfo = null;
+      } else {
+        _lastInfo = findUserInfoInFriendList(widget.userId);
+      }
     }
   }
 }

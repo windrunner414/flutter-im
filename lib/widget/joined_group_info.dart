@@ -1,9 +1,8 @@
-import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/group.dart';
-import 'package:wechat/widget/stream_builder.dart';
 
 typedef GroupInfoBuilder = Widget Function(BuildContext context, Group group);
 
@@ -18,55 +17,47 @@ class JoinedGroupInfo extends StatefulWidget {
 }
 
 class _JoinedGroupInfoState extends State<JoinedGroupInfo> {
-  Widget _cached;
+  StreamSubscription _subscription;
   Group _lastInfo;
 
   @override
   Widget build(BuildContext context) {
-    return IStreamBuilder(
-      stream: groupList,
-      builder: _build,
+    return widget.builder(
+      context,
+      _lastInfo ??
+          Group(
+            groupAvatar: '',
+            groupName: '群聊${widget.groupId}',
+            groupId: widget.groupId,
+          ),
     );
   }
 
-  Widget _build(BuildContext context, _) {
-    bool equal(Group g1, Group g2) {
-      if (g1 == g2) {
-        return true;
+  @override
+  void initState() {
+    super.initState();
+    _lastInfo = findGroupInfoInJoinedGroup(widget.groupId);
+    _subscription = joinedGroupList.skip(1).listen((value) {
+      final Group g = findGroupInfoInJoinedGroup(widget.groupId);
+      if (g != _lastInfo) {
+        setState(() {
+          _lastInfo = g;
+        });
       }
-      if (g1 == null || g2 == null) {
-        return false;
-      }
-      return jsonEncode(g1) == jsonEncode(g2);
-    }
+    });
+  }
 
-    final g = findGroupInfoInJoinedGroup(widget.groupId);
-    if (_cached != null && equal(_lastInfo, g)) {
-      return _cached;
-    }
-    _lastInfo = g;
-    if (g != null) {
-      _cached = widget.builder(context, g);
-    } else {
-      _cached = widget.builder(
-        context,
-        Group(
-          groupAvatar: '',
-          groupName: '群聊${widget.groupId}',
-          groupId: widget.groupId,
-        ),
-      );
-    }
-    return _cached;
+  @override
+  void dispose() {
+    super.dispose();
+    _subscription.cancel();
   }
 
   @override
   void didUpdateWidget(JoinedGroupInfo oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.groupId != widget.groupId ||
-        oldWidget.builder != widget.builder) {
-      _cached = null;
-      _lastInfo = null;
+    if (oldWidget.groupId != widget.groupId) {
+      _lastInfo = findGroupInfoInJoinedGroup(widget.groupId);
     }
   }
 }

@@ -47,5 +47,7 @@
     <string>发送图片</string>
     <key>NSCameraUsageDescription</key>
     <string>发送照片</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>发送语音消息</string>
 </dict>
 </plist>
