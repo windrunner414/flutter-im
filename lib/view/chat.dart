@@ -93,6 +93,79 @@ class _ChatPageState extends BaseViewState<ChatViewModel, ChatPage> {
       inject(params: <dynamic>[widget.id, widget.type]);
 }
 
+class _RecordVoiceButton extends StatefulWidget {
+  _RecordVoiceButton({this.viewModel});
+
+  final ChatViewModel viewModel;
+
+  @override
+  _RecordVoiceButtonState createState() => _RecordVoiceButtonState();
+}
+
+class _RecordVoiceButtonState extends State<_RecordVoiceButton> {
+  int _seconds;
+  bool _cancel;
+  Offset _startOffset;
+
+  void _onStart(Offset offset) {
+    setState(() {
+      _startOffset = offset;
+      _seconds = 0;
+      _cancel = false;
+    });
+  }
+
+  void _onMove(Offset offset) {
+    bool cancel = _startOffset.dy - offset.dy >= 50;
+    if (cancel != _cancel) {
+      setState(() {
+        _cancel = cancel;
+      });
+    }
+  }
+
+  void _onEnd() {
+    setState(() {
+      _seconds = null;
+      _cancel = null;
+      _startOffset = null;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: InkWell(
+        splashColor: Colors.transparent,
+        child: GestureDetector(
+          child: Container(
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+            ),
+            alignment: Alignment.center,
+            padding: const EdgeInsets.all(7), // 7的话高度跟输入框一样
+            child: Text(
+              _seconds == null
+                  ? '长按录音'
+                  : (_cancel ? '松手取消' : '松手发送 上滑取消 $_seconds秒'),
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+          onPanDown: (detail) => _onStart(detail.globalPosition),
+          onPanStart: (detail) => _onMove(detail.globalPosition),
+          onPanUpdate: (detail) => _onMove(detail.globalPosition),
+          onPanEnd: (_) => _onEnd(),
+          onPanCancel: () => _onEnd(),
+        ),
+        onTap: () {},
+      ),
+    );
+  }
+}
+
 class _MessageEditArea extends StatefulWidget {
   _MessageEditArea({this.viewModel});
 
@@ -248,27 +321,7 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
               child: Container(
                 color: Colors.white,
                 child: _showVoice
-                    ? Material(
-                        child: InkWell(
-                          splashColor: Colors.transparent,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(4)),
-                            ),
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.all(7), // 7的话高度跟输入框一样
-                            child: Text(
-                              '长按录音',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ),
-                          onTap: () {},
-                        ),
-                      )
+                    ? _RecordVoiceButton(viewModel: widget.viewModel)
                     : TextField(
                         controller: _messageEditingController,
                         focusNode: _messageInputFocus,
@@ -779,7 +832,7 @@ class _TextMessageBoxState extends _MessageBoxState {
                 },
                 onPointerMove: (PointerMoveEvent event) =>
                     _nowPosition = event.localPosition,
-                onPointerUp: (PointerUpEvent event) => _checkTap(),
+                onPointerUp: (_) => _checkTap(),
                 child: text,
               ),
             )
