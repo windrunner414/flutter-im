@@ -10,6 +10,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:rxdart/rxdart.dart';
@@ -20,6 +21,7 @@ import 'package:wechat/model/group.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/model/user.dart';
 import 'package:wechat/service/base.dart';
+import 'package:wechat/util/layer.dart';
 import 'package:wechat/util/router.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
@@ -107,7 +109,11 @@ class _RecordVoiceButtonState extends State<_RecordVoiceButton> {
   bool _cancel;
   Offset _startOffset;
 
-  void _onStart(Offset offset) {
+  Future<void> _onStart(Offset offset) async {
+    if (!await FlutterAudioRecorder.hasPermissions) {
+      showToast('请检查权限');
+      return;
+    }
     setState(() {
       _startOffset = offset;
       _seconds = 0;
@@ -290,7 +296,9 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
           data: bytes,
         ));
       }
-    } catch (_) {}
+    } catch (_) {
+      showToast('请检查权限');
+    }
   }
 
   @override
