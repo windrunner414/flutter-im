@@ -7,10 +7,6 @@ typedef CloseLayerFunc = void Function();
 
 CloseLayerFunc showToast(String msg) => BotToast.showText(text: msg);
 
-CloseLayerFunc showNotification() {
-  // BotToast.showNotification()
-}
-
 CloseLayerFunc showLoading() => BotToast.showCustomLoading(
       toastBuilder: (_) => Builder(
         builder: (BuildContext context) {
@@ -39,6 +35,8 @@ CloseLayerFunc showLoading() => BotToast.showCustomLoading(
 
 CloseLayerFunc showWidget({
   @required Widget builder(CloseLayerFunc closeFunc),
+  UniqueKey key,
+  String groupKey,
   bool crossPage = true,
   bool allowClick = false,
   bool clickClose = false,
@@ -51,6 +49,8 @@ CloseLayerFunc showWidget({
 }) =>
     BotToast.showEnhancedWidget(
       toastBuilder: builder,
+      key: key,
+      groupKey: groupKey,
       crossPage: crossPage,
       allowClick: allowClick,
       clickClose: clickClose,

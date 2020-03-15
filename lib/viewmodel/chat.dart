@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:dartin/dartin.dart';
 import 'package:flutter/material.dart';
@@ -100,21 +101,45 @@ class ChatViewModel extends BaseViewModel {
       if (!isReSend) {
         _addMessage(message);
       }
-      if (message.msg.isEmpty) {
-        if (message.msgType == MessageType.image) {
-          message.msg = await worker.jsonEncode({
-            "src": await _fileRepository
-                .uploadImage(
-                  MultipartFile.fromBytes(
+
+      switch (message.msgType) {
+        case MessageType.image:
+          if (message.msg.isEmpty) {
+            message.msg = await worker.jsonEncode({
+              "src": await _fileRepository
+                  .uploadImage(
+                    // TODO:不要直接把图片全读出来再传和显示，浪费内存
+                    MultipartFile.fromBytes(
+                      'file',
+                      message.data,
+                      filename: 'image.jpg',
+                      contentType: MediaType('image', 'jpeg'),
+                    ),
+                  )
+                  .bindTo(this)
+            });
+          }
+          break;
+        case MessageType.audio:
+          var msg = await worker.jsonDecode(message.msg);
+          if (msg['src'] == null) {
+            final File file = message.data;
+            msg['src'] = await _fileRepository
+                .uploadVoice(
+                  await MultipartFile.fromPath(
                     'file',
-                    message.data,
-                    filename: 'image.jpg',
-                    contentType: MediaType('image', 'jpeg'),
+                    file.path,
+                    filename: 'voice.aac',
+                    contentType: MediaType('audio', 'aac'),
                   ),
                 )
-                .bindTo(this)
-          });
-        }
+                .bindTo(this);
+            message.msg = await worker.jsonEncode(msg);
+            message.data = null;
+            file.delete();
+          }
+          break;
+        default:
       }
 
       /// 不bindTo，一直等到返回结果，如果成功了就updateConversation

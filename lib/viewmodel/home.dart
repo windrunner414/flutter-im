@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:chopper/chopper.dart';
 import 'package:dartin/dartin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
@@ -47,6 +48,9 @@ class HomeViewModel extends BaseViewModel {
         }());
         webSocketConnected.value = true;
         _messageRepository.pullUnreadMessages().catchError((Object error) {
+          if (error is Response && error.statusCode == 401) {
+            return;
+          }
           assert(() {
             debugPrint('获取未读消息失败，重连：$error');
             return true;

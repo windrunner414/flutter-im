@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:badges/badges.dart';
@@ -10,9 +11,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
+import 'package:flutter_sound/flutter_sound.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/constant.dart';
 import 'package:wechat/common/state.dart';
@@ -24,9 +26,11 @@ import 'package:wechat/service/base.dart';
 import 'package:wechat/util/layer.dart';
 import 'package:wechat/util/router.dart';
 import 'package:wechat/util/screen.dart';
+import 'package:wechat/util/worker/worker.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/chat.dart';
 import 'package:wechat/widget/app_bar.dart';
+import 'package:wechat/widget/audio_player.dart';
 import 'package:wechat/widget/friend_user_info.dart';
 import 'package:wechat/widget/image.dart';
 import 'package:wechat/widget/joined_group_info.dart';
@@ -108,12 +112,52 @@ class _RecordVoiceButtonState extends State<_RecordVoiceButton> {
   int _seconds;
   bool _cancel;
   Offset _startOffset;
+  Future<void> _startFuture;
+  FlutterSound _recorder;
+  StreamSubscription _recorderStateSubscription;
 
-  Future<void> _onStart(Offset offset) async {
-    if (!await FlutterAudioRecorder.hasPermissions) {
-      showToast('请检查权限');
+  void _checkRecording() {
+    if (_seconds == null) {
+      throw Exception('不在录制中');
+    }
+  }
+
+  Future<void> _start() async {
+    FlutterSound recorder;
+    File file;
+    try {
+      file = File(
+          '${(await getTemporaryDirectory()).path}/record_${DateTime.now().microsecondsSinceEpoch}.aac');
+      _checkRecording();
+      recorder = FlutterSound();
+      await recorder.startRecorder(
+        codec: t_CODEC.CODEC_AAC,
+        uri: file.path,
+      );
+      _checkRecording();
+      _recorder = recorder;
+      _recorderStateSubscription =
+          _recorder.onRecorderStateChanged.listen((RecordStatus status) {
+        setState(() {
+          _seconds = status.currentPosition ~/ 1000;
+          if (_seconds >= 60) {
+            _onEnd();
+          }
+        });
+      });
+    } catch (_) {
+      if (recorder != null && recorder.isRecording) {
+        recorder.stopRecorder().then((String path) => File(path).delete());
+      }
+      _onEnd();
+    }
+  }
+
+  void _onStart(Offset offset) {
+    if (_startFuture != null) {
       return;
     }
+    _startFuture = _start()..whenComplete(() => _startFuture = null);
     setState(() {
       _startOffset = offset;
       _seconds = 0;
@@ -121,8 +165,27 @@ class _RecordVoiceButtonState extends State<_RecordVoiceButton> {
     });
   }
 
+  Future<void> _end() async {
+    final bool cancel = _cancel;
+    final int duration = _seconds;
+    final String path = await _recorder.stopRecorder();
+    final File file = File(path);
+    if (!cancel) {
+      widget.viewModel.send(Message(
+        msgType: MessageType.audio,
+        msg: await worker.jsonEncode({"duration": duration}),
+        data: file,
+      ));
+    } else {
+      await file.delete();
+    }
+  }
+
   void _onMove(Offset offset) {
-    bool cancel = _startOffset.dy - offset.dy >= 50;
+    if (_startOffset == null) {
+      return;
+    }
+    final bool cancel = _startOffset.dy - offset.dy >= 50;
     if (cancel != _cancel) {
       setState(() {
         _cancel = cancel;
@@ -131,6 +194,12 @@ class _RecordVoiceButtonState extends State<_RecordVoiceButton> {
   }
 
   void _onEnd() {
+    if (_recorder != null) {
+      _recorderStateSubscription?.cancel();
+      _end();
+      _recorder = null;
+      _recorderStateSubscription = null;
+    }
     setState(() {
       _seconds = null;
       _cancel = null;
@@ -149,7 +218,7 @@ class _RecordVoiceButtonState extends State<_RecordVoiceButton> {
               borderRadius: BorderRadius.all(Radius.circular(4)),
             ),
             alignment: Alignment.center,
-            padding: const EdgeInsets.all(7), // 7的话高度跟输入框一样
+            padding: const EdgeInsets.all(8),
             child: Text(
               _seconds == null
                   ? '长按录音'
@@ -493,6 +562,8 @@ class _MessageBox extends StatefulWidget {
         return _TextMessageBoxState();
       case MessageType.image:
         return _ImageMessageBoxState();
+      case MessageType.audio:
+        return _AudioMessageBoxState();
       default:
         return _TextMessageBoxState();
     }
@@ -608,6 +679,49 @@ abstract class _MessageBoxState extends State<_MessageBox> {
               ),
             );
           },
+        );
+      },
+    );
+  }
+}
+
+class _AudioMessageBoxState extends _MessageBoxState {
+  @override
+  Widget buildBox(BuildContext context) {
+    int duration;
+    String src;
+    try {
+      var msg = jsonDecode(widget.message.msg);
+      duration = msg['duration'] ?? 0;
+      src = msg['src'];
+    } catch (_) {
+      duration = 0;
+      src = null;
+    }
+    return GestureDetector(
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(4)),
+          color: isSentByMe ? const Color(0xFF9FE658) : Colors.white,
+        ),
+        child: Text('${duration}\''),
+      ),
+      onTap: () {
+        showWidget(
+          builder: (CloseLayerFunc close) => AudioPlayer(
+            src: (widget.message.data is File)
+                ? 'file://${widget.message.data.path}'
+                : staticFileBaseUrl + src,
+            onFinish: close,
+          ),
+          crossPage: false,
+          allowClick: true,
+          ignoreContentClick: true,
+          clickClose: false,
+          backgroundColor: Colors.transparent,
+          groupKey: 'chat_voice_player',
+          onlyOne: true,
         );
       },
     );

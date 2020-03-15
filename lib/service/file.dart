@@ -19,6 +19,15 @@ abstract class FileService extends BaseService {
   );
 
   @Put(
+    path: '/Common/Upload/voice',
+    headers: {contentTypeKey: 'multipart/form-data'},
+  )
+  @multipart
+  Future<Response<ApiResponse<String>>> uploadVoice(
+    @PartFile() MultipartFile file,
+  );
+
+  @Put(
     path: '/User/UploadFile/image',
     headers: {contentTypeKey: 'multipart/form-data'},
   )

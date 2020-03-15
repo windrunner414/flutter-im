@@ -9,6 +9,9 @@ class FileRepository extends BaseRepository {
   Future<String> uploadImage(MultipartFile file) async =>
       (await _fileService.uploadImage(file)).body.result;
 
+  Future<String> uploadVoice(MultipartFile file) async =>
+      (await _fileService.uploadVoice(file)).body.result;
+
   Future<String> uploadAvatar(MultipartFile file) async =>
       (await _fileService.uploadAvatar(file)).body.result;
 }

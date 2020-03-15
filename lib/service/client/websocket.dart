@@ -148,6 +148,7 @@ class WebSocketClient {
     }
   }
 
+  // TODO: 收到close事件就可以抛出错误连接断开了不必一直等到超时
   Future<WebSocketMessage<T>> receive<T>(
       {int op, int flagId, Duration timeout = const Duration(seconds: 15)}) {
     assert(() {
