@@ -216,6 +216,7 @@ class _RecordVoiceButtonState extends State<_RecordVoiceButton> {
           child: Container(
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(4)),
+              color: Colors.white,
             ),
             alignment: Alignment.center,
             padding: const EdgeInsets.all(8),
