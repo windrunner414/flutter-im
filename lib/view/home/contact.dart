@@ -147,6 +147,11 @@ class _ContactPageState extends BaseViewState<ContactViewModel, _ContactPage>
           title: '我的群聊',
           onPressed: () => router.push('/joinedGroupList'),
         ),
+        ContactItem(
+          avatar: 'asset://assets/images/ic_group_chat.png',
+          title: '黑名单',
+          onPressed: () => router.push('/blackList'),
+        ),
       ];
 
   @override

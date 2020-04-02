@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:badges/badges.dart';
 import 'package:dartin/dartin.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -366,6 +367,8 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
           data: bytes,
         ));
       }
+    } on NoImagesSelectedException {
+      // ignore
     } catch (_) {
       showToast('请检查权限');
     }
@@ -376,6 +379,7 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
     final Widget input = Column(
       children: <Widget>[
         Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
             GestureDetector(
               child: UImage(
@@ -527,24 +531,36 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
           ),
       ],
     );
-    return Container(
-      color: const Color(AppColor.ChatInputSectionBgColor),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      child: widget.viewModel.type == ConversationType.friend
-          ? input
-          : JoinedGroupInfo(
-              groupId: widget.viewModel.id,
-              builder: (BuildContext context, Group group) {
-                return group.isForbidden
-                    ? Center(
-                        child: Text(
-                          '禁言中',
-                          style: TextStyle(color: Colors.black54),
-                        ),
-                      )
-                    : input;
-              },
-            ),
+    return WillPopScope(
+      onWillPop: () async {
+        if (_showEmoji || _showMore) {
+          setState(() {
+            _showEmoji = false;
+            _showMore = false;
+          });
+          return false;
+        }
+        return true;
+      },
+      child: Container(
+        color: const Color(AppColor.ChatInputSectionBgColor),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: widget.viewModel.type == ConversationType.friend
+            ? input
+            : JoinedGroupInfo(
+                groupId: widget.viewModel.id,
+                builder: (BuildContext context, Group group) {
+                  return group.isForbidden
+                      ? Center(
+                          child: Text(
+                            '禁言中',
+                            style: TextStyle(color: Colors.black54),
+                          ),
+                        )
+                      : input;
+                },
+              ),
+      ),
     );
   }
 }
@@ -706,7 +722,21 @@ class _AudioMessageBoxState extends _MessageBoxState {
           borderRadius: const BorderRadius.all(Radius.circular(4)),
           color: isSentByMe ? const Color(0xFF9FE658) : Colors.white,
         ),
-        child: Text('${duration}\''),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            UImage(
+              'asset://assets/images/ic_voice.png',
+              width: 18,
+              height: 18,
+            ),
+            const SizedBox(width: 5),
+            Text(
+              '${duration}\'',
+              style: TextStyle(color: Colors.black54, fontSize: 17),
+            ),
+          ],
+        ),
       ),
       onTap: () {
         showWidget(
@@ -748,11 +778,18 @@ class _ImageMessageBoxState extends _MessageBoxState {
       imageProvider =
           ExtendedAssetImageProvider('assets/images/chat_image_error.png');
     }
-    final Widget image = ExtendedImage(
-      image: imageProvider,
-      filterQuality: FilterQuality.low,
-      enableMemoryCache: true,
-      clearMemoryCacheIfFailed: true,
+    final Widget image = ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: 300),
+      child: SingleChildScrollView(
+        child: ExtendedImage(
+          image: imageProvider,
+          filterQuality: FilterQuality.low,
+          enableMemoryCache: true,
+          clearMemoryCacheIfFailed: true,
+          fit: BoxFit.fitWidth,
+        ),
+        physics: const NeverScrollableScrollPhysics(),
+      ),
     );
     if (widget.message.sendState?.value == SendState.sending) {
       return Stack(children: <Widget>[

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chopper/chopper.dart';
 import 'package:wechat/model/api_response.dart';
 
@@ -32,6 +34,8 @@ class ViewModelException<T> implements Exception {
       } else {
         return '${response.statusCode} ${response.base.reasonPhrase}';
       }
+    } else if (data is TimeoutException) {
+      return 'timeout: ${(data as TimeoutException).duration.inSeconds}s';
     } else {
       return data.toString();
     }

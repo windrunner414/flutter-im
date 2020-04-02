@@ -81,7 +81,7 @@ class _DefaultConverter implements Converter, ErrorConverter {
           body[entry.key.toString()] = entry.value.toString();
         }
       }
-      req = req.replace(body: body);
+      req = req.copyWith(body: body);
     }
 
     return req;
@@ -104,7 +104,7 @@ class _DefaultConverter implements Converter, ErrorConverter {
       debugPrint('http response: ${response.statusCode}: ${response.body}');
       return true;
     }());
-    return response.replace<BodyType>(
+    return response.copyWith<BodyType>(
         body: ApiResponse<InnerType>.fromJson(
             await worker.jsonDecode(response.body as String)) as BodyType);
   }

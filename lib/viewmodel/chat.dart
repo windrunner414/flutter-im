@@ -11,6 +11,8 @@ import 'package:wechat/model/conversation.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/repository/file.dart';
 import 'package:wechat/repository/message.dart';
+import 'package:wechat/service/base.dart';
+import 'package:wechat/service/client/websocket.dart';
 import 'package:wechat/util/worker/worker.dart';
 import 'package:wechat/viewmodel/base.dart';
 
@@ -25,6 +27,7 @@ class ChatViewModel extends BaseViewModel {
   final BehaviorSubject<List<Message>> newMessages =
       BehaviorSubject<List<Message>>.seeded(<Message>[]);
 
+  StreamSubscription _streamSubscription;
   PublishSubject<Message> _messages;
   final MessageRepository _messageRepository = inject();
   final FileRepository _fileRepository = inject();
@@ -70,9 +73,7 @@ class ChatViewModel extends BaseViewModel {
       bool find = false;
       int i = 0;
       for (var nm in newMessages.value) {
-        if (++i >= list.list.length) {
-          break;
-        }
+        ++i;
         if (latestMessage.msgId == nm.msgId) {
           find = true;
           break;
@@ -80,7 +81,8 @@ class ChatViewModel extends BaseViewModel {
       }
       Iterable<Message> add = list.list.reversed;
       if (find) {
-        add = add.take(list.list.length - i);
+        int take = list.list.length - i;
+        add = add.take(take > 0 ? take : 0);
       }
       newMessages.value = newMessages.value..insertAll(0, add);
       _lastMsgId = newMessages.value.first.msgId - 1;
@@ -179,6 +181,37 @@ class ChatViewModel extends BaseViewModel {
         .catchError((Object error) {});
   }
 
+  void _listenStatus() {
+    int length = newMessages.value.length;
+    _streamSubscription = webSocketClient.connection.listen((value) async {
+      if (value.type == WebSocketEventType.connected) {
+        final MessageList list = await _messageRepository
+            .getHistoricalMessages(id: id, type: type)
+            .bindTo(this, 'pullOnReconnect');
+        final Iterable<Message> newAfterReconnect =
+            newMessages.value.skip(length);
+
+        var latestMessage = list.list.first;
+        bool find = false;
+        int i = 0;
+        for (var nm in newAfterReconnect) {
+          ++i;
+          if (latestMessage.msgId == nm.msgId) {
+            find = true;
+            break;
+          }
+        }
+
+        final List<Message> newList = List<Message>.from(list.list.reversed);
+        newList.addAll(find ? newAfterReconnect.skip(i) : newAfterReconnect);
+        newMessages.value = newList;
+        historicalMessages.value = [];
+      } else if (value.type == WebSocketEventType.closed) {
+        length = newMessages.value.length;
+      }
+    });
+  }
+
   @override
   void init() {
     super.init();
@@ -187,6 +220,7 @@ class ChatViewModel extends BaseViewModel {
         _addMessage(value);
         _notifyRead(value.msgId);
       });
+    _listenStatus();
   }
 
   @override
@@ -206,5 +240,6 @@ class ChatViewModel extends BaseViewModel {
     newMessages.close();
     historicalMessages.close();
     _messages.close();
+    _streamSubscription.cancel();
   }
 }

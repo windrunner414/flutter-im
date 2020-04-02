@@ -16,4 +16,11 @@ abstract class UserService extends BaseService {
     @Query() @required int page,
     @Query() @required int limit,
   });
+
+  @Post(path: '/update')
+  Future<Response<ApiResponse<User>>> update({
+    @Field() String userName,
+    @Field() String userPassword,
+    @Field() String userAvatar,
+  });
 }

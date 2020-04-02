@@ -22,10 +22,12 @@ import 'package:wechat/service/user.dart';
 import 'package:wechat/service/user_friend.dart';
 import 'package:wechat/service/user_friend_apply.dart';
 import 'package:wechat/viewmodel/add_friend.dart';
+import 'package:wechat/viewmodel/black_list.dart';
 import 'package:wechat/viewmodel/chat.dart';
 import 'package:wechat/viewmodel/contact.dart';
 import 'package:wechat/viewmodel/conversation.dart';
 import 'package:wechat/viewmodel/create_group.dart';
+import 'package:wechat/viewmodel/edit_profile.dart';
 import 'package:wechat/viewmodel/friend_applications.dart';
 import 'package:wechat/viewmodel/home.dart';
 import 'package:wechat/viewmodel/login.dart';
@@ -52,6 +54,8 @@ final Module viewModelModule = Module(<DartIn<dynamic>>[
       ({params}) => FriendApplicationsViewModel()),
   factory<ConversationViewModel>(({params}) => ConversationViewModel()),
   factory<CreateGroupViewModel>(({params}) => CreateGroupViewModel()),
+  factory<BlackListViewModel>(({params}) => BlackListViewModel()),
+  factory<EditProfileViewModel>(({params}) => EditProfileViewModel()),
 ]);
 
 final Module repositoryModule = Module(<DartIn<dynamic>>[

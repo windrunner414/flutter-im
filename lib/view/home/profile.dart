@@ -8,64 +8,69 @@ class _ProfileHeaderView extends StatelessWidget {
             EdgeInsets.symmetric(vertical: 13.height, horizontal: 20.width),
         child: IStreamBuilder<User>(
           stream: ownUserInfo,
-          builder: (BuildContext context, AsyncSnapshot<User> snapshot) => Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              UImage(
-                snapshot.data.userAvatar,
-                placeholderBuilder: (BuildContext context) => UImage(
-                  'asset://assets/images/default_avatar.png',
+          builder: (BuildContext context, AsyncSnapshot<User> snapshot) =>
+              GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () => router.push('/editProfile'),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                UImage(
+                  snapshot.data.userAvatar,
+                  placeholderBuilder: (BuildContext context) => UImage(
+                    'asset://assets/images/default_avatar.png',
+                    width: 60.sp,
+                    height: 60.sp,
+                  ),
                   width: 60.sp,
                   height: 60.sp,
                 ),
-                width: 60.sp,
-                height: 60.sp,
-              ),
-              SizedBox(width: 10.width),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      snapshot.data.userName,
-                      style: TextStyle(
-                        color: const Color(AppColor.TitleColor),
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
+                SizedBox(width: 10.width),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        snapshot.data.userName,
+                        style: TextStyle(
+                          color: const Color(AppColor.TitleColor),
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 10.height),
-                    Text(
-                      '账号: ${snapshot.data.userAccount}',
-                      style: TextStyle(
-                        color: const Color(AppColor.DescTextColor),
-                        fontSize: 13.sp,
-                      ),
-                    )
-                  ],
+                      SizedBox(height: 10.height),
+                      Text(
+                        '账号: ${snapshot.data.userAccount}',
+                        style: TextStyle(
+                          color: const Color(AppColor.DescTextColor),
+                          fontSize: 13.sp,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              GestureDetector(
-                onTap: () => router.push('/businessCard'),
-                child: Icon(
+                GestureDetector(
+                  onTap: () => router.push('/businessCard'),
+                  child: Icon(
+                    const IconData(
+                      0xe620,
+                      fontFamily: Constant.IconFontFamily,
+                    ),
+                    size: 22.minWidthHeight,
+                    color: Color(AppColor.TabIconNormalColor),
+                  ),
+                ),
+                SizedBox(width: 5.width),
+                Icon(
                   const IconData(
-                    0xe620,
+                    0xe664,
                     fontFamily: Constant.IconFontFamily,
                   ),
                   size: 22.minWidthHeight,
                   color: Color(AppColor.TabIconNormalColor),
                 ),
-              ),
-              SizedBox(width: 5.width),
-              Icon(
-                const IconData(
-                  0xe664,
-                  fontFamily: Constant.IconFontFamily,
-                ),
-                size: 22.minWidthHeight,
-                color: Color(AppColor.TabIconNormalColor),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );

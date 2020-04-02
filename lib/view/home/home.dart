@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:video_player/video_player.dart';
 import 'package:wechat/common/constant.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/contacts.dart';

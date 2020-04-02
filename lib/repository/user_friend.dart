@@ -13,6 +13,9 @@ class UserFriendRepository extends BaseRepository {
     return friendList.value;
   }
 
+  Future<FriendList> getBlackList() async =>
+      (await _userFriendService.getBlackList()).body.result;
+
   Future<Friend> updateRemark({
     @required int userId,
     @required String remark,

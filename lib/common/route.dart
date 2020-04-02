@@ -4,9 +4,11 @@ import 'package:wechat/common/state.dart';
 import 'package:wechat/model/conversation.dart';
 import 'package:wechat/util/router.dart';
 import 'package:wechat/view/add_friend.dart';
+import 'package:wechat/view/black_list.dart';
 import 'package:wechat/view/business_card.dart';
 import 'package:wechat/view/chat.dart';
 import 'package:wechat/view/create_group.dart';
+import 'package:wechat/view/edit_profile.dart';
 import 'package:wechat/view/friend_applications.dart';
 import 'package:wechat/view/home/home.dart';
 import 'package:wechat/view/joined_group_list.dart';
@@ -98,4 +100,9 @@ final Set<AppRouteSetting> appRoutes = <AppRouteSetting>{
     parameters: <String>{'userId', 'groupId'},
   ),
   AppRouteSetting(path: '/scanQrCode', handler: (_, __) => ScanQrPage()),
+  AppRouteSetting(path: '/blackList', handler: (_, __) => BlackListPage()),
+  AppRouteSetting(
+    path: '/editProfile',
+    handler: (_, __) => EditProfilePage(),
+  ),
 };

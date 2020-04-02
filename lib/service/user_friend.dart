@@ -43,4 +43,7 @@ abstract class UserFriendService extends BaseService {
   Future<Response<ApiResponse<dynamic>>> delete({
     @Field() @required int userId,
   });
+
+  @Get(path: '/getBlackAll')
+  Future<Response<ApiResponse<FriendList>>> getBlackList();
 }

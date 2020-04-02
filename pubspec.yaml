@@ -49,6 +49,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/audio/message.mp3
     - assets/images/splash.png
     - assets/images/ic_new_friend.png
     - assets/images/ic_group_chat.png

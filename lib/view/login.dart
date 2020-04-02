@@ -52,7 +52,7 @@ class LoginPage extends BaseView<LoginViewModel> {
               onSelected: (_PopupMenuItems selected) async {
                 switch (selected) {
                   case _PopupMenuItems.serverSetting:
-                    if (await router.push<bool>('/serverSetting') == true) {
+                    if (await router.push('/serverSetting') == true) {
                       viewModel.refreshVerifyCode();
                     }
                     break;
