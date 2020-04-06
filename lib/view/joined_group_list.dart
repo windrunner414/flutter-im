@@ -20,6 +20,7 @@ class JoinedGroupListPage extends StatelessWidget {
           stream: joinedGroupList,
           builder: (BuildContext context, AsyncSnapshot<GroupList> snapshot) {
             return ListView.separated(
+              physics: const BouncingScrollPhysics(),
               itemBuilder: (BuildContext context, int index) {
                 final Group group = snapshot.data.list[index];
                 return ContactItem(

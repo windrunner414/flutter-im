@@ -36,6 +36,7 @@ class Group extends BaseModel {
     int lastSpeakTime,
     this.manageUserId,
     this.userGroupName,
+    this.code,
   })  : addTime =
             (addTime ?? 99999999999) < 9999999999 ? addTime * 1000 : addTime,
         lastSpeakTime = (lastSpeakTime ?? 99999999999) < 9999999999
@@ -58,6 +59,7 @@ class Group extends BaseModel {
   final String groupName;
   final String groupAvatar;
   final int manageUserId;
+  final String code;
 
   @override
   bool operator ==(dynamic other) {

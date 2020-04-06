@@ -26,4 +26,31 @@ class GroupRepository extends BaseRepository {
       (await _groupService.getUserInfo(userId: userId, groupId: groupId))
           .body
           .result;
+
+  Future<Group> getInfo({@required int groupId}) async =>
+      (await _groupService.getInfo(groupId: groupId)).body.result;
+
+  Future<GroupUserList> getUserList({@required int groupId}) async =>
+      (await _groupService.getUserList(groupId: groupId)).body.result;
+
+  Future<void> deleteUser({
+    @required int userId,
+    @required int groupId,
+  }) async =>
+      await _groupService.deleteUser(groupId: groupId, userId: userId);
+
+  Future<void> delete({@required int groupId}) async =>
+      await _groupService.delete(groupId: groupId);
+
+  Future<void> update(
+          {@required int groupId,
+          String groupName,
+          bool isSpeakForbidden,
+          String groupAvatar}) async =>
+      await _groupService.update(
+        groupId: groupId,
+        groupAvatar: groupAvatar,
+        groupName: groupName,
+        isSpeakForbidden: isSpeakForbidden ? 1 : 0,
+      );
 }

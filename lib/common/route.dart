@@ -10,6 +10,7 @@ import 'package:wechat/view/chat.dart';
 import 'package:wechat/view/create_group.dart';
 import 'package:wechat/view/edit_profile.dart';
 import 'package:wechat/view/friend_applications.dart';
+import 'package:wechat/view/group.dart';
 import 'package:wechat/view/home/home.dart';
 import 'package:wechat/view/joined_group_list.dart';
 import 'package:wechat/view/login.dart';
@@ -104,5 +105,11 @@ final Set<AppRouteSetting> appRoutes = <AppRouteSetting>{
   AppRouteSetting(
     path: '/editProfile',
     handler: (_, __) => EditProfilePage(),
+  ),
+  AppRouteSetting(
+    path: '/group',
+    handler: (_, Map<String, String> arguments) =>
+        GroupPage(int.tryParse(arguments['id'])),
+    parameters: <String>{'id'},
   ),
 };

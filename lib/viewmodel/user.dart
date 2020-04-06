@@ -1,6 +1,7 @@
 import 'package:dartin/dartin.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/exception.dart';
+import 'package:wechat/common/state.dart';
 import 'package:wechat/model/friend.dart';
 import 'package:wechat/model/group_user.dart';
 import 'package:wechat/repository/group.dart';
@@ -31,17 +32,29 @@ class UserViewModel extends BaseViewModel {
           .getUserInfo(userId: userId, groupId: groupId)
           .bindTo(this, 'getGroupUserData')
           .wrapError();
+    }
+    if (userId == ownUserInfo.value.userId) {
+      friendData.value = Friend(
+        friendId: 0,
+        targetUserName: ownUserInfo.value.userName,
+        userAvatar: ownUserInfo.value.userAvatar,
+        addTime: 0,
+        state: FriendState.normal,
+        targetUserAccount: ownUserInfo.value.userAccount,
+        remark: '',
+        targetUserId: userId,
+      );
+    } else {
       try {
         friendData.value = await _userFriendRepository
             .getUserInfo(userId: userId)
             .bindTo(this, 'getFriendData')
             .wrapError();
-      } catch (_) {}
-    } else {
-      friendData.value = await _userFriendRepository
-          .getUserInfo(userId: userId)
-          .bindTo(this, 'getFriendData')
-          .wrapError();
+      } catch (_) {
+        if (groupId == null) {
+          rethrow;
+        }
+      }
     }
   }
 

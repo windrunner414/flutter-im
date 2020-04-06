@@ -74,6 +74,11 @@ class ChatPage extends BaseView<ChatViewModel> {
                         'groupId': null,
                       },
                     );
+                  } else {
+                    router.push(
+                      '/group',
+                      arguments: <String, String>{'id': id.toString()},
+                    );
                   }
                 },
               ),
@@ -550,6 +555,14 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
             : JoinedGroupInfo(
                 groupId: widget.viewModel.id,
                 builder: (BuildContext context, Group group) {
+                  if (group.isForbidden == null) {
+                    return Center(
+                      child: Text(
+                        '该群已被封禁或已解散',
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                    );
+                  }
                   return group.isForbidden
                       ? Center(
                           child: Text(
@@ -602,15 +615,21 @@ abstract class _MessageBoxState extends State<_MessageBox> {
           stream: widget.message.sendState,
           builder: (_, AsyncSnapshot<SendState> snapshot) {
             dependOnScreenUtil(context);
-            final Widget avatar = UImage(
-              user.userAvatar,
-              placeholderBuilder: (BuildContext context) => UImage(
-                'asset://assets/images/default_avatar.png',
+            final Widget avatar = GestureDetector(
+              onTap: () => router.push('/user', arguments: <String, String>{
+                'userId': user.userId.toString(),
+                'groupId': widget.message.groupId.toString(),
+              }),
+              child: UImage(
+                user.userAvatar,
+                placeholderBuilder: (BuildContext context) => UImage(
+                  'asset://assets/images/default_avatar.png',
+                  width: 48.sp,
+                  height: 48.sp,
+                ),
                 width: 48.sp,
                 height: 48.sp,
               ),
-              width: 48.sp,
-              height: 48.sp,
             );
             Widget status;
             switch (snapshot.data) {

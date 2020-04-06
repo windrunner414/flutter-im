@@ -32,6 +32,7 @@ part 'model_generic_json_converter.g.dart';
   Group,
   GroupList,
   GroupUser,
+  GroupUserList,
 ])
 class ModelGenericJsonConverter<T>
     with _$ModelGenericJsonConverterMixin<T>
