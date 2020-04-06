@@ -66,6 +66,28 @@ class GroupUser extends BaseModel {
   @JsonKey(name: 'userAvatarAccount') // TODO: ???
   final String userAccount;
   String get showName => userGroupName ?? userName;
+
+  @override
+  bool operator ==(dynamic other) {
+    if (super == other) {
+      return true;
+    }
+    if (other is GroupUser) {
+      return groupUserListId == other.groupUserListId &&
+          groupId == other.groupId &&
+          userId == other.userId &&
+          userName == other.userName &&
+          userGroupName == other.userGroupName &&
+          addTime == other.addTime &&
+          lastSpeakTime == other.lastSpeakTime &&
+          isForbidden == other.isForbidden &&
+          state == other.state &&
+          userAvatar == other.userAvatar &&
+          userAccount == other.userAccount;
+    } else {
+      return false;
+    }
+  }
 }
 
 @JsonSerializable()

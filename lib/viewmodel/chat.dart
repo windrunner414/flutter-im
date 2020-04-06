@@ -8,8 +8,10 @@ import 'package:http_parser/http_parser.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/conversation.dart';
+import 'package:wechat/model/group_user.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/repository/file.dart';
+import 'package:wechat/repository/group.dart';
 import 'package:wechat/repository/message.dart';
 import 'package:wechat/service/base.dart';
 import 'package:wechat/service/client/websocket.dart';
@@ -21,6 +23,11 @@ class ChatViewModel extends BaseViewModel {
 
   final int id;
   final ConversationType type;
+
+  final BehaviorSubject<GroupUserList> groupUserList =
+      BehaviorSubject<GroupUserList>.seeded(GroupUserList(total: 0, list: []));
+  Timer _updateGroupInfoTimer;
+  final GroupRepository _groupRepository = inject();
 
   final BehaviorSubject<List<Message>> historicalMessages =
       BehaviorSubject<List<Message>>.seeded(<Message>[]);
@@ -212,6 +219,14 @@ class ChatViewModel extends BaseViewModel {
     });
   }
 
+  Future<void> _updateGroupInfo() async {
+    try {
+      groupUserList.value = await _groupRepository.getUserList(groupId: id);
+    } catch (_) {
+      // ignore
+    }
+  }
+
   @override
   void init() {
     super.init();
@@ -221,6 +236,9 @@ class ChatViewModel extends BaseViewModel {
         _notifyRead(value.msgId);
       });
     _listenStatus();
+    _updateGroupInfo();
+    _updateGroupInfoTimer =
+        Timer.periodic(Duration(seconds: 5), (timer) => _updateGroupInfo());
   }
 
   @override
@@ -241,5 +259,6 @@ class ChatViewModel extends BaseViewModel {
     historicalMessages.close();
     _messages.close();
     _streamSubscription.cancel();
+    _updateGroupInfoTimer?.cancel();
   }
 }

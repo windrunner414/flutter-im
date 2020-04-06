@@ -21,6 +21,7 @@ import 'package:wechat/common/constant.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/conversation.dart';
 import 'package:wechat/model/group.dart';
+import 'package:wechat/model/group_user.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/model/user.dart';
 import 'package:wechat/service/base.dart';
@@ -33,6 +34,7 @@ import 'package:wechat/viewmodel/chat.dart';
 import 'package:wechat/widget/app_bar.dart';
 import 'package:wechat/widget/audio_player.dart';
 import 'package:wechat/widget/friend_user_info.dart';
+import 'package:wechat/widget/group_user_info.dart';
 import 'package:wechat/widget/image.dart';
 import 'package:wechat/widget/joined_group_info.dart';
 import 'package:wechat/widget/stream_builder.dart';
@@ -608,113 +610,129 @@ abstract class _MessageBoxState extends State<_MessageBox> {
 
   @override
   Widget build(BuildContext context) {
-    return FriendUserInfo(
-      userId: widget.message.fromUserId,
-      builder: (BuildContext context, User user) {
-        return IStreamBuilder(
-          stream: widget.message.sendState,
-          builder: (_, AsyncSnapshot<SendState> snapshot) {
-            dependOnScreenUtil(context);
-            final Widget avatar = GestureDetector(
-              onTap: () => router.push('/user', arguments: <String, String>{
-                'userId': user.userId.toString(),
-                'groupId': widget.message.groupId.toString(),
-              }),
-              child: UImage(
-                user.userAvatar,
-                placeholderBuilder: (BuildContext context) => UImage(
-                  'asset://assets/images/default_avatar.png',
-                  width: 48.sp,
-                  height: 48.sp,
-                ),
-                width: 48.sp,
-                height: 48.sp,
-              ),
-            );
-            Widget status;
-            switch (snapshot.data) {
-              case SendState.sending:
-                status = Padding(
-                  padding: const EdgeInsets.only(top: 2, right: 10),
-                  child: SpinKitRing(
-                    color: Colors.black26,
-                    size: 18,
-                    lineWidth: 1,
-                  ),
-                );
-                break;
-              case SendState.failed:
-                status = GestureDetector(
-                  onTap: () =>
-                      setState(() => widget.viewModel.reSend(widget.message)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 2, right: 10),
-                    child: Badge(
-                      badgeContent: Icon(
-                        Icons.refresh,
-                        size: 14,
-                        color: Colors.white,
-                      ),
-                      badgeColor: Colors.red,
-                      elevation: 0,
-                    ),
-                  ),
-                );
-                break;
-              default:
-            }
-            final Widget messageBox = Flexible(
-              child: Column(
-                crossAxisAlignment: isSentByMe
-                    ? CrossAxisAlignment.end
-                    : CrossAxisAlignment.start,
-                children: <Widget>[
-                  if (widget.showName)
-                    Text(
-                      user.userName,
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        color: Colors.black45,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  const SizedBox(height: 5),
-                  if (status != null)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        status,
-                        Flexible(child: buildBox(context)),
-                      ],
-                    )
-                  else
-                    buildBox(context),
-                ],
-              ),
-            );
+    return widget.viewModel.type == ConversationType.friend
+        ? FriendUserInfo(
+            userId: widget.message.fromUserId,
+            builder: (BuildContext context, User user) {
+              return _buildContainer(context, user);
+            },
+          )
+        : GroupUserInfo(
+            userId: widget.message.fromUserId,
+            builder: (BuildContext context, GroupUser user) {
+              return _buildContainer(
+                  context,
+                  User(
+                    userId: user.userId,
+                    userAvatar: user.userAvatar,
+                    userName: user.showName,
+                  ));
+            },
+            userList: widget.viewModel.groupUserList,
+          );
+  }
 
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                mainAxisAlignment: isSentByMe
-                    ? MainAxisAlignment.end
-                    : MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: isSentByMe
-                    ? <Widget>[
-                        messageBox,
-                        const SizedBox(width: 10),
-                        avatar,
-                      ]
-                    : <Widget>[
-                        avatar,
-                        const SizedBox(width: 10),
-                        messageBox,
-                      ],
+  Widget _buildContainer(BuildContext context, User user) {
+    return IStreamBuilder(
+      stream: widget.message.sendState,
+      builder: (_, AsyncSnapshot<SendState> snapshot) {
+        dependOnScreenUtil(context);
+        final Widget avatar = GestureDetector(
+          onTap: () => router.push('/user', arguments: <String, String>{
+            'userId': user.userId.toString(),
+            'groupId': widget.message.groupId.toString(),
+          }),
+          child: UImage(
+            user.userAvatar,
+            placeholderBuilder: (BuildContext context) => UImage(
+              'asset://assets/images/default_avatar.png',
+              width: 48.sp,
+              height: 48.sp,
+            ),
+            width: 48.sp,
+            height: 48.sp,
+          ),
+        );
+        Widget status;
+        switch (snapshot.data) {
+          case SendState.sending:
+            status = Padding(
+              padding: const EdgeInsets.only(top: 2, right: 10),
+              child: SpinKitRing(
+                color: Colors.black26,
+                size: 18,
+                lineWidth: 1,
               ),
             );
-          },
+            break;
+          case SendState.failed:
+            status = GestureDetector(
+              onTap: () =>
+                  setState(() => widget.viewModel.reSend(widget.message)),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 2, right: 10),
+                child: Badge(
+                  badgeContent: Icon(
+                    Icons.refresh,
+                    size: 14,
+                    color: Colors.white,
+                  ),
+                  badgeColor: Colors.red,
+                  elevation: 0,
+                ),
+              ),
+            );
+            break;
+          default:
+        }
+        final Widget messageBox = Flexible(
+          child: Column(
+            crossAxisAlignment:
+                isSentByMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            children: <Widget>[
+              if (widget.showName)
+                Text(
+                  user.userName,
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.black45,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              const SizedBox(height: 5),
+              if (status != null)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    status,
+                    Flexible(child: buildBox(context)),
+                  ],
+                )
+              else
+                buildBox(context),
+            ],
+          ),
+        );
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            mainAxisAlignment:
+                isSentByMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: isSentByMe
+                ? <Widget>[
+                    messageBox,
+                    const SizedBox(width: 10),
+                    avatar,
+                  ]
+                : <Widget>[
+                    avatar,
+                    const SizedBox(width: 10),
+                    messageBox,
+                  ],
+          ),
         );
       },
     );
