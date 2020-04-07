@@ -19,7 +19,7 @@ abstract class AuthService extends BaseService {
       @Field() @required String verifyCode});
 
   @Post(path: '/register')
-  Future<Response<ApiResponse<dynamic>>> register(
+  Future<Response<ApiResponse<Object>>> register(
       {@Field() @required String userAccount,
       @Field() @required String userName,
       @Field() @required String userPassword,

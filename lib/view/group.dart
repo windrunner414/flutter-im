@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:dartin/dartin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/constant.dart';
 import 'package:wechat/common/state.dart';
@@ -58,6 +59,119 @@ class GroupPage extends BaseView<GroupViewModel> {
 
   @override
   _GroupPageState createState() => _GroupPageState();
+
+  // TODO: 可以抽出来复用的，先copy了
+  Future<void> _editGroupName(
+      BuildContext context, String current, GroupViewModel viewModel) async {
+    final TextEditingController textEditingController =
+        TextEditingController.fromValue(TextEditingValue(text: current));
+    final bool save = await showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text('修改群聊名称'),
+        content: TextField(
+          controller: textEditingController,
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: Text("取消"),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          FlatButton(
+            child: Text("确定"),
+            onPressed: () {
+              if (textEditingController.text.isEmpty) {
+                showToast('不能为空');
+              } else {
+                Navigator.of(context).pop(true);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+    if (save == true) {
+      final new_ = textEditingController.text;
+      if (current != new_) {
+        viewModel.update(groupName: new_).catchAll(
+          (e) {
+            showToast(e.toString());
+          },
+          test: exceptCancelException,
+        ).showLoadingUntilComplete();
+      }
+    }
+  }
+
+  Future<void> _editNickName(
+      BuildContext context, String current, GroupViewModel viewModel) async {
+    final TextEditingController textEditingController =
+        TextEditingController.fromValue(TextEditingValue(text: current));
+    final bool save = await showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text('修改我在本群的昵称'),
+        content: TextField(
+          controller: textEditingController,
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: Text("取消"),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          FlatButton(
+            child: Text("确定"),
+            onPressed: () {
+              if (textEditingController.text.isEmpty) {
+                showToast('不能为空');
+              } else {
+                Navigator.of(context).pop(true);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+    if (save == true) {
+      final new_ = textEditingController.text;
+      if (current != new_) {
+        viewModel.updateNickName(new_).catchAll(
+          (e) {
+            showToast(e.toString());
+          },
+          test: exceptCancelException,
+        ).showLoadingUntilComplete();
+      }
+    }
+  }
+
+  void _showQRCode(GroupViewModel viewModel) {
+    showWidget(
+      builder: (_) {
+        return Center(
+          child: Container(
+            color: Colors.white,
+            child: QrImage(
+              data: 'group://' + viewModel.info.value.code.toString(),
+              errorCorrectionLevel: QrErrorCorrectLevel.H,
+              size: 196,
+              errorStateBuilder: (BuildContext context, Object error) =>
+                  const Text(
+                '啊哦，出错了',
+                style: TextStyle(
+                  fontSize: 22,
+                  color: Colors.black,
+                  decoration: TextDecoration.none,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+      clickClose: true,
+      crossPage: false,
+    );
+  }
 
   @override
   Widget build(BuildContext context, GroupViewModel viewModel) {
@@ -145,25 +259,35 @@ class GroupPage extends BaseView<GroupViewModel> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                _column('群聊名称', Text(group.groupName)),
-                _column(
-                  '群二维码',
-                  Icon(
-                    const IconData(
-                      0xe620,
-                      fontFamily: Constant.IconFontFamily,
+                if (isManager)
+                  GestureDetector(
+                    onTap: () =>
+                        _editGroupName(context, group.groupName, viewModel),
+                    child: _column('群聊名称', Text(group.groupName)),
+                  )
+                else
+                  _column('群聊名称', Text(group.groupName)),
+                GestureDetector(
+                  onTap: () => _showQRCode(viewModel),
+                  child: _column(
+                    '群二维码',
+                    Icon(
+                      const IconData(
+                        0xe620,
+                        fontFamily: Constant.IconFontFamily,
+                      ),
+                      size: 26,
+                      color: Color(AppColor.TabIconNormalColor),
                     ),
-                    size: 26,
-                    color: Color(AppColor.TabIconNormalColor),
                   ),
                 ),
-                if (isManager)
+                if (isManager && false) // TODO: hide this now
                   _column(
                     '禁言',
                     CupertinoSwitch(
                       value: group.isForbidden,
                       onChanged: (bool value) {
-                        viewModel.updateForbidden(value).catchAll(
+                        viewModel.update(isSpeakForbidden: value).catchAll(
                           (e) {
                             showToast(e.toString());
                           },
@@ -173,7 +297,12 @@ class GroupPage extends BaseView<GroupViewModel> {
                     ),
                   ),
                 const SizedBox(height: 8),
-                _column('我在本群的昵称', Text(me.showName)),
+                GestureDetector(
+                  // 这里应该默认为userGroupName而非showName
+                  onTap: () =>
+                      _editNickName(context, me.userGroupName, viewModel),
+                  child: _column('我在本群的昵称', Text(me.showName)),
+                ),
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,

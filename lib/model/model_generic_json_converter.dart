@@ -4,6 +4,7 @@ import 'package:wechat/model/conversation.dart';
 import 'package:wechat/model/friend.dart';
 import 'package:wechat/model/friend_application.dart';
 import 'package:wechat/model/group.dart';
+import 'package:wechat/model/group_application.dart';
 import 'package:wechat/model/group_user.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/model/server_config.dart';
@@ -33,6 +34,8 @@ part 'model_generic_json_converter.g.dart';
   GroupList,
   GroupUser,
   GroupUserList,
+  GroupApplication,
+  GroupApplicationList,
 ])
 class ModelGenericJsonConverter<T>
     with _$ModelGenericJsonConverterMixin<T>

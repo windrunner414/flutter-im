@@ -91,6 +91,7 @@ class GroupUser extends BaseModel {
 }
 
 @JsonSerializable()
+@CopyWith()
 class GroupUserList extends BaseModel {
   GroupUserList({this.total, this.list});
 

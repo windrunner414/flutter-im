@@ -12,7 +12,7 @@ abstract class UserFriendApplyService extends BaseService {
       _$UserFriendApplyService(client);
 
   @Post(path: '/addFriend')
-  Future<Response<ApiResponse<dynamic>>> addFriend({
+  Future<Response<ApiResponse<Object>>> addFriend({
     @Field() @required String userAccount,
     @Field() String note,
   });
@@ -26,7 +26,7 @@ abstract class UserFriendApplyService extends BaseService {
   });
 
   @Post(path: '/verify')
-  Future<Response<ApiResponse<dynamic>>> verify({
+  Future<Response<ApiResponse<Object>>> verify({
     @Field() @required int friendApplyId,
     @Field() @required int state,
     @Field() String note,

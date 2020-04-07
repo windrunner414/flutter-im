@@ -8,6 +8,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/exception.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/friend_application.dart';
+import 'package:wechat/model/group_application.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/model/websocket_message.dart';
 import 'package:wechat/repository/auth.dart';
@@ -29,6 +30,8 @@ class HomeViewModel extends BaseViewModel {
   final BehaviorSubject<int> currentIndex = BehaviorSubject<int>.seeded(0);
   final PageController pageController = PageController(initialPage: 0);
   final BehaviorSubject<int> friendApplicationNum =
+      BehaviorSubject<int>.seeded(0);
+  final BehaviorSubject<int> groupApplicationNum =
       BehaviorSubject<int>.seeded(0);
   final BehaviorSubject<bool> webSocketConnected =
       BehaviorSubject<bool>.seeded(false);
@@ -86,6 +89,7 @@ class HomeViewModel extends BaseViewModel {
     _refreshFriendApplyNum();
     _refreshFriendList();
     _refreshJoinedGroupList();
+    _refreshGroupApplyNum();
     _timers.add(Timer.periodic(
         const Duration(minutes: 5), (_) => _refreshUserProfile()));
     _timers.add(Timer.periodic(
@@ -95,6 +99,8 @@ class HomeViewModel extends BaseViewModel {
         const Duration(seconds: 5), (_) => _refreshFriendList()));
     _timers.add(Timer.periodic(
         const Duration(seconds: 5), (_) => _refreshJoinedGroupList()));
+    _timers.add(Timer.periodic(
+        const Duration(seconds: 5), (_) => _refreshGroupApplyNum()));
   }
 
   void _stopTimers() {
@@ -120,6 +126,16 @@ class HomeViewModel extends BaseViewModel {
         .bindTo(this, 'refreshFriendApplyNum')
         .then((FriendApplicationList result) =>
             friendApplicationNum.value = result.total)
+        .catchError((Object e) {});
+  }
+
+  void _refreshGroupApplyNum() {
+    _groupRepository
+        .getGroupApplications(
+            page: 1, limit: 1, state: GroupApplicationState.waiting)
+        .bindTo(this, 'refreshGroupApplyNum')
+        .then((GroupApplicationList result) =>
+            groupApplicationNum.value = result.total)
         .catchError((Object e) {});
   }
 

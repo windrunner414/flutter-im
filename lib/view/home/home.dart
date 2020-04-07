@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:video_player/video_player.dart';
 import 'package:wechat/common/constant.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/contacts.dart';
@@ -63,7 +62,10 @@ class HomePage extends BaseView<HomeViewModel> {
     dependOnScreenUtil(context);
     final List<Widget> pages = <Widget>[
       _ConversationPage(),
-      _ContactPage(friendApplicationNum: viewModel.friendApplicationNum),
+      _ContactPage(
+        friendApplicationNum: viewModel.friendApplicationNum,
+        groupApplicationNum: viewModel.groupApplicationNum,
+      ),
       _ProfilePage(),
     ];
     return WillPopScope(
@@ -131,7 +133,14 @@ class HomePage extends BaseView<HomeViewModel> {
           stream: viewModel.currentIndex,
           builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
             Widget buildContactIcon(bool active) => IStreamBuilder<int>(
-                  stream: viewModel.friendApplicationNum,
+                  initialData: 0,
+                  stream: Rx.combineLatest<int, int>(
+                    <Stream<int>>{
+                      viewModel.friendApplicationNum,
+                      viewModel.groupApplicationNum,
+                    },
+                    (List<int> list) => list.fold(0, (v, e) => v + e),
+                  ),
                   builder:
                       (BuildContext context, AsyncSnapshot<int> snapshot) =>
                           Badge(

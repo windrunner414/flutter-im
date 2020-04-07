@@ -3,26 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/constant.dart';
-import 'package:wechat/model/friend_application.dart';
+import 'package:wechat/model/group_application.dart';
 import 'package:wechat/util/layer.dart';
 import 'package:wechat/util/screen.dart';
 import 'package:wechat/view/base.dart';
-import 'package:wechat/viewmodel/friend_applications.dart';
+import 'package:wechat/viewmodel/group_applications.dart';
 import 'package:wechat/widget/app_bar.dart';
 import 'package:wechat/widget/image.dart';
 import 'package:wechat/widget/stream_builder.dart';
 
-class FriendApplicationsPage extends BaseView<FriendApplicationsViewModel> {
+class GroupApplicationsPage extends BaseView<GroupApplicationsViewModel> {
   @override
-  _FriendApplicationsPageState createState() => _FriendApplicationsPageState();
+  _GroupApplicationsPageState createState() => _GroupApplicationsPageState();
 
   @override
-  Widget build(BuildContext context, FriendApplicationsViewModel viewModel) =>
+  Widget build(BuildContext context, GroupApplicationsViewModel viewModel) =>
       null;
 }
 
-class _FriendApplicationsPageState
-    extends BaseViewState<FriendApplicationsViewModel, FriendApplicationsPage> {
+class _GroupApplicationsPageState
+    extends BaseViewState<GroupApplicationsViewModel, GroupApplicationsPage> {
   @override
   void initState() {
     super.initState();
@@ -38,16 +38,16 @@ class _FriendApplicationsPageState
   Widget build(BuildContext context) {
     dependOnScreenUtil(context);
     return Scaffold(
-      appBar: const IAppBar(title: Text('好友申请')),
-      body: IStreamBuilder<List<BehaviorSubject<FriendApplication>>>(
+      appBar: const IAppBar(title: Text('加群申请')),
+      body: IStreamBuilder<List<BehaviorSubject<GroupApplication>>>(
         stream: viewModel.list,
         builder: (BuildContext context,
-                AsyncSnapshot<List<BehaviorSubject<FriendApplication>>>
+                AsyncSnapshot<List<BehaviorSubject<GroupApplication>>>
                     snapshot) =>
             snapshot.data.isEmpty
                 ? Center(
                     child: Text(
-                      '好友申请空空的~',
+                      '加群申请空空的~',
                       style: TextStyle(
                         fontSize: 18.sp,
                         color: Colors.black54,
@@ -70,11 +70,10 @@ class _FriendApplicationsPageState
                         itemExtent: 56,
                         delegate: SliverChildBuilderDelegate(
                           (BuildContext context, int index) =>
-                              IStreamBuilder<FriendApplication>(
+                              IStreamBuilder<GroupApplication>(
                             stream: snapshot.data[index],
                             builder: (BuildContext context,
-                                    AsyncSnapshot<FriendApplication>
-                                        snapshot) =>
+                                    AsyncSnapshot<GroupApplication> snapshot) =>
                                 _buildItem(snapshot.data, index),
                           ),
                           childCount: snapshot.data.length,
@@ -87,7 +86,7 @@ class _FriendApplicationsPageState
     );
   }
 
-  Widget _buildItem(FriendApplication data, int index) => Container(
+  Widget _buildItem(GroupApplication data, int index) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         height: 56.height,
         color: Colors.white,
@@ -107,7 +106,7 @@ class _FriendApplicationsPageState
                 child: Row(
                   children: <Widget>[
                     UImage(
-                      data.fromUserAvatar,
+                      data.userAvatar,
                       placeholderBuilder: (BuildContext context) => UImage(
                         'asset://assets/images/default_avatar.png',
                         width: 36.sp,
@@ -118,16 +117,30 @@ class _FriendApplicationsPageState
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: Text(
-                        data.fromUserName,
-                        style: TextStyle(fontSize: 16.sp),
-                        overflow: TextOverflow.ellipsis,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            '${data.userName}',
+                            style: TextStyle(fontSize: 16.sp),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            '申请加入${data.groupName}',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: Colors.black54,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-              if (data.state == FriendApplicationState.waiting)
+              if (data.state == GroupApplicationState.waiting)
                 ButtonTheme(
                   minWidth: 0,
                   child: Row(
@@ -136,7 +149,7 @@ class _FriendApplicationsPageState
                         onPressed: () => viewModel
                             .verify(
                           index: index,
-                          state: FriendApplicationState.accepted,
+                          state: GroupApplicationState.accepted,
                         )
                             .catchAll(
                           (Object error) {
@@ -159,7 +172,7 @@ class _FriendApplicationsPageState
                         onPressed: () => viewModel
                             .verify(
                           index: index,
-                          state: FriendApplicationState.rejected,
+                          state: GroupApplicationState.rejected,
                         )
                             .catchAll(
                           (Object error) {
@@ -185,7 +198,7 @@ class _FriendApplicationsPageState
                 )
               else
                 Text(
-                  data.state == FriendApplicationState.accepted ? '已接受' : '已拒绝',
+                  data.state == GroupApplicationState.accepted ? '已接受' : '已拒绝',
                   style: TextStyle(
                     color: Colors.black54,
                     fontSize: 16.sp,

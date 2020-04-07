@@ -2,6 +2,7 @@ import 'package:chopper/chopper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:wechat/model/api_response.dart';
 import 'package:wechat/model/group.dart';
+import 'package:wechat/model/group_application.dart';
 import 'package:wechat/model/group_user.dart';
 import 'package:wechat/service/base.dart';
 
@@ -41,7 +42,7 @@ abstract class GroupService extends BaseService {
   });
 
   @Post(path: '/GroupUser/delete')
-  Future<Response<ApiResponse<dynamic>>> deleteUser({
+  Future<Response<ApiResponse<bool>>> deleteUser({
     @Field() @required int groupId,
     @Field() @required int userId,
   });
@@ -57,5 +58,33 @@ abstract class GroupService extends BaseService {
     @Field() String groupName,
     @Field() int isSpeakForbidden,
     @Field() String groupAvatar,
+  });
+
+  @Post(path: '/GroupUser/update')
+  Future<Response<ApiResponse<bool>>> updateUser({
+    @Field() @required int groupId,
+    @Field() @required int userId,
+    @Field() String userGroupName,
+  });
+
+  @Post(path: '/GroupUserApply/groupApply')
+  Future<Response<ApiResponse<Object>>> applyEnter({
+    @Field() @required String code,
+    @Field() String note,
+  });
+
+  @Get(path: '/GroupUserApply/getFriendApplyList')
+  Future<Response<ApiResponse<GroupApplicationList>>> getGroupApplications({
+    @Query() int page,
+    @Query() int limit,
+    @Query() int groupId,
+    @Query() int state,
+  });
+
+  @Post(path: '/GroupUserApply/verify')
+  Future<Response<ApiResponse<Object>>> verifyApplication({
+    @Field() @required int groupApplyId,
+    @Field() @required int state,
+    @Field() String note,
   });
 }

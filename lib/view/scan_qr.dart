@@ -1,6 +1,7 @@
 import 'package:dartin/dartin.dart';
 import 'package:flutter/material.dart';
 import 'package:qrcode/qrcode.dart';
+import 'package:wechat/repository/group.dart';
 import 'package:wechat/util/layer.dart';
 import 'package:wechat/view/base.dart';
 import 'package:wechat/viewmodel/add_friend.dart';
@@ -46,6 +47,43 @@ class _ScanQrPageState extends State<ScanQrPage> {
                     final AddFriendViewModel viewModel = inject();
                     viewModel
                         .addFriend(userAccount: account)
+                        .then((value) {
+                          showToast('申请成功');
+                        })
+                        .catchAll((e) {
+                          showToast(e.toString());
+                        })
+                        .showLoadingUntilComplete()
+                        .whenComplete(() {
+                          Navigator.of(context).pop();
+                        });
+                  },
+                ),
+              ],
+            ),
+          );
+          break;
+        case 'group':
+          final String code = uri.host;
+          await showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: Text('申请入群'),
+              content: Text('是否申请入群？'),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text("取消"),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                FlatButton(
+                  child: Text("确定"),
+                  onPressed: () {
+                    final GroupRepository _groupRepository = inject();
+                    _groupRepository
+                        .applyEnter(code: code)
+                        .then((value) {
+                          showToast('申请成功');
+                        })
                         .catchAll((e) {
                           showToast(e.toString());
                         })

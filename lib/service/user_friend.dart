@@ -40,7 +40,7 @@ abstract class UserFriendService extends BaseService {
   });
 
   @Post(path: '/delete')
-  Future<Response<ApiResponse<dynamic>>> delete({
+  Future<Response<ApiResponse<Object>>> delete({
     @Field() @required int userId,
   });
 

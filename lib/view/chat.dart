@@ -451,25 +451,29 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
             ),
             const SizedBox(width: 6),
             if (_showSendButton)
-              FlatButton(
-                onPressed: () {
-                  final String text = _messageEditingController.text;
-                  if (text.isNotEmpty) {
-                    _messageEditingController.text = '';
-                    widget.viewModel.send(Message(
-                      msgType: MessageType.text,
-                      msg: text,
-                    ));
-                  }
-                },
-                child: Text(
-                  '发送',
-                  style: TextStyle(fontSize: 16.sp, color: Colors.white),
+              ButtonTheme(
+                minWidth: 68,
+                child: FlatButton(
+                  onPressed: () {
+                    final String text = _messageEditingController.text;
+                    if (text.isNotEmpty) {
+                      _messageEditingController.text = '';
+                      widget.viewModel.send(Message(
+                        msgType: MessageType.text,
+                        msg: text,
+                      ));
+                    }
+                  },
+                  child: Text(
+                    '发送',
+                    style: TextStyle(fontSize: 16.sp, color: Colors.white),
+                  ),
+                  color: const Color(AppColor.LoginInputNormalColor),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  splashColor: Colors.transparent,
                 ),
-                color: const Color(AppColor.LoginInputNormalColor),
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                splashColor: Colors.transparent,
               )
             else
               GestureDetector(
@@ -560,7 +564,7 @@ class _MessageEditAreaState extends State<_MessageEditArea> {
                   if (group.isForbidden == null) {
                     return Center(
                       child: Text(
-                        '该群已被封禁或已解散',
+                        '您已不在该群中',
                         style: TextStyle(color: Colors.black54),
                       ),
                     );
@@ -596,6 +600,8 @@ class _MessageBox extends StatefulWidget {
         return _ImageMessageBoxState();
       case MessageType.audio:
         return _AudioMessageBoxState();
+      case MessageType.system:
+        return _SystemMessageBoxState();
       default:
         return _TextMessageBoxState();
     }
@@ -736,6 +742,36 @@ abstract class _MessageBoxState extends State<_MessageBox> {
         );
       },
     );
+  }
+}
+
+class _SystemMessageBoxState extends _MessageBoxState {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        height: 24,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+          color: Colors.grey.withAlpha(60),
+        ),
+        child: Center(
+          child: Text(
+            widget.message.msg,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.black54,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget buildBox(BuildContext context) {
+    return null;
   }
 }
 

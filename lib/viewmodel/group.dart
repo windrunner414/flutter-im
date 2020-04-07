@@ -42,11 +42,42 @@ class GroupViewModel extends BaseViewModel {
         .wrapError();
   }
 
-  Future<void> updateForbidden(bool value) async {
+  Future<void> update({
+    String groupName,
+    bool isSpeakForbidden,
+    List<int> groupAvatar,
+  }) async {
+    String _groupAvatar;
     await _groupRepository
-        .update(groupId: id, isSpeakForbidden: value)
-        .bindTo(this, 'updateForbidden')
+        .update(
+            groupId: id,
+            groupName: groupName,
+            isSpeakForbidden: isSpeakForbidden,
+            groupAvatar: _groupAvatar)
+        .bindTo(this, 'update')
         .wrapError();
-    info.value = info.value.copyWith(isForbidden: value);
+    info.value = info.value.copyWith(
+      isForbidden: isSpeakForbidden,
+      groupName: groupName,
+      groupAvatar: _groupAvatar,
+    );
+  }
+
+  Future<void> updateNickName(String userGroupName) async {
+    await _groupRepository
+        .updateUser(
+            userId: ownUserInfo.value.userId,
+            groupId: id,
+            userGroupName: userGroupName)
+        .bindTo(this, 'updateNickName')
+        .wrapError();
+    final List<GroupUser> list = users.value.list;
+    for (int i = 0; i < list.length; ++i) {
+      if (list[i].userId == ownUserInfo.value.userId) {
+        list[i] = list[i].copyWith(userGroupName: userGroupName);
+        users.value = users.value.copyWith(list: list);
+        return;
+      }
+    }
   }
 }

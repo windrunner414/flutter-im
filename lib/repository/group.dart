@@ -2,6 +2,7 @@ import 'package:dartin/dartin.dart';
 import 'package:flutter/material.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/group.dart';
+import 'package:wechat/model/group_application.dart';
 import 'package:wechat/model/group_user.dart';
 import 'package:wechat/repository/base.dart';
 import 'package:wechat/service/group.dart';
@@ -51,6 +52,49 @@ class GroupRepository extends BaseRepository {
         groupId: groupId,
         groupAvatar: groupAvatar,
         groupName: groupName,
-        isSpeakForbidden: isSpeakForbidden ? 1 : 0,
+        isSpeakForbidden:
+            isSpeakForbidden == null ? null : (isSpeakForbidden ? 1 : 0),
       );
+
+  Future<void> updateUser({
+    @required int userId,
+    @required int groupId,
+    String userGroupName,
+  }) async =>
+      await _groupService.updateUser(
+        groupId: groupId,
+        userId: userId,
+        userGroupName: userGroupName,
+      );
+
+  Future<void> applyEnter({@required String code}) async =>
+      await _groupService.applyEnter(code: code);
+
+  Future<GroupApplicationList> getGroupApplications({
+    int page,
+    int limit,
+    int groupId,
+    GroupApplicationState state,
+  }) async =>
+      (await _groupService.getGroupApplications(
+        page: page,
+        limit: limit,
+        groupId: groupId,
+        state: GroupApplication(state: state).toJson()['state'],
+      ))
+          .body
+          .result;
+
+  Future<void> verifyApplication({
+    @required int groupApplyId,
+    @required GroupApplicationState state,
+    String note,
+  }) async =>
+      (await _groupService.verifyApplication(
+        groupApplyId: groupApplyId,
+        state: GroupApplication(state: state).toJson()['state'],
+        note: note,
+      ))
+          .body
+          .result;
 }

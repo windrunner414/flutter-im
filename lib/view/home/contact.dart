@@ -1,9 +1,10 @@
 part of 'home.dart';
 
 class _ContactPage extends BaseView<ContactViewModel> {
-  const _ContactPage({this.friendApplicationNum});
+  const _ContactPage({this.friendApplicationNum, this.groupApplicationNum});
 
   final BehaviorSubject<int> friendApplicationNum;
+  final BehaviorSubject<int> groupApplicationNum;
 
   @override
   _ContactPageState createState() => _ContactPageState();
@@ -123,6 +124,37 @@ class _ContactPageState extends BaseViewState<ContactViewModel, _ContactPage>
               right: 32,
               child: IStreamBuilder<int>(
                 stream: widget.friendApplicationNum,
+                builder: (BuildContext context, AsyncSnapshot<int> snapshot) =>
+                    Badge(
+                  badgeColor: const Color(AppColor.NotifyDotBgColor),
+                  elevation: 0,
+                  badgeContent: Text(
+                    snapshot.data > 99 ? '99+' : snapshot.data.toString(),
+                    style: TextStyle(
+                      color: const Color(AppColor.NotifyDotTextColor),
+                      fontSize: 14.sp,
+                    ),
+                  ),
+                  toAnimate: false,
+                  padding: const EdgeInsets.all(7),
+                  showBadge: snapshot.data > 0,
+                ),
+              ),
+            ),
+          ],
+        ),
+        Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            ContactItem(
+              avatar: 'asset://assets/images/ic_new_friend.png',
+              title: '加群申请',
+              onPressed: () => router.push('/groupApplications'),
+            ),
+            Positioned(
+              right: 32,
+              child: IStreamBuilder<int>(
+                stream: widget.groupApplicationNum,
                 builder: (BuildContext context, AsyncSnapshot<int> snapshot) =>
                     Badge(
                   badgeColor: const Color(AppColor.NotifyDotBgColor),
