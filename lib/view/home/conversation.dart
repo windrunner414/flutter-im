@@ -1,9 +1,13 @@
 part of 'home.dart';
 
+enum _ConversationItemAction { delete }
+
 class _ConversationItem extends StatefulWidget {
-  const _ConversationItem(this._conversation) : assert(_conversation != null);
+  const _ConversationItem(this._conversation, this.viewModel)
+      : assert(_conversation != null);
 
   final Conversation _conversation;
+  final ConversationViewModel viewModel;
 
   @override
   _ConversationItemState createState() => _ConversationItemState();
@@ -119,7 +123,37 @@ class _ConversationItemState extends State<_ConversationItem> {
               : 'group',
         });
       },
-      onLongPress: () {},
+      onLongPressStart: (details) async {
+        final _ConversationItemAction action = await showMenu(
+          context: context,
+          position: RelativeRect.fromLTRB(
+            details.globalPosition.dx,
+            details.globalPosition.dy,
+            double.infinity,
+            double.infinity,
+          ),
+          items: <PopupMenuItem<_ConversationItemAction>>[
+            PopupMenuItem<_ConversationItemAction>(
+              value: _ConversationItemAction.delete,
+              child: Text(
+                '删除该聊天',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+          ],
+        );
+        switch (action) {
+          case _ConversationItemAction.delete:
+            widget.viewModel.conversations.value = widget
+                .viewModel.conversations.value
+              ..remove(widget._conversation);
+            break;
+          default:
+        }
+      },
       child: Container(
         padding: const EdgeInsets.all(10.0),
         decoration: BoxDecoration(
@@ -218,7 +252,7 @@ class _ConversationPage extends BaseView<ConversationViewModel> {
         return ListView.builder(
           physics: const BouncingScrollPhysics(),
           itemBuilder: (BuildContext context, int index) {
-            return _ConversationItem(snapshot.data[index]);
+            return _ConversationItem(snapshot.data[index], viewModel);
           },
           itemCount: snapshot.data?.length ?? 0,
           addAutomaticKeepAlives: false,
