@@ -749,7 +749,7 @@ class _SystemMessageBoxState extends _MessageBoxState {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       child: Container(
         height: 24,
         decoration: BoxDecoration(
