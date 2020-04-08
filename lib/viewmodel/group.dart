@@ -1,8 +1,11 @@
 import 'package:dartin/dartin.dart';
+import 'package:http/http.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/group.dart';
 import 'package:wechat/model/group_user.dart';
+import 'package:wechat/repository/file.dart';
 import 'package:wechat/repository/group.dart';
 import 'package:wechat/viewmodel/base.dart';
 
@@ -14,6 +17,7 @@ class GroupViewModel extends BaseViewModel {
   final BehaviorSubject<GroupUserList> users = BehaviorSubject();
 
   final GroupRepository _groupRepository = inject();
+  final FileRepository _fileRepository = inject();
 
   Future<void> refresh() async {
     info.value = await _groupRepository
@@ -47,8 +51,20 @@ class GroupViewModel extends BaseViewModel {
     bool isSpeakForbidden,
     List<int> groupAvatar,
   }) async {
-    String _groupAvatar;
-    await _groupRepository
+    final String _groupAvatar = groupAvatar == null
+        ? null
+        : await _fileRepository
+            .uploadAvatar(
+              MultipartFile.fromBytes(
+                'file',
+                groupAvatar,
+                filename: 'image.jpg',
+                contentType: MediaType('image', 'jpeg'),
+              ),
+            )
+            .bindTo(this, 'update')
+            .wrapError();
+    info.value = await _groupRepository
         .update(
             groupId: id,
             groupName: groupName,
@@ -56,11 +72,6 @@ class GroupViewModel extends BaseViewModel {
             groupAvatar: _groupAvatar)
         .bindTo(this, 'update')
         .wrapError();
-    info.value = info.value.copyWith(
-      isForbidden: isSpeakForbidden,
-      groupName: groupName,
-      groupAvatar: _groupAvatar,
-    );
   }
 
   Future<void> updateNickName(String userGroupName) async {

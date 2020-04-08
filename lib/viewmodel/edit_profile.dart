@@ -18,14 +18,17 @@ class EditProfileViewModel extends BaseViewModel {
   }) async {
     final String _userAvatar = userAvatar == null
         ? null
-        : await _fileRepository.uploadAvatar(
-            MultipartFile.fromBytes(
-              'file',
-              userAvatar,
-              filename: 'image.jpg',
-              contentType: MediaType('image', 'jpeg'),
-            ),
-          );
+        : await _fileRepository
+            .uploadAvatar(
+              MultipartFile.fromBytes(
+                'file',
+                userAvatar,
+                filename: 'image.jpg',
+                contentType: MediaType('image', 'jpeg'),
+              ),
+            )
+            .bindTo(this, 'update')
+            .wrapError();
     final User new_ = await _userRepository
         .update(
             userName: userName,

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:dartin/dartin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wechat/common/constant.dart';
@@ -18,40 +19,6 @@ import 'package:wechat/widget/app_bar.dart';
 import 'package:wechat/widget/image.dart';
 import 'package:wechat/widget/stream_builder.dart';
 
-Widget _column(String text, Widget right) {
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
-      border: Border(
-        bottom: BorderSide(
-          color: const Color(AppColor.DividerColor),
-          width: 0.5,
-        ),
-      ),
-    ),
-    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-    child: ConstrainedBox(
-      constraints: BoxConstraints(minHeight: 40),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            text,
-            style: TextStyle(color: Colors.black87, fontSize: 18),
-          ),
-          DefaultTextStyle(
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.black54,
-            ),
-            child: right,
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
 class GroupPage extends BaseView<GroupViewModel> {
   GroupPage(this.id);
 
@@ -59,6 +26,40 @@ class GroupPage extends BaseView<GroupViewModel> {
 
   @override
   _GroupPageState createState() => _GroupPageState();
+
+  Widget _column(String text, Widget right) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(
+            color: const Color(AppColor.DividerColor),
+            width: 0.5,
+          ),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minHeight: 40),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              text,
+              style: TextStyle(color: Colors.black87, fontSize: 18),
+            ),
+            DefaultTextStyle(
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.black54,
+              ),
+              child: right,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   // TODO: 可以抽出来复用的，先copy了
   Future<void> _editGroupName(
@@ -145,6 +146,28 @@ class GroupPage extends BaseView<GroupViewModel> {
     }
   }
 
+  Future<void> _editGroupAvatar(GroupViewModel viewModel) async {
+    try {
+      var resultList = await MultiImagePicker.pickImages(
+        maxImages: 1,
+        enableCamera: true,
+      );
+      var result = resultList[0];
+      List<int> bytes =
+          (await result.getByteData(quality: 80)).buffer.asUint8List();
+      viewModel.update(groupAvatar: bytes).catchAll(
+        (e) {
+          showToast(e.toString());
+        },
+        test: exceptCancelException,
+      ).showLoadingUntilComplete();
+    } on NoImagesSelectedException {
+      // ignore
+    } catch (_) {
+      showToast('请检查权限');
+    }
+  }
+
   void _showQRCode(GroupViewModel viewModel) {
     showWidget(
       builder: (_) {
@@ -211,7 +234,7 @@ class GroupPage extends BaseView<GroupViewModel> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     children: List.generate(
-                      min(users.total, 23),
+                      min(users.total, isManager ? 23 : 25),
                       (index) => Center(
                         child: GestureDetector(
                           onTap: () => router.push(
@@ -234,28 +257,48 @@ class GroupPage extends BaseView<GroupViewModel> {
                           ),
                         ),
                       ),
-                    )..addAll([
-                        Center(
-                          child: GestureDetector(
-                            onTap: () {},
-                            child: Icon(
-                              Icons.add,
-                              size: 48,
-                              color: Colors.grey,
+                    )..addAll(isManager
+                        ? [
+                            Center(
+                              child: GestureDetector(
+                                onTap: () {},
+                                child: Icon(
+                                  Icons.add,
+                                  size: 48,
+                                  color: Colors.grey,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        Center(
-                          child: GestureDetector(
-                            onTap: () {},
-                            child: Icon(
-                              Icons.remove,
-                              size: 48,
-                              color: Colors.grey,
+                            Center(
+                              child: GestureDetector(
+                                onTap: () {},
+                                child: Icon(
+                                  Icons.remove,
+                                  size: 48,
+                                  color: Colors.grey,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ]),
+                          ]
+                        : const []),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => router.push(
+                    '/groupMembers',
+                    arguments: <String, String>{'id': id.toString()},
+                  ),
+                  child: Container(
+                    color: Colors.white,
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Text(
+                      '查看全部成员',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black54,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -267,6 +310,37 @@ class GroupPage extends BaseView<GroupViewModel> {
                   )
                 else
                   _column('群聊名称', Text(group.groupName)),
+                if (isManager)
+                  GestureDetector(
+                    onTap: () => _editGroupAvatar(viewModel),
+                    child: _column(
+                      '群聊头像',
+                      UImage(
+                        group.groupAvatar,
+                        placeholderBuilder: (BuildContext context) => UImage(
+                          'asset://assets/images/default_avatar.png',
+                          width: 48,
+                          height: 48,
+                        ),
+                        width: 48,
+                        height: 48,
+                      ),
+                    ),
+                  )
+                else
+                  _column(
+                    '群聊头像',
+                    UImage(
+                      group.groupAvatar,
+                      placeholderBuilder: (BuildContext context) => UImage(
+                        'asset://assets/images/default_avatar.png',
+                        width: 56,
+                        height: 56,
+                      ),
+                      width: 56,
+                      height: 56,
+                    ),
+                  ),
                 GestureDetector(
                   onTap: () => _showQRCode(viewModel),
                   child: _column(

@@ -43,18 +43,20 @@ class GroupRepository extends BaseRepository {
   Future<void> delete({@required int groupId}) async =>
       await _groupService.delete(groupId: groupId);
 
-  Future<void> update(
+  Future<Group> update(
           {@required int groupId,
           String groupName,
           bool isSpeakForbidden,
           String groupAvatar}) async =>
-      await _groupService.update(
+      (await _groupService.update(
         groupId: groupId,
         groupAvatar: groupAvatar,
         groupName: groupName,
         isSpeakForbidden:
             isSpeakForbidden == null ? null : (isSpeakForbidden ? 1 : 0),
-      );
+      ))
+          .body
+          .result;
 
   Future<void> updateUser({
     @required int userId,

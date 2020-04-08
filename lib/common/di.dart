@@ -31,6 +31,7 @@ import 'package:wechat/viewmodel/edit_profile.dart';
 import 'package:wechat/viewmodel/friend_applications.dart';
 import 'package:wechat/viewmodel/group.dart';
 import 'package:wechat/viewmodel/group_applications.dart';
+import 'package:wechat/viewmodel/group_members.dart';
 import 'package:wechat/viewmodel/home.dart';
 import 'package:wechat/viewmodel/login.dart';
 import 'package:wechat/viewmodel/profile.dart';
@@ -61,6 +62,8 @@ final Module viewModelModule = Module(<DartIn<dynamic>>[
   factory<GroupViewModel>(({params}) => GroupViewModel(params.get(0) as int)),
   factory<GroupApplicationsViewModel>(
       ({params}) => GroupApplicationsViewModel()),
+  factory<GroupMembersViewModel>(
+      ({params}) => GroupMembersViewModel(params.get(0) as int)),
 ]);
 
 final Module repositoryModule = Module(<DartIn<dynamic>>[

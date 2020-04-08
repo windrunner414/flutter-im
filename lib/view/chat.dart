@@ -763,6 +763,7 @@ class _SystemMessageBoxState extends _MessageBoxState {
               fontSize: 14,
               color: Colors.black54,
             ),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ),
