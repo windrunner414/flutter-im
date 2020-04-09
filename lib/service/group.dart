@@ -87,4 +87,19 @@ abstract class GroupService extends BaseService {
     @Field() @required int state,
     @Field() String note,
   });
+
+  @Post(path: '/GroupUserApply/inviteEnterGroup')
+  Future<Response<ApiResponse<Object>>> inviteFriend({
+    @Field() @required int groupId,
+    @Field() @required int userId,
+    @Field() String note,
+  });
+
+  @Get(path: '/GroupUserInvitation/getFriendInvitationList')
+  Future<Response<ApiResponse<Object>>> getGroupInvitations({
+    @Query() int page,
+    @Query() int limit,
+    @Query() int groupId,
+    @Query() int state,
+  });
 }

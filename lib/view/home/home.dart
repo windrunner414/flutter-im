@@ -65,6 +65,7 @@ class HomePage extends BaseView<HomeViewModel> {
       _ContactPage(
         friendApplicationNum: viewModel.friendApplicationNum,
         groupApplicationNum: viewModel.groupApplicationNum,
+        groupInvitationNum: viewModel.groupInvitationNum,
       ),
       _ProfilePage(),
     ];
@@ -138,6 +139,7 @@ class HomePage extends BaseView<HomeViewModel> {
                     <Stream<int>>{
                       viewModel.friendApplicationNum,
                       viewModel.groupApplicationNum,
+                      viewModel.groupInvitationNum,
                     },
                     (List<int> list) => list.fold(0, (v, e) => v + e),
                   ),

@@ -33,6 +33,8 @@ class HomeViewModel extends BaseViewModel {
       BehaviorSubject<int>.seeded(0);
   final BehaviorSubject<int> groupApplicationNum =
       BehaviorSubject<int>.seeded(0);
+  final BehaviorSubject<int> groupInvitationNum =
+      BehaviorSubject<int>.seeded(0);
   final BehaviorSubject<bool> webSocketConnected =
       BehaviorSubject<bool>.seeded(false);
 
@@ -138,6 +140,8 @@ class HomeViewModel extends BaseViewModel {
             groupApplicationNum.value = result.total)
         .catchError((Object e) {});
   }
+
+  void _refreshGroupInvitationNum() {}
 
   Future<void> _ping() async {
     /// 如果此时连接断开，会立刻失败并调用reconnect，reconnect不会做任何事情

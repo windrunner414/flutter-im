@@ -99,4 +99,30 @@ class GroupRepository extends BaseRepository {
       ))
           .body
           .result;
+
+  Future<void> inviteFriend({
+    @required int groupId,
+    @required int userId,
+    String note,
+  }) async =>
+      await _groupService.inviteFriend(
+        groupId: groupId,
+        userId: userId,
+        note: note,
+      );
+
+  Future<Object> getGroupInvitations({
+    int page,
+    int limit,
+    int groupId,
+    int state,
+  }) async =>
+      (await _groupService.getGroupInvitations(
+        page: page,
+        limit: limit,
+        groupId: groupId,
+        state: state,
+      ))
+          .body
+          .result;
 }

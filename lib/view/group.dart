@@ -10,6 +10,7 @@ import 'package:wechat/common/constant.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/group.dart';
 import 'package:wechat/model/group_user.dart';
+import 'package:wechat/model/user.dart';
 import 'package:wechat/util/layer.dart';
 import 'package:wechat/util/router.dart';
 import 'package:wechat/util/screen.dart';
@@ -196,6 +197,162 @@ class GroupPage extends BaseView<GroupViewModel> {
     );
   }
 
+  void _inviteFriends(BuildContext context, GroupViewModel viewModel) {
+    List<User> users = [];
+    Set<int> groupUsers =
+        viewModel.users.value.list.map((e) => e.userId).toSet();
+    for (var e in friendList.value.list) {
+      if (groupUsers.contains(e.targetUserId)) {
+        continue;
+      }
+      users.add(User(
+        userId: e.targetUserId,
+        userAvatar: e.userAvatar,
+        userName: e.showName,
+      ));
+    }
+    _selectUser(context, users, (users) {
+      return viewModel.invite(users).then((_) {
+        showToast('已发送邀请');
+        return true;
+      }).catchAll(
+        (e) {
+          showToast(e.toString());
+          return false;
+        },
+        test: exceptCancelException,
+      ).showLoadingUntilComplete();
+    });
+  }
+
+  Future<bool> _deleteUsers(
+      BuildContext context, GroupViewModel viewModel) async {
+    List<User> users = [];
+    for (var e in viewModel.users.value.list) {
+      if (e.userId == ownUserInfo.value.userId) {
+        continue;
+      }
+      users.add(User(
+        userId: e.userId,
+        userAvatar: e.userAvatar,
+        userName: e.showName,
+      ));
+    }
+    _selectUser(context, users, (users) {
+      return viewModel.deleteUsers(users).then((_) {
+        showToast('操作成功');
+        return true;
+      }).catchAll(
+        (e) {
+          showToast(e.toString());
+          return false;
+        },
+        test: exceptCancelException,
+      ).showLoadingUntilComplete();
+    });
+  }
+
+  _selectUser(
+    BuildContext context,
+    List<User> users,
+    Future<bool> callback(Set<User> users),
+  ) {
+    BehaviorSubject<Set<User>> selected = BehaviorSubject.seeded({});
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Material(
+          child: Scaffold(
+            appBar: IAppBar(
+              title: Text('邀请好友'),
+              actions: <Widget>[
+                ButtonTheme(
+                  minWidth: 0,
+                  child: FlatButton(
+                    onPressed: () async {
+                      if (selected.value.length > 0) {
+                        if (!(await callback(selected.value))) {
+                          return;
+                        }
+                      }
+                      router.pop();
+                    },
+                    child: Text(
+                      '确定',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                    color: const Color(AppColor.LoginInputNormalColor),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ),
+              ],
+            ),
+            body: IStreamBuilder(
+              stream: selected,
+              builder: (BuildContext context, _) {
+                return ListView.builder(
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: <Widget>[
+                          const SizedBox(width: 12),
+                          UImage(
+                            users[index].userAvatar,
+                            placeholderBuilder: (BuildContext context) =>
+                                UImage(
+                              'asset://assets/images/default_avatar.png',
+                              width: 36,
+                              height: 36,
+                            ),
+                            width: 36,
+                            height: 36,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            users[index].userName,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Checkbox(
+                                value: selected.value.contains(users[index])
+                                    ? true
+                                    : false,
+                                onChanged: (value) {
+                                  if (selected.value.length >= 10) {
+                                    showToast('一次最多选择10个');
+                                    return;
+                                  }
+                                  if (value) {
+                                    selected.value = selected.value
+                                      ..add(users[index]);
+                                  } else {
+                                    selected.value = selected.value
+                                      ..remove(users[index]);
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  itemCount: users.length,
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context, GroupViewModel viewModel) {
     dependOnScreenUtil(context);
@@ -261,7 +418,7 @@ class GroupPage extends BaseView<GroupViewModel> {
                         ? [
                             Center(
                               child: GestureDetector(
-                                onTap: () {},
+                                onTap: () => _inviteFriends(context, viewModel),
                                 child: Icon(
                                   Icons.add,
                                   size: 48,
@@ -271,7 +428,7 @@ class GroupPage extends BaseView<GroupViewModel> {
                             ),
                             Center(
                               child: GestureDetector(
-                                onTap: () {},
+                                onTap: () => _deleteUsers(context, viewModel),
                                 child: Icon(
                                   Icons.remove,
                                   size: 48,

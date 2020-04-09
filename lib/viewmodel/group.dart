@@ -2,9 +2,11 @@ import 'package:dartin/dartin.dart';
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:wechat/common/exception.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/group.dart';
 import 'package:wechat/model/group_user.dart';
+import 'package:wechat/model/user.dart';
 import 'package:wechat/repository/file.dart';
 import 'package:wechat/repository/group.dart';
 import 'package:wechat/viewmodel/base.dart';
@@ -88,6 +90,33 @@ class GroupViewModel extends BaseViewModel {
         list[i] = list[i].copyWith(userGroupName: userGroupName);
         users.value = users.value.copyWith(list: list);
         return;
+      }
+    }
+  }
+
+  Future<void> invite(Set<User> users) async {
+    for (var i in users) {
+      try {
+        await _groupRepository
+            .inviteFriend(groupId: id, userId: i.userId)
+            .bindTo(this, 'invite')
+            .wrapError();
+      } on CancelException {
+        rethrow;
+      } catch (_) {
+        // TODO: 失败了一个怎么办？
+      }
+    }
+  }
+
+  Future<void> deleteUsers(Set<User> users) async {
+    for (var i in users) {
+      try {
+        await deleteUser(i.userId);
+      } on CancelException {
+        rethrow;
+      } catch (_) {
+        // TODO: 失败了一个怎么办？
       }
     }
   }
