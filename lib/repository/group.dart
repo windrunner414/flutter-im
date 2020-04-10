@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/group.dart';
 import 'package:wechat/model/group_application.dart';
+import 'package:wechat/model/group_invitation.dart';
 import 'package:wechat/model/group_user.dart';
 import 'package:wechat/repository/base.dart';
 import 'package:wechat/service/group.dart';
@@ -111,18 +112,29 @@ class GroupRepository extends BaseRepository {
         note: note,
       );
 
-  Future<Object> getGroupInvitations({
+  Future<GroupInvitationList> getGroupInvitations({
     int page,
     int limit,
     int groupId,
-    int state,
+    GroupInvitationState state,
   }) async =>
       (await _groupService.getGroupInvitations(
         page: page,
         limit: limit,
         groupId: groupId,
-        state: state,
+        state: GroupInvitation(state: state).toJson()['state'],
       ))
           .body
           .result;
+
+  Future<void> verifyInvitation({
+    @required int groupApplyId,
+    @required GroupInvitationState state,
+    String note,
+  }) async =>
+      await _groupService.verifyInvitation(
+        groupApplyId: groupApplyId,
+        state: GroupInvitation(state: state).toJson()['state'],
+        note: note,
+      );
 }

@@ -13,6 +13,7 @@ import 'package:wechat/view/friend_applications.dart';
 import 'package:wechat/view/group.dart';
 import 'package:wechat/view/groupMembers.dart';
 import 'package:wechat/view/group_applications.dart';
+import 'package:wechat/view/group_invitations.dart';
 import 'package:wechat/view/home/home.dart';
 import 'package:wechat/view/joined_group_list.dart';
 import 'package:wechat/view/login.dart';
@@ -123,5 +124,9 @@ final Set<AppRouteSetting> appRoutes = <AppRouteSetting>{
     handler: (_, Map<String, String> arguments) =>
         GroupMembersPage(int.tryParse(arguments['id'])),
     parameters: <String>{'id'},
+  ),
+  AppRouteSetting(
+    path: '/groupInvitations',
+    handler: (_, __) => GroupInvitationsPage(),
   ),
 };

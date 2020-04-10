@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:wechat/model/api_response.dart';
 import 'package:wechat/model/group.dart';
 import 'package:wechat/model/group_application.dart';
+import 'package:wechat/model/group_invitation.dart';
 import 'package:wechat/model/group_user.dart';
 import 'package:wechat/service/base.dart';
 
@@ -96,10 +97,17 @@ abstract class GroupService extends BaseService {
   });
 
   @Get(path: '/GroupUserInvitation/getFriendInvitationList')
-  Future<Response<ApiResponse<Object>>> getGroupInvitations({
+  Future<Response<ApiResponse<GroupInvitationList>>> getGroupInvitations({
     @Query() int page,
     @Query() int limit,
     @Query() int groupId,
     @Query() int state,
+  });
+
+  @Post(path: '/GroupUserInvitation/groupAgree')
+  Future<Response<ApiResponse<Object>>> verifyInvitation({
+    @Field() @required int groupApplyId,
+    @Field() @required int state,
+    @Field() String note,
   });
 }

@@ -9,6 +9,7 @@ import 'package:wechat/common/exception.dart';
 import 'package:wechat/common/state.dart';
 import 'package:wechat/model/friend_application.dart';
 import 'package:wechat/model/group_application.dart';
+import 'package:wechat/model/group_invitation.dart';
 import 'package:wechat/model/message.dart';
 import 'package:wechat/model/websocket_message.dart';
 import 'package:wechat/repository/auth.dart';
@@ -92,6 +93,7 @@ class HomeViewModel extends BaseViewModel {
     _refreshFriendList();
     _refreshJoinedGroupList();
     _refreshGroupApplyNum();
+    _refreshGroupInvitationNum();
     _timers.add(Timer.periodic(
         const Duration(minutes: 5), (_) => _refreshUserProfile()));
     _timers.add(Timer.periodic(
@@ -103,6 +105,8 @@ class HomeViewModel extends BaseViewModel {
         const Duration(seconds: 5), (_) => _refreshJoinedGroupList()));
     _timers.add(Timer.periodic(
         const Duration(seconds: 5), (_) => _refreshGroupApplyNum()));
+    _timers.add(Timer.periodic(
+        const Duration(seconds: 5), (_) => _refreshGroupInvitationNum()));
   }
 
   void _stopTimers() {
@@ -141,7 +145,15 @@ class HomeViewModel extends BaseViewModel {
         .catchError((Object e) {});
   }
 
-  void _refreshGroupInvitationNum() {}
+  void _refreshGroupInvitationNum() {
+    _groupRepository
+        .getGroupInvitations(
+            page: 1, limit: 1, state: GroupInvitationState.waiting)
+        .bindTo(this, 'refreshGroupInvitationNum')
+        .then((GroupInvitationList result) =>
+            groupInvitationNum.value = result.total)
+        .catchError((Object e) {});
+  }
 
   Future<void> _ping() async {
     /// 如果此时连接断开，会立刻失败并调用reconnect，reconnect不会做任何事情
